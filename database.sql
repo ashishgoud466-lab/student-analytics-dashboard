@@ -1,5 +1,5 @@
-CREATE DATABASE student_appdemo_db;
-USE student_appdemo_db;
+CREATE DATABASE Student_appdemo_db;
+USE Student_appdemo_db;
 
 CREATE TABLE Student_info (
 Roll_no VARCHAR(20) PRIMARY KEY ,
@@ -11,7 +11,7 @@ Admission_Year INT
 
 CREATE TABLE Courses  (
 Cid  VARCHAR(20) PRIMARY KEY ,
-Course_name VARCHAR(50) ,
+Course_name VARCHAR(255) ,
 Credits INT 
 );
 

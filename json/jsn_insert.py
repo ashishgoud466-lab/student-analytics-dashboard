@@ -4,19 +4,19 @@ import mysql.connector
 
 # ==========================================
 # JSON FILE LOCATION
-# ==========================================
-JSON_FOLDER = r"C:\Users\Ghana shyam\OneDrive\Documents\student app folder"
+JSON_FOLDER = r"C:\Users\Ghana shyam\OneDrive\Documents\student app folder\json_student_grade_2-1"
 
 # ==========================================
-# MYSQL CONNECTION
-# ==========================================
+import os
+
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",   # <-- change this
-    database="Student_appdemo_db"
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT")),
+    ssl_disabled=False
 )
-
 cursor = conn.cursor()
 
 print("✅ Connected to MySQL")
