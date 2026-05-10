@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState }from "react";
 import Compare from "./pages/Compare";
 
 import {
-    Hashrouter,
+    HashRouter,
     Routes,
     Route,
     Link
