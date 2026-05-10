@@ -1,0 +1,53 @@
+{
+    "roll_no": "24011M2115",
+    "subjects": [
+        {
+            "cid": "22CS18",
+            "name": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+            "credits": 3.0,
+            "gp": 8
+        },
+        {
+            "cid": "22M06",
+            "name": "COMPUTER ORIENTATION STATISTICAL METHODS",
+            "credits": 4.0,
+            "gp": 6
+        },
+        {
+            "cid": "22CS09",
+            "name": "DATA STRUCTURES",
+            "credits": 3.0,
+            "gp": 9
+        },
+        {
+            "cid": "22CS09L",
+            "name": "DATA STRUCTURES LAB",
+            "credits": 1.5,
+            "gp": 9
+        },
+        {
+            "cid": "22EE10",
+            "name": "DIGITAL ELECTRONICS",
+            "credits": 3.0,
+            "gp": 7
+        },
+        {
+            "cid": "22CS10",
+            "name": "OBJECT ORIENTED PROGRAMMING THROUGH JAVA",
+            "credits": 3.0,
+            "gp": 6
+        },
+        {
+            "cid": "22CS10L",
+            "name": "OBJECT ORIENTED PROGRAMMING THROUGH JAVA LAB",
+            "credits": 1.5,
+            "gp": 10
+        },
+        {
+            "cid": "22CS11L",
+            "name": "SKILL DEVELOPMENT COURSE (DATA VISUALIZATION-R PROGRAMMING / POWER BI)",
+            "credits": 1.0,
+            "gp": 8
+        }
+    ]
+}
