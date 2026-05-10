@@ -12,17 +12,21 @@ import API_BASE from "./services/api";
 
 import StudentProfile from "./pages/StudentProfile";
 
-
 function App() {
 
+    // ==========================================
+    // STATES
+    // ==========================================
+
     const [students, setStudents] = useState([]);
+
+    const [totalStudents, setTotalStudents] = useState(0);
 
     const [search, setSearch] = useState("");
 
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState(null);
-
 
 
     // ==========================================
@@ -37,7 +41,11 @@ function App() {
 
             .then((data) => {
 
+                console.log(data);
+
                 setStudents(data.results);
+
+                setTotalStudents(data.total_students);
 
                 setLoading(false);
 
@@ -45,7 +53,7 @@ function App() {
 
             .catch((err) => {
 
-                console.log(err);
+                console.error(err);
 
                 setError("Failed to load data");
 
@@ -54,7 +62,6 @@ function App() {
             });
 
     }, []);
-
 
 
     // ==========================================
@@ -75,12 +82,9 @@ function App() {
     );
 
 
-
     // ==========================================
     // DASHBOARD STATS
     // ==========================================
-
-    const totalStudents = students.length;
 
     const highestSGPA = students.length > 0
 
@@ -114,7 +118,6 @@ function App() {
         : null;
 
 
-
     // ==========================================
     // LOADING
     // ==========================================
@@ -137,7 +140,6 @@ function App() {
     }
 
 
-
     return (
 
         <BrowserRouter>
@@ -152,10 +154,7 @@ function App() {
 
                         <div className="container mt-4">
 
-
-                            {/* ========================================== */}
                             {/* NAVBAR */}
-                            {/* ========================================== */}
 
                             <nav className="navbar navbar-dark bg-dark mb-4 rounded shadow">
 
@@ -170,19 +169,21 @@ function App() {
                                 </div>
 
                             </nav>
-<Link
-    to="/Compare"
-    className="btn btn-light"
->
-
-    Compare
-
-</Link>
 
 
-                            {/* ========================================== */}
+                            {/* COMPARE BUTTON */}
+
+                            <Link
+                                to="/compare"
+                                className="btn btn-dark mb-4"
+                            >
+
+                                Compare Students
+
+                            </Link>
+
+
                             {/* TITLE */}
-                            {/* ========================================== */}
 
                             <h1 className="text-center mb-4">
 
@@ -191,10 +192,7 @@ function App() {
                             </h1>
 
 
-
-                            {/* ========================================== */}
                             {/* DASHBOARD CARDS */}
-                            {/* ========================================== */}
 
                             <div className="row mb-4">
 
@@ -216,7 +214,6 @@ function App() {
                                 </div>
 
 
-
                                 <div className="col-md-3">
 
                                     <div className="card shadow">
@@ -234,7 +231,6 @@ function App() {
                                 </div>
 
 
-
                                 <div className="col-md-3">
 
                                     <div className="card shadow">
@@ -250,7 +246,6 @@ function App() {
                                     </div>
 
                                 </div>
-
 
 
                                 <div className="col-md-3">
@@ -278,10 +273,7 @@ function App() {
                             </div>
 
 
-
-                            {/* ========================================== */}
-                            {/* SEARCH BAR */}
-                            {/* ========================================== */}
+                            {/* SEARCH */}
 
                             <input
                                 type="text"
@@ -292,13 +284,9 @@ function App() {
                             />
 
 
-
-                            {/* ========================================== */}
                             {/* TABLE */}
-                            {/* ========================================== */}
 
                             <table className="table table-bordered table-hover shadow">
-
 
                                 <thead className="table-dark">
 
@@ -314,17 +302,13 @@ function App() {
 
                                 </thead>
 
-
-
                                 <tbody>
 
                                     {filteredStudents.map((student, index) => (
 
                                         <tr key={index}>
 
-
                                             <td>{index + 1}</td>
-
 
                                             <td>
 
@@ -337,7 +321,6 @@ function App() {
                                                 </Link>
 
                                             </td>
-
 
                                             <td>{student.Student_name}</td>
 
@@ -354,24 +337,21 @@ function App() {
                             </table>
 
 
-
-                            {/* ========================================== */}
                             {/* FOOTER */}
-                            {/* ========================================== */}
 
                             <footer className="text-center mt-5 mb-3 text-muted">
 
-    Student Analytics Dashboard © 2026
+                                Student Analytics Dashboard © 2026
 
-    <br />
+                                <br />
 
-    <small>
+                                <small>
 
-        Made by <b>Shyam</b> 🚀
+                                    Made by <b>Shyam</b> 🚀
 
-    </small>
+                                </small>
 
-</footer>
+                            </footer>
 
                         </div>
 
@@ -380,9 +360,7 @@ function App() {
                 />
 
 
-                {/* ========================================== */}
                 {/* PROFILE PAGE */}
-                {/* ========================================== */}
 
                 <Route
 
@@ -391,13 +369,18 @@ function App() {
                     element={<StudentProfile />}
 
                 />
-<Route
 
-    path="/compare"
 
-    element={<Compare />}
+                {/* COMPARE PAGE */}
 
-/>
+                <Route
+
+                    path="/compare"
+
+                    element={<Compare />}
+
+                />
+
             </Routes>
 
         </BrowserRouter>
