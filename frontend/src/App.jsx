@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Compare from "./pages/Compare";
 
 import {
-    BrowserRouter,
+    Hashrouter,
     Routes,
     Route,
     Link
@@ -142,7 +142,7 @@ function App() {
 
     return (
 
-        <BrowserRouter>
+        <HashRouter>
 
             <Routes>
 
@@ -383,7 +383,7 @@ function App() {
 
             </Routes>
 
-        </BrowserRouter>
+        </HashRouter>
 
     );
 }
