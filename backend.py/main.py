@@ -29,20 +29,20 @@ def home():
 # ==========================================
 # RANK LIST
 # ==========================================
-@app.get("/ranklist")
-def get_ranklist():
+@app.get("/ranklist", tags=["Analytics"])
+def ranklist():
+
+    cursor.execute(
+        queries.rank_list_query
+    )
+
+    data = cursor.fetchall()
 
     return {
-        "total_students": 1,
-        "results": [
-            {
-                "Roll_no": "24011M2104",
-                "Student_name": "Shyam",
-                "Programme": "Computer Science",
-                "SGPA": 8.17
-            }
-        ]
+        "total_students": len(data),
+        "results": data
     }
+
 @app.get("/student/{roll}")
 
 def get_student(roll: str):
