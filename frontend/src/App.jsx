@@ -86,15 +86,22 @@ function App() {
 
     const highestSGPA = students.length > 0
 
-        ? Math.max(...students.map((s) => s.SGPA))
+        ? Math.max(
+            ...students.map((s) =>
+                parseFloat(s.SGPA)
+            )
+        ).toFixed(2)
 
         : 0;
 
     const averageSGPA = students.length > 0
 
         ? (
-            students.reduce((sum, s) => sum + s.SGPA, 0)
-            / students.length
+            students.reduce(
+                (sum, s) =>
+                    sum + parseFloat(s.SGPA),
+                0
+            ) / students.length
         ).toFixed(2)
 
         : 0;
@@ -103,7 +110,8 @@ function App() {
 
         ? students.reduce((top, current) =>
 
-            current.SGPA > top.SGPA
+            parseFloat(current.SGPA) >
+            parseFloat(top.SGPA)
 
                 ? current
 
@@ -282,7 +290,9 @@ function App() {
 
                                 <td>{student.Programme}</td>
 
-                                <td>{student.SGPA}</td>
+                                <td>
+                                    {parseFloat(student.SGPA).toFixed(2)}
+                                </td>
 
                             </tr>
 
