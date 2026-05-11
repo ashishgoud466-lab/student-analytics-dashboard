@@ -13,7 +13,7 @@ conn = mysql.connector.connect(
     port=int(os.getenv("DB_PORT")),
     ssl_disabled=False
 )
-
+cursor = conn.cursor()
 cursor = conn.cursor()
 
 print("✅ Connected to MySQL")

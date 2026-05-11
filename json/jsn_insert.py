@@ -10,7 +10,6 @@ JSON_FOLDER = r"C:\Users\Ghana shyam\OneDrive\Documents\student app folder\json_
 
 # ==========================================
 # MYSQL CONNECTION
-# ==========================================
 conn = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     user=os.getenv("DB_USER"),
@@ -19,7 +18,6 @@ conn = mysql.connector.connect(
     port=int(os.getenv("DB_PORT")),
     ssl_disabled=False
 )
-
 cursor = conn.cursor()
 
 print("✅ Connected to MySQL")
