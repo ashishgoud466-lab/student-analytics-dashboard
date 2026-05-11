@@ -1,6 +1,4 @@
-import { useEffect, useState }from "react";
-import Login from "./pages/Login";
-
+import { useEffect, useState } from "react";
 
 import {
     HashRouter,
@@ -12,6 +10,8 @@ import {
 import API_BASE from "./services/api";
 
 import StudentProfile from "./pages/StudentProfile";
+
+import Login from "./pages/Login";
 
 function App() {
 
@@ -28,7 +28,6 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState(null);
-
 
     // ==========================================
     // FETCH DATA
@@ -64,7 +63,6 @@ function App() {
 
     }, []);
 
-
     // ==========================================
     // SEARCH FILTER
     // ==========================================
@@ -82,7 +80,6 @@ function App() {
             .includes(search.toLowerCase())
     );
 
-
     // ==========================================
     // DASHBOARD STATS
     // ==========================================
@@ -93,7 +90,6 @@ function App() {
 
         : 0;
 
-
     const averageSGPA = students.length > 0
 
         ? (
@@ -102,7 +98,6 @@ function App() {
         ).toFixed(2)
 
         : 0;
-
 
     const topStudent = students.length > 0
 
@@ -118,28 +113,208 @@ function App() {
 
         : null;
 
-
     // ==========================================
-    // LOADING
-    // ==========================================
-
-    if (loading) {
-
-        return <h1 className="text-center mt-5">Loading...</h1>;
-
-    }
-
-
-    // ==========================================
-    // ERROR
+    // DASHBOARD COMPONENT
     // ==========================================
 
-    if (error) {
+    const Dashboard = () => {
 
-        return <h1 className="text-center mt-5">{error}</h1>;
+        if (loading) {
 
-    }
+            return <h1 className="text-center mt-5">Loading...</h1>;
+        }
 
+        if (error) {
+
+            return <h1 className="text-center mt-5">{error}</h1>;
+        }
+
+        return (
+
+            <div className="container mt-4">
+
+                {/* NAVBAR */}
+
+                <nav className="navbar navbar-dark bg-dark mb-4 rounded shadow">
+
+                    <div className="container-fluid">
+
+                        <span className="navbar-brand mb-0 h1">
+
+                            Student Analytics
+
+                        </span>
+
+                    </div>
+
+                </nav>
+
+                {/* TITLE */}
+
+                <h1 className="text-center mb-4">
+
+                    Student Analytics Dashboard
+
+                </h1>
+
+                {/* DASHBOARD CARDS */}
+
+                <div className="row mb-4">
+
+                    <div className="col-md-3">
+
+                        <div className="card shadow">
+
+                            <div className="card-body">
+
+                                <h5>Total Students</h5>
+
+                                <h2>{totalStudents}</h2>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div className="col-md-3">
+
+                        <div className="card shadow">
+
+                            <div className="card-body">
+
+                                <h5>Highest SGPA</h5>
+
+                                <h2>{highestSGPA}</h2>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div className="col-md-3">
+
+                        <div className="card shadow">
+
+                            <div className="card-body">
+
+                                <h5>Average SGPA</h5>
+
+                                <h2>{averageSGPA}</h2>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div className="col-md-3">
+
+                        <div className="card shadow">
+
+                            <div className="card-body">
+
+                                <h5>Top Student</h5>
+
+                                <h6>
+
+                                    {topStudent
+                                        ? topStudent.Student_name
+                                        : "N/A"}
+
+                                </h6>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {/* SEARCH */}
+
+                <input
+                    type="text"
+                    className="form-control mb-4"
+                    placeholder="Search by name or roll number..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+
+                {/* TABLE */}
+
+                <table className="table table-bordered table-hover shadow">
+
+                    <thead className="table-dark">
+
+                        <tr>
+
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Programme</th>
+                            <th>SGPA</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {filteredStudents.map((student, index) => (
+
+                            <tr key={index}>
+
+                                <td>
+
+                                    <Link
+                                        to={`/student/${student.Roll_no}`}
+                                    >
+
+                                        {student.Roll_no}
+
+                                    </Link>
+
+                                </td>
+
+                                <td>{student.Student_name}</td>
+
+                                <td>{student.Programme}</td>
+
+                                <td>{student.SGPA}</td>
+
+                            </tr>
+
+                        ))}
+
+                    </tbody>
+
+                </table>
+
+                {/* FOOTER */}
+
+                <footer className="text-center mt-5 mb-3 text-muted">
+
+                    Student Analytics Dashboard © 2026
+
+                    <br />
+
+                    <small>
+
+                        Made by <b>Shyam</b> 🚀
+
+                    </small>
+
+                </footer>
+
+            </div>
+        );
+    };
+
+    // ==========================================
+    // APP ROUTES
+    // ==========================================
 
     return (
 
@@ -148,230 +323,23 @@ function App() {
             <Routes>
 
                 <Route
-
                     path="/"
-
-                    element={
-
-                        <div className="container mt-4">
-
-                            {/* NAVBAR */}
-
-                            <nav className="navbar navbar-dark bg-dark mb-4 rounded shadow">
-
-                                <div className="container-fluid">
-
-                                    <span className="navbar-brand mb-0 h1">
-
-                                        Student Analytics
-
-                                    </span>
-
-                                </div>
-
-                            </nav>
-
-
-                            {/* COMPARE BUTTON */}
-
-
-
-                            {/* TITLE */}
-
-                            <h1 className="text-center mb-4">
-
-                                Student Analytics Dashboard
-
-                            </h1>
-
-
-                            {/* DASHBOARD CARDS */}
-
-                            <div className="row mb-4">
-
-
-                                <div className="col-md-3">
-
-                                    <div className="card shadow">
-
-                                        <div className="card-body">
-
-                                            <h5>Total Students</h5>
-
-                                            <h2>{totalStudents}</h2>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="col-md-3">
-
-                                    <div className="card shadow">
-
-                                        <div className="card-body">
-
-                                            <h5>Highest SGPA</h5>
-
-                                            <h2>{highestSGPA}</h2>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="col-md-3">
-
-                                    <div className="card shadow">
-
-                                        <div className="card-body">
-
-                                            <h5>Average SGPA</h5>
-
-                                            <h2>{averageSGPA}</h2>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="col-md-3">
-
-                                    <div className="card shadow">
-
-                                        <div className="card-body">
-
-                                            <h5>Top Student</h5>
-
-                                            <h6>
-
-                                                {topStudent
-                                                    ? topStudent.Student_name
-                                                    : "N/A"}
-
-                                            </h6>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* SEARCH */}
-
-                            <input
-                                type="text"
-                                className="form-control mb-4"
-                                placeholder="Search by name or roll number..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-
-
-                            {/* TABLE */}
-
-                            <table className="table table-bordered table-hover shadow">
-
-                                <thead className="table-dark">
-
-                                    <tr>
-
-                                        <th>Roll No</th>
-                                        <th>Roll No</th>
-                                        <th>Name</th>
-                                        <th>Programme</th>
-                                        <th>SGPA</th>
-
-                                    </tr>
-
-                                </thead>
-
-                                <tbody>
-
-                                    {filteredStudents.map((student, index) => (
-
-                                        <tr key={index}>
-
-                                           
-
-                                            <td>
-
-                                                <Link
-                                                    to={`/student/${student.Roll_no}`}
-                                                >
-
-                                                    {student.Roll_no}
-
-                                                </Link>
-
-                                            </td>
-
-                                            <td>{student.Student_name}</td>
-
-                                            <td>{student.Programme}</td>
-
-                                            <td>{student.SGPA}</td>
-
-                                        </tr>
-
-                                    ))}
-
-                                </tbody>
-
-                            </table>
-
-
-                            {/* FOOTER */}
-
-                            <footer className="text-center mt-5 mb-3 text-muted">
-
-                                Student Analytics Dashboard © 2026
-
-                                <br />
-
-                                <small>
-
-                                    Made by <b>Shyam</b> 🚀
-
-                                </small>
-
-                            </footer>
-
-                        </div>
-
-                    }
-
+                    element={<Login />}
                 />
-<Route path="/" element={<Login />} />
-
-<Route path="/dashboard" element={<Dashboard />} />
-
-                {/* PROFILE PAGE */}
 
                 <Route
-
-                    path="/student/:roll"
-
-                    element={<StudentProfile />}
-
+                    path="/dashboard"
+                    element={<Dashboard />}
                 />
 
-
-               
+                <Route
+                    path="/student/:roll"
+                    element={<StudentProfile />}
+                />
 
             </Routes>
 
         </HashRouter>
-
     );
 }
 
