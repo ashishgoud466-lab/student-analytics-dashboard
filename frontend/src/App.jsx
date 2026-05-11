@@ -1,5 +1,5 @@
 import { useEffect, useState }from "react";
-import Compare from "./pages/Compare";
+
 
 import {
     HashRouter,
@@ -173,14 +173,6 @@ function App() {
 
                             {/* COMPARE BUTTON */}
 
-                            <Link
-                                to="/compare"
-                                className="btn btn-dark mb-4"
-                            >
-
-                                Compare Students
-
-                            </Link>
 
 
                             {/* TITLE */}
@@ -292,7 +284,7 @@ function App() {
 
                                     <tr>
 
-                                        <th>Rank</th>
+                                        <th>Roll No</th>
                                         <th>Roll No</th>
                                         <th>Name</th>
                                         <th>Programme</th>
@@ -308,7 +300,7 @@ function App() {
 
                                         <tr key={index}>
 
-                                            <td>{index + 1}</td>
+                                           
 
                                             <td>
 
@@ -371,15 +363,7 @@ function App() {
                 />
 
 
-                {/* COMPARE PAGE */}
-
-                <Route
-
-                    path="/compare"
-
-                    element={<Compare />}
-
-                />
+               
 
             </Routes>
 

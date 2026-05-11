@@ -4,11 +4,13 @@ import mysql.connector
 
 # ==========================================
 # JSON FILE LOCATION
+# ==========================================
+
 JSON_FOLDER = r"C:\Users\Ghana shyam\OneDrive\Documents\student app folder\json_student_grade_2-1"
 
 # ==========================================
-import os
-
+# MYSQL CONNECTION
+# ==========================================
 conn = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     user=os.getenv("DB_USER"),
@@ -17,6 +19,7 @@ conn = mysql.connector.connect(
     port=int(os.getenv("DB_PORT")),
     ssl_disabled=False
 )
+
 cursor = conn.cursor()
 
 print("✅ Connected to MySQL")
@@ -24,6 +27,7 @@ print("✅ Connected to MySQL")
 # ==========================================
 # FIND JSON FILES
 # ==========================================
+
 json_files = [
     f for f in os.listdir(JSON_FOLDER)
     if f.endswith(".json")
@@ -34,6 +38,7 @@ print(f"\n📁 JSON FILES FOUND: {len(json_files)}")
 # ==========================================
 # PROCESS EACH FILE
 # ==========================================
+
 for file in json_files:
 
     print(f"\n📄 Processing {file}")
@@ -52,8 +57,18 @@ for file in json_files:
         print("📚 Subjects:", len(subjects))
 
         # ==========================================
+        # DELETE OLD ENROLL DATA
+        # ==========================================
+
+        cursor.execute("""
+        DELETE FROM Enroll
+        WHERE Roll_no = %s
+        """, (roll_no,))
+
+        # ==========================================
         # INSERT STUDENT
         # ==========================================
+
         cursor.execute("""
             INSERT IGNORE INTO Student_info
             (Roll_no, Student_name, Branch, Programme, Admission_Year)
@@ -69,6 +84,7 @@ for file in json_files:
         # ==========================================
         # INSERT SUBJECTS
         # ==========================================
+
         for sub in subjects:
 
             cid = sub["cid"]
@@ -76,9 +92,10 @@ for file in json_files:
             credits = sub["credits"]
             gp = sub["gp"]
 
-            # --------------------------------------
+            # ==========================================
             # INSERT COURSE
-            # --------------------------------------
+            # ==========================================
+
             cursor.execute("""
                 INSERT INTO Courses
                 (Cid, Course_name, Credits)
@@ -92,11 +109,12 @@ for file in json_files:
                 credits
             ))
 
-            # --------------------------------------
+            # ==========================================
             # INSERT ENROLL
-            # --------------------------------------
+            # ==========================================
+
             cursor.execute("""
-                INSERT IGNORE INTO Enroll
+                INSERT INTO Enroll
                 (Roll_no, Cid, Sem_id, Grade_point)
                 VALUES (%s, %s, %s, %s)
             """, (
@@ -109,19 +127,22 @@ for file in json_files:
         print("✅ Inserted successfully")
 
     except Exception as e:
+
         print("❌ ERROR:", e)
 
 # ==========================================
 # SAVE CHANGES
 # ==========================================
+
 conn.commit()
 
 # ==========================================
 # VERIFY INSERT
 # ==========================================
+
 cursor.execute("""
-    SELECT COUNT(DISTINCT Roll_no)
-    FROM Enroll
+SELECT COUNT(DISTINCT Roll_no)
+FROM Enroll
 """)
 
 count = cursor.fetchone()[0]
@@ -131,6 +152,7 @@ print("\n🎯 TOTAL STUDENTS INSERTED:", count)
 # ==========================================
 # CLOSE CONNECTION
 # ==========================================
+
 cursor.close()
 conn.close()
 
