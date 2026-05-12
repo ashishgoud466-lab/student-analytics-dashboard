@@ -1,6 +1,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi import Body
+from fastapi import Body
 
 from db import get_connection
 
@@ -23,6 +24,50 @@ app.add_middleware(
 # ==========================================
 # HOME
 # ==========================================
+
+@app.post("/login")
+
+def login(data: dict = Body(...)):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    roll = data["roll_no"]
+
+    password = data["password"]
+
+    cursor.execute("""
+
+        SELECT *
+
+        FROM Users
+
+        WHERE Roll_no = %s
+        AND Temp_Password = %s
+
+    """, (roll, password))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if not user:
+
+        return {
+            "success": False,
+            "message": "Invalid credentials"
+        }
+
+    return {
+
+        "success": True,
+
+        "roll_no": user["Roll_no"],
+
+        "first_login": user["First_Login"]
+
+    }
 @app.post("/register")
 
 def register(data: dict = Body(...)):
