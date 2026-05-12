@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ChangePassword from "./pages/ChangePassword";
 
 import {
     HashRouter,
@@ -363,7 +364,10 @@ function App() {
                     path="/dashboard"
                     element={<Dashboard />}
                 />
-
+<Route
+    path="/change-password"
+    element={<ChangePassword />}
+/>
                 <Route
                     path="/student/:roll"
                     element={<StudentProfile />}

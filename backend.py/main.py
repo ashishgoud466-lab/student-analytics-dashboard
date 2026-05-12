@@ -69,6 +69,58 @@ def login(data: dict = Body(...)):
 
     }
 @app.post("/register")
+@app.post("/change-password")
+
+def change_password(data: dict = Body(...)):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    roll = data["roll_no"]
+
+    new_password = data["new_password"]
+
+    email = data["email"]
+
+    # ==========================================
+    # UPDATE USER
+    # ==========================================
+
+    cursor.execute("""
+
+        UPDATE Users
+
+        SET
+
+            Password = %s,
+
+            Email = %s,
+
+            First_Login = FALSE
+
+        WHERE Roll_no = %s
+
+    """, (
+
+        new_password,
+
+        email,
+
+        roll
+
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return {
+
+        "success": True,
+
+        "message": "Password updated"
+    }
 
 def register(data: dict = Body(...)):
 
