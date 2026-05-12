@@ -1,12 +1,16 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
-
-from db import cursor
+from db import get_connection
 
 import queries
 
 app = FastAPI()
+
+# ==========================================
+# CORS
+# ==========================================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,6 +22,7 @@ app.add_middleware(
 # ==========================================
 # HOME
 # ==========================================
+
 @app.get("/")
 def home():
 
@@ -25,59 +30,70 @@ def home():
         "message": "Student Analytics API Running"
     }
 
-
 # ==========================================
 # RANK LIST
 # ==========================================
+
 @app.get("/ranklist", tags=["Analytics"])
 def ranklist():
 
-    cursor.execute(
-        queries.rank_list_query
-    )
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        SELECT *
+        FROM student_analytics_view
+        ORDER BY Roll_no ASC
+
+    """)
 
     data = cursor.fetchall()
+
+    conn.close()
 
     return {
         "total_students": len(data),
         "results": data
     }
 
-@app.get("/student/{roll}")
+# ==========================================
+# STUDENT DETAILS
+# ==========================================
 
+@app.get("/student/{roll}")
 def get_student(roll: str):
 
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
     # =========================
-    # STUDENT ANALYTICS
+    # STUDENT INFO
     # =========================
 
-    cursor.execute(f"""
+    cursor.execute("""
 
         SELECT *
-
         FROM student_analytics_view
+        WHERE Roll_no = %s
 
-        WHERE Roll_no = '{roll}'
-
-    """)
+    """, (roll,))
 
     student = cursor.fetchone()
-
 
     # =========================
     # SUBJECTS
     # =========================
 
-    cursor.execute(f"""
+    cursor.execute("""
 
         SELECT
 
             C.Cid,
-
             C.Course_name,
-
             C.Credits,
-
             E.Grade_point
 
         FROM Enroll E
@@ -85,12 +101,13 @@ def get_student(roll: str):
         JOIN Courses C
         ON E.Cid = C.Cid
 
-        WHERE E.Roll_no = '{roll}'
+        WHERE E.Roll_no = %s
 
-    """)
+    """, (roll,))
 
     subjects = cursor.fetchall()
 
+    conn.close()
 
     return {
 
@@ -99,193 +116,80 @@ def get_student(roll: str):
         "subjects": subjects
 
     }
+
 # ==========================================
 # ABOVE CLASS AVERAGE
 # ==========================================
+
 @app.get("/above-class-average")
 def above_average():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
 
     cursor.execute(
         queries.students_above_average_query
     )
 
-    return cursor.fetchall()
-@app.get("/compare/{roll1}/{roll2}")
+    data = cursor.fetchall()
 
-def compare_students(roll1: str, roll2: str):
+    conn.close()
 
-    cursor.execute(f"""
-
-        SELECT *
-
-        FROM student_analytics_view
-
-        WHERE Roll_no = '{roll1}'
-
-    """)
-
-    student1 = cursor.fetchone()
-
-
-    cursor.execute(f"""
-
-        SELECT *
-
-        FROM student_analytics_view
-
-        WHERE Roll_no = '{roll2}'
-
-    """)
-
-    student2 = cursor.fetchone()
-
-
-    return {
-
-        "student1": student1,
-
-        "student2": student2
-
-    }
-
+    return data
 
 # ==========================================
 # PROGRAMME TOPPERS
 # ==========================================
+
 @app.get("/programme-toppers")
 def programme_toppers():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
 
     cursor.execute(
         queries.programme_toppers_query
     )
 
-    return cursor.fetchall()
+    data = cursor.fetchall()
 
+    conn.close()
 
-# ==========================================
-# CONSISTENT STUDENTS
-# ==========================================
-@app.get("/consistent-students")
-def consistent_students():
-
-    cursor.execute(
-        queries.consistent_students_query
-    )
-
-    return cursor.fetchall()
-
-
-# ==========================================
-# PERFORMANCE GAP
-# ==========================================
-@app.get("/performance-gap")
-def performance_gap():
-
-    cursor.execute(
-        queries.performance_gap_query
-    )
-
-    return cursor.fetchall()
-
+    return data
 
 # ==========================================
 # BACKLOGS
 # ==========================================
+
 @app.get("/backlogs")
 def backlogs():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
 
     cursor.execute(
         queries.backlog_count_query
     )
 
-    return cursor.fetchall()
+    data = cursor.fetchall()
 
+    conn.close()
 
-# ==========================================
-# HARDEST SUBJECTS
-# ==========================================
-@app.get("/hardest-subjects")
-def hardest_subjects():
-
-    cursor.execute(
-        queries.hardest_subjects_query
-    )
-
-    return cursor.fetchall()
-
+    return data
 
 # ==========================================
-# EASIEST SUBJECTS
+# SEARCH
 # ==========================================
-@app.get("/easiest-subjects")
-def easiest_subjects():
-
-    cursor.execute(
-        queries.easiest_subjects_query
-    )
-
-    return cursor.fetchall()
-
-
-# ==========================================
-# HIGHEST O GRADES
-# ==========================================
-@app.get("/highest-o-grades")
-def highest_o_grades():
-
-    cursor.execute(
-        queries.highest_o_grades_query
-    )
-
-    return cursor.fetchall()
-
-
-# ==========================================
-# SUBJECT TOPPERS
-# ==========================================
-@app.get("/subject-toppers")
-def subject_toppers():
-
-    cursor.execute(
-        queries.subject_toppers_query
-    )
-
-    return cursor.fetchall()
-
-@app.get("/compare/{s1}/{s2}")
-def compare(s1: str, s2: str):
-
-    query = '''
-
-    SELECT
-
-        C.Course_name,
-
-        E1.Grade_point AS Student1_GP,
-
-        E2.Grade_point AS Student2_GP
-
-    FROM Enroll E1
-
-    JOIN Enroll E2
-    ON E1.Cid = E2.Cid
-
-    JOIN Courses C
-    ON E1.Cid = C.Cid
-
-    WHERE
-        E1.Roll_no = %s
-    AND
-        E2.Roll_no = %s
-
-    '''
-
-    cursor.execute(query, (s1, s2))
-
-    return cursor.fetchall()
 
 @app.get("/search/{name}", tags=["Search"])
 def search_student(name: str):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
 
     query = '''
 
@@ -299,7 +203,13 @@ def search_student(name: str):
 
     data = cursor.fetchall()
 
+    conn.close()
+
     return data
+
+# ==========================================
+# HEALTH
+# ==========================================
 
 @app.get("/health")
 def health():
@@ -307,28 +217,3 @@ def health():
     return {
         "status": "running"
     }
-
-# ==========================================
-# SINGLE STUDENT
-# ==========================================
-@app.get("/student/{roll_no}", tags=["Students"])
-def student(roll_no: str):
-
-    query = '''
-
-    SELECT *
-    FROM student_analytics_view
-    WHERE Roll_no = %s
-
-    '''
-
-    cursor.execute(query, (roll_no,))
-
-    data = cursor.fetchone()
-
-    if not data:
-        return {
-            "error": "Student not found"
-        }
-
-    return data

@@ -1,22 +1,22 @@
-import os
 import pymysql
+import os
 
-db = pymysql.connect(
+def get_connection():
 
-    host=os.getenv("DB_HOST"),
+    return pymysql.connect(
 
-    user=os.getenv("DB_USER"),
+        host=os.getenv("DB_HOST"),
 
-    password=os.getenv("DB_PASSWORD"),
+        user=os.getenv("DB_USER"),
 
-    database=os.getenv("DB_NAME"),
+        password=os.getenv("DB_PASSWORD"),
 
-    port=int(os.getenv("DB_PORT")),
+        database=os.getenv("DB_NAME"),
 
-    ssl={"ssl": {}}
+        port=int(os.getenv("DB_PORT")),
 
-)
+        ssl={"ssl": {}},
 
-cursor = db.cursor(pymysql.cursors.DictCursor)
+        cursorclass=pymysql.cursors.DictCursor
 
-print("✅ Database Connected")
+    )
