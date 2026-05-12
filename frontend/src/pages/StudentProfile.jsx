@@ -95,6 +95,10 @@ function StudentProfile() {
                     <strong>Total Subjects:</strong> {student.Total_Subjects}
                 </p>
 
+                <p>
+                    <strong>Backlogs:</strong> {student.Backlogs}
+                </p>
+
             </div>
 
 
