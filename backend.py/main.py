@@ -1,5 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+from fastapi import Body
 
 from db import get_connection
 
@@ -22,7 +23,97 @@ app.add_middleware(
 # ==========================================
 # HOME
 # ==========================================
+@app.post("/register")
 
+def register(data: dict = Body(...)):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    roll = data["roll_no"]
+
+    password = data["password"]
+
+    # check existing user
+
+    cursor.execute("""
+
+        SELECT *
+
+        FROM Users
+
+        WHERE Roll_no = %s
+
+    """, (roll,))
+
+    existing = cursor.fetchone()
+
+    if existing:
+
+        conn.close()
+
+        return {
+            "success": False,
+            "message": "User already exists"
+        }
+
+    # insert user
+
+    cursor.execute("""
+
+        INSERT INTO Users
+        (Roll_no, Password)
+
+        VALUES (%s, %s)
+
+    """, (roll, password))
+
+    conn.commit()
+
+    conn.close()
+
+    return {
+        "success": True
+    }
+@app.post("/login")
+
+def login(data: dict = Body(...)):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    roll = data["roll_no"]
+
+    password = data["password"]
+
+    cursor.execute("""
+
+        SELECT *
+
+        FROM Users
+
+        WHERE Roll_no = %s
+        AND Password = %s
+
+    """, (roll, password))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user:
+
+        return {
+            "success": True,
+            "role": user["Role"],
+            "roll_no": user["Roll_no"]
+        }
+
+    return {
+        "success": False
+    }
 @app.get("/")
 def home():
 

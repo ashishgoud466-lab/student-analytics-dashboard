@@ -1,134 +1,146 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import API_BASE from "../services/api";
 
 function Login() {
 
-    const [rollNo, setRollNo] = useState("");
-    const [username, setUsername] = useState("");
+    const [roll, setRoll] = useState("");
+
     const [password, setPassword] = useState("");
 
-    const navigate = useNavigate();
+    const [message, setMessage] = useState("");
 
-    const handleStudentLogin = () => {
+    // ==========================================
+    // LOGIN
+    // ==========================================
 
-        if (!rollNo.trim()) {
+    const handleLogin = async () => {
 
-            alert("Enter Roll Number");
-            return;
-        }
+        const res = await fetch(`${API_BASE}/login`, {
 
-        navigate(`/student/${rollNo}`);
-    };
+            method: "POST",
 
-    const handleAdminLogin = () => {
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-        if (
-            username === "admin" &&
-            password === "admin123"
-        ) {
+            body: JSON.stringify({
+                roll_no: roll,
+                password: password
+            })
 
-            navigate("/dashboard");
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            if (data.role === "admin") {
+
+                window.location.href = "/#/dashboard";
+
+            } else {
+
+                window.location.href =
+                    `/#/student/${data.roll_no}`;
+            }
 
         } else {
 
-            alert("Invalid Admin Credentials");
+            setMessage("Invalid credentials");
+        }
+    };
+
+    // ==========================================
+    // REGISTER
+    // ==========================================
+
+    const handleRegister = async () => {
+
+        const res = await fetch(`${API_BASE}/register`, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                roll_no: roll,
+                password: password
+            })
+
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            setMessage("Registration successful");
+
+        } else {
+
+            setMessage(data.message);
         }
     };
 
     return (
 
-        <div
-            style={{
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                background: "#f5f5f5",
-                padding: "20px"
-            }}
-        >
+        <div className="container mt-5">
 
             <div
-                style={{
-                    background: "white",
-                    padding: "40px",
-                    borderRadius: "12px",
-                    width: "350px",
-                    boxShadow: "0 0 10px rgba(0,0,0,0.1)"
-                }}
+                className="card shadow p-4 mx-auto"
+                style={{ maxWidth: "400px" }}
             >
 
-                <h1
-                    style={{
-                        textAlign: "center",
-                        marginBottom: "30px"
-                    }}
-                >
-                    Student Analytics Login
-                </h1>
-
-                <h3>Student Login</h3>
+                <h2 className="text-center mb-4">
+                    Student Login
+                </h2>
 
                 <input
                     type="text"
-                    placeholder="Enter Roll Number"
-                    value={rollNo}
-                    onChange={(e) => setRollNo(e.target.value)}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "10px"
-                    }}
-                />
-
-                <button
-                    onClick={handleStudentLogin}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "30px",
-                        cursor: "pointer"
-                    }}
-                >
-                    Login as Student
-                </button>
-
-                <h3>Admin Login</h3>
-
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "10px"
-                    }}
+                    className="form-control mb-3"
+                    placeholder="Roll Number"
+                    value={roll}
+                    onChange={(e) => setRoll(e.target.value)}
                 />
 
                 <input
                     type="password"
+                    className="form-control mb-3"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "10px"
-                    }}
                 />
 
                 <button
-                    onClick={handleAdminLogin}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        cursor: "pointer"
-                    }}
+                    className="btn btn-dark mb-2"
+                    onClick={handleLogin}
                 >
-                    Login as Admin
+
+                    Login
+
                 </button>
+
+                <button
+                    className="btn btn-secondary"
+                    onClick={handleRegister}
+                >
+
+                    Register
+
+                </button>
+
+                {
+
+                    message &&
+
+                    <p className="mt-3 text-center">
+
+                        {message}
+
+                    </p>
+                }
 
             </div>
 
