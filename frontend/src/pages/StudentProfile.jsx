@@ -74,7 +74,13 @@ function StudentProfile() {
                 <p>
                     <strong>Admission Year:</strong> {student.Admission_Year}
                 </p>
+<p>
+    <strong>Semester ID:</strong> {student.Sem_id}
+</p>
 
+<p>
+    <strong>Current Year:</strong> {student.Current_year}
+</p>
                 <p>
                     <strong>SGPA:</strong> {student.SGPA}
 
