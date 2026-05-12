@@ -86,25 +86,30 @@ function App() {
 
     const highestSGPA = students.length > 0
 
-        ? Math.max(
-            ...students.map((s) =>
-                parseFloat(s.SGPA)
-            )
-        ).toFixed(2)
+        ? Math.max(...students.map((s) => Number(s.SGPA)))
 
         : 0;
+
 
     const averageSGPA = students.length > 0
 
         ? (
             students.reduce(
-                (sum, s) =>
-                    sum + parseFloat(s.SGPA),
+                (sum, s) => sum + Number(s.SGPA),
                 0
             ) / students.length
         ).toFixed(2)
 
         : 0;
+
+
+    const totalBacklogs = students.reduce(
+
+        (sum, s) => sum + Number(s.Backlogs || 0),
+
+        0
+    );
+
 
     const topStudent = students.length > 0
 
@@ -223,19 +228,33 @@ function App() {
 
                             <div className="card-body">
 
-                                <h5>Top Student</h5>
+                                <h5>Total Backlogs</h5>
 
-                                <h6>
-
-                                    {topStudent
-                                        ? topStudent.Student_name
-                                        : "N/A"}
-
-                                </h6>
+                                <h2>{totalBacklogs}</h2>
 
                             </div>
 
                         </div>
+
+                    </div>
+
+                </div>
+
+                {/* TOP STUDENT */}
+
+                <div className="card shadow mb-4">
+
+                    <div className="card-body">
+
+                        <h5>Top Student</h5>
+
+                        <h4>
+
+                            {topStudent
+                                ? topStudent.Student_name
+                                : "N/A"}
+
+                        </h4>
 
                     </div>
 
@@ -263,6 +282,7 @@ function App() {
                             <th>Name</th>
                             <th>Programme</th>
                             <th>SGPA</th>
+                            <th>Backlogs</th>
 
                         </tr>
 
@@ -293,6 +313,8 @@ function App() {
                                 <td>
                                     {parseFloat(student.SGPA).toFixed(2)}
                                 </td>
+
+                                <td>{student.Backlogs}</td>
 
                             </tr>
 
