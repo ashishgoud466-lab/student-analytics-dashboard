@@ -77,6 +77,22 @@ function StudentProfile() {
 
                 <p>
                     <strong>SGPA:</strong> {student.SGPA}
+
+                    {
+
+                        Number(student.Backlogs) > 0
+
+                        &&
+
+                        <span className="text-danger">
+
+                            {" "}
+                            (with backlogs)
+
+                        </span>
+
+                    }
+
                 </p>
 
                 <p>
@@ -96,7 +112,18 @@ function StudentProfile() {
                 </p>
 
                 <p>
-                    <strong>Backlogs:</strong> {student.Backlogs}
+                    <strong>Backlogs:</strong>
+
+                    {
+
+                        Number(student.Backlogs) > 0
+
+                            ? `${student.Backlogs} backlog(s)`
+
+                            : "No Backlogs"
+
+                    }
+
                 </p>
 
             </div>
