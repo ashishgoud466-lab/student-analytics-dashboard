@@ -341,7 +341,35 @@ def above_average():
 # ==========================================
 # PROGRAMME TOPPERS
 # ==========================================
+@app.get("/admin/users")
 
+def admin_users():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        SELECT
+
+            Roll_no,
+            Temp_Password,
+            Password,
+            Email,
+            First_Login
+
+        FROM Users
+
+        ORDER BY Roll_no ASC
+
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
 @app.get("/programme-toppers")
 
 def programme_toppers():

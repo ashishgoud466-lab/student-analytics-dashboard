@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
-
+import AdminUsers from "./pages/AdminUsers";
 import {
     HashRouter,
     Routes,
@@ -359,7 +359,10 @@ function App() {
                     path="/"
                     element={<Login />}
                 />
-
+<Route
+    path="/admin/users"
+    element={<AdminUsers />}
+/>
                 <Route
                     path="/dashboard"
                     element={<Dashboard />}
