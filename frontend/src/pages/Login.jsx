@@ -35,22 +35,31 @@ function Login() {
 
         if (data.success) {
 
-            if (data.role === "admin") {
+    // =====================================
+    // FIRST LOGIN
+    // =====================================
 
-                window.location.href = "/#/dashboard";
+    if (data.first_login) {
 
-            } else {
+        window.location.href =
+            "/#/change-password";
 
-                window.location.href =
-                    `/#/student/${data.roll_no}`;
-            }
+    }
 
-        } else {
+    // =====================================
+    // NORMAL LOGIN
+    // =====================================
 
-            setMessage("Invalid credentials");
-        }
-    };
+    else {
 
+        window.location.href =
+            `/#/student/${data.roll_no}`;
+    }
+
+} else {
+
+    setMessage("Invalid credentials");
+}
     // ==========================================
     // REGISTER
     // ==========================================
