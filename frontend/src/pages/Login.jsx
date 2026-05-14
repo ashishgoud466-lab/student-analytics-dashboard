@@ -10,9 +10,9 @@ function Login() {
 
     const [message, setMessage] = useState("");
 
-    // ==========================================
+    // =====================================
     // LOGIN
-    // ==========================================
+    // =====================================
 
     const handleLogin = async () => {
 
@@ -25,8 +25,11 @@ function Login() {
             },
 
             body: JSON.stringify({
+
                 roll_no: roll,
+
                 password: password
+
             })
 
         });
@@ -35,61 +38,30 @@ function Login() {
 
         if (data.success) {
 
-    // =====================================
-    // FIRST LOGIN
-    // =====================================
+            // ============================
+            // FIRST LOGIN
+            // ============================
 
-    if (data.first_login) {
+            if (data.first_login) {
 
-        window.location.href =
-            "/#/change-password";
+                window.location.href =
+                    "/#/change-password";
 
-    }
+            }
 
-    // =====================================
-    // NORMAL LOGIN
-    // =====================================
+            // ============================
+            // NORMAL LOGIN
+            // ============================
 
-    else {
+            else {
 
-        window.location.href =
-            `/#/student/${data.roll_no}`;
-    }
-
-} else {
-
-    setMessage("Invalid credentials");
-}
-    // ==========================================
-    // REGISTER
-    // ==========================================
-
-    const handleRegister = async () => {
-
-        const res = await fetch(`${API_BASE}/register`, {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                roll_no: roll,
-                password: password
-            })
-
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-
-            setMessage("Registration successful");
+                window.location.href =
+                    `/#/student/${data.roll_no}`;
+            }
 
         } else {
 
-            setMessage(data.message);
+            setMessage("Invalid credentials");
         }
     };
 
@@ -103,7 +75,9 @@ function Login() {
             >
 
                 <h2 className="text-center mb-4">
+
                     Student Login
+
                 </h2>
 
                 <input
@@ -123,20 +97,11 @@ function Login() {
                 />
 
                 <button
-                    className="btn btn-dark mb-2"
+                    className="btn btn-dark"
                     onClick={handleLogin}
                 >
 
                     Login
-
-                </button>
-
-                <button
-                    className="btn btn-secondary"
-                    onClick={handleRegister}
-                >
-
-                    Register
 
                 </button>
 
