@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ChangePassword from "./pages/ChangePassword";
-import AdminUsers from "./pages/AdminUsers";
+import AdminUsers from "./pages/AdminUsers";\
+import AdminLogin from "./pages/AdminLogin";
 import {
     HashRouter,
     Routes,
@@ -355,10 +356,10 @@ function App() {
 
             <Routes>
 
-                <Route
-                    path="/"
-                    element={<Login />}
-                />
+               <Route
+    path="/"
+    element={<Login />}
+/>
 <Route
     path="/admin/users"
     element={<AdminUsers />}
@@ -370,6 +371,10 @@ function App() {
 <Route
     path="/change-password"
     element={<ChangePassword />}
+/>
+<Route
+    path="/admin-login"
+    element={<AdminLogin />}
 />
                 <Route
                     path="/student/:roll"

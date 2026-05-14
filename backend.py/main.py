@@ -370,6 +370,7 @@ def admin_users():
     conn.close()
 
     return data
+@app.post("/reset-password")
 @app.get("/programme-toppers")
 
 def programme_toppers():
