@@ -125,9 +125,8 @@ def login(data: dict = Body(...)):
 
         FROM Users
 
-        WHERE Roll_no = %s
-        AND Temp_Password = %s
-
+        WHERE BINARY Roll_no = %s
+AND BINARY Temp_Password = %s
     """, (
 
         roll,
@@ -259,18 +258,31 @@ def get_student(roll: str):
     # STUDENT INFO
     # ==================================
 
-    cursor.execute("""
+   cursor.execute("""
 
-        SELECT *
+    SELECT *
 
-        FROM student_analytics_view
+    FROM Users
 
-        WHERE Roll_no = %s
+    WHERE
 
-    """, (roll,))
+        BINARY Roll_no = %s
 
-    student = cursor.fetchone()
+    AND
 
+    (
+        BINARY Temp_Password = %s
+        OR
+        BINARY Password = %s
+    )
+
+""", (
+
+    roll,
+    password,
+    password
+
+))
     # ==================================
     # SUBJECTS
     # ==================================
