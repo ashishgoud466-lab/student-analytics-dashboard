@@ -26,12 +26,53 @@ app.add_middleware(
 # ==========================================
 
 @app.get("/")
+
 def home():
 
     return {
 
         "message": "Student Analytics API Running"
     }
+
+# ==========================================
+# SEMESTER SUBJECTS
+# ==========================================
+
+@app.get("/semester/{sem}")
+
+def get_semester_subjects(sem: int):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        SELECT
+
+            C.Cid,
+            C.Course_name,
+            C.Credits,
+            C.Semester,
+            E.Grade_point
+
+        FROM Courses C
+
+        LEFT JOIN Enroll E
+
+        ON C.Cid = E.Cid
+
+        WHERE C.Semester = %s
+
+        ORDER BY C.Cid
+
+    """, (sem,))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
 
 # ==========================================
 # REGISTER
@@ -49,9 +90,7 @@ def register(data: dict = Body(...)):
 
     password = data["password"]
 
-    # ==========================================
     # CHECK USER EXISTS
-    # ==========================================
 
     cursor.execute("""
 
@@ -76,9 +115,7 @@ def register(data: dict = Body(...)):
             "message": "User already exists"
         }
 
-    # ==========================================
     # INSERT USER
-    # ==========================================
 
     cursor.execute("""
 
@@ -125,11 +162,24 @@ def login(data: dict = Body(...)):
 
         FROM Users
 
-        WHERE BINARY Roll_no = %s
-AND BINARY Temp_Password = %s
+        WHERE
+
+            BINARY Roll_no = %s
+
+        AND
+
+        (
+            BINARY Temp_Password = %s
+
+            OR
+
+            BINARY Password = %s
+        )
+
     """, (
 
         roll,
+        password,
         password
 
     ))
@@ -254,38 +304,21 @@ def get_student(roll: str):
 
     cursor = conn.cursor()
 
-    # ==================================
     # STUDENT INFO
-    # ==================================
 
-   cursor.execute("""
+    cursor.execute("""
 
-    SELECT *
+        SELECT *
 
-    FROM Users
+        FROM student_analytics_view
 
-    WHERE
+        WHERE Roll_no = %s
 
-        BINARY Roll_no = %s
+    """, (roll,))
 
-    AND
+    student = cursor.fetchone()
 
-    (
-        BINARY Temp_Password = %s
-        OR
-        BINARY Password = %s
-    )
-
-""", (
-
-    roll,
-    password,
-    password
-
-))
-    # ==================================
     # SUBJECTS
-    # ==================================
 
     cursor.execute("""
 
@@ -294,14 +327,18 @@ def get_student(roll: str):
             C.Cid,
             C.Course_name,
             C.Credits,
+            C.Semester,
             E.Grade_point
 
         FROM Enroll E
 
         JOIN Courses C
+
         ON E.Cid = C.Cid
 
         WHERE E.Roll_no = %s
+
+        ORDER BY C.Semester
 
     """, (roll,))
 
@@ -317,30 +354,9 @@ def get_student(roll: str):
     }
 
 # ==========================================
-# ABOVE CLASS AVERAGE
+# ADMIN USERS
 # ==========================================
 
-@app.get("/above-class-average")
-
-def above_average():
-
-    conn = get_connection()
-
-    cursor = conn.cursor()
-
-    cursor.execute(
-        queries.students_above_average_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# PROGRAMME TOPPERS
-# ==========================================
 @app.get("/admin/users")
 
 def admin_users():
@@ -370,7 +386,33 @@ def admin_users():
     conn.close()
 
     return data
-@app.post("/reset-password")
+
+# ==========================================
+# ABOVE CLASS AVERAGE
+# ==========================================
+
+@app.get("/above-class-average")
+
+def above_average():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        queries.students_above_average_query
+    )
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+# ==========================================
+# PROGRAMME TOPPERS
+# ==========================================
+
 @app.get("/programme-toppers")
 
 def programme_toppers():
