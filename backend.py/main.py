@@ -456,7 +456,103 @@ def backlogs():
 # ==========================================
 # SEARCH
 # ==========================================
+@app.post("/update-grade")
 
+def update_grade(data: dict = Body(...)):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    roll = data["roll_no"]
+
+    cid = data["cid"]
+
+    gp = data["grade_point"]
+
+    # CHECK EXISTING
+
+    cursor.execute("""
+
+        SELECT *
+
+        FROM Enroll
+
+        WHERE
+
+            Roll_no = %s
+
+        AND
+
+            Cid = %s
+
+    """, (
+
+        roll,
+        cid
+
+    ))
+
+    existing = cursor.fetchone()
+
+    # UPDATE
+
+    if existing:
+
+        cursor.execute("""
+
+            UPDATE Enroll
+
+            SET Grade_point = %s
+
+            WHERE
+
+                Roll_no = %s
+
+            AND
+
+                Cid = %s
+
+        """, (
+
+            gp,
+            roll,
+            cid
+
+        ))
+
+    # INSERT
+
+    else:
+
+        cursor.execute("""
+
+            INSERT INTO Enroll
+
+            (
+                Roll_no,
+                Cid,
+                Grade_point
+            )
+
+            VALUES (%s, %s, %s)
+
+        """, (
+
+            roll,
+            cid,
+            gp
+
+        ))
+
+    conn.commit()
+
+    conn.close()
+
+    return {
+
+        "success": True
+    }
 @app.get("/search/{name}", tags=["Search"])
 
 def search_student(name: str):
