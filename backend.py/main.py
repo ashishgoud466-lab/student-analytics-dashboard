@@ -48,25 +48,25 @@ def get_semester_subjects(sem: int):
 
     cursor.execute("""
 
-        SELECT
+    SELECT
 
-            C.Cid,
-            C.Course_name,
-            C.Credits,
-            C.Semester,
-            E.Grade_point
+        C.Cid,
+        C.Course_name,
+        C.Credits,
+        C.Sem_id,
+        E.Grade_point
 
-        FROM Courses C
+    FROM Courses C
 
-        LEFT JOIN Enroll E
+    LEFT JOIN Enroll E
 
-        ON C.Cid = E.Cid
+    ON C.Cid = E.Cid
 
-        WHERE C.Semester = %s
+    WHERE C.Sem_id = %s
 
-        ORDER BY C.Cid
+    ORDER BY C.Cid
 
-    """, (sem,))
+""", (sem,))
 
     data = cursor.fetchall()
 

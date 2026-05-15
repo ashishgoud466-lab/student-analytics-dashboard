@@ -16,11 +16,19 @@ function Dashboard() {
     const [subjects, setSubjects] =
         useState([]);
 
+    const [grades, setGrades] =
+        useState({});
+
+    const [loading, setLoading] =
+        useState(true);
+
     // =========================================
     // FETCH SUBJECTS
     // =========================================
 
     useEffect(() => {
+
+        setLoading(true);
 
         fetch(
             `${API_BASE}/semester/${selectedSem}`
@@ -32,15 +40,67 @@ function Dashboard() {
 
                 setSubjects(data);
 
+                setLoading(false);
+
             })
 
             .catch((err) => {
 
                 console.error(err);
 
+                setLoading(false);
+
             });
 
     }, [selectedSem]);
+
+    // =========================================
+    // SAVE GRADES
+    // =========================================
+
+    const saveGrades = async () => {
+
+        try {
+
+            for (const cid in grades) {
+
+                await fetch(
+
+                    `${API_BASE}/update-grade`,
+
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            roll_no:
+                                "24011M2104",
+
+                            cid: cid,
+
+                            grade_point:
+                                grades[cid]
+                        })
+                    }
+                );
+            }
+
+            alert("Grades Saved Successfully");
+
+        } catch (err) {
+
+            console.error(err);
+
+            alert("Error Saving Grades");
+        }
+    };
 
     // =========================================
     // CALCULATIONS
@@ -65,7 +125,18 @@ function Dashboard() {
                 (sum, sub) =>
 
                     sum +
-                    Number(sub.Grade_point || 0),
+                    Number(
+
+                        grades[sub.Cid]
+
+                        ??
+
+                        sub.Grade_point
+
+                        ??
+
+                        0
+                    ),
 
                 0
 
@@ -85,7 +156,20 @@ function Dashboard() {
 
             ...subjects.map(
 
-                (s) => Number(s.Grade_point || 0)
+                (s) =>
+
+                    Number(
+
+                        grades[s.Cid]
+
+                        ??
+
+                        s.Grade_point
+
+                        ??
+
+                        0
+                    )
             )
         )
 
@@ -121,9 +205,7 @@ function Dashboard() {
                         background:
                             "rgba(15, 23, 42, 0.95)",
                         borderRight:
-                            "1px solid rgba(255,255,255,0.08)",
-                        backdropFilter:
-                            "blur(20px)"
+                            "1px solid rgba(255,255,255,0.08)"
                     }}
                 >
 
@@ -132,8 +214,7 @@ function Dashboard() {
                         <h1
                             style={{
                                 fontWeight: "700",
-                                fontSize: "2.3rem",
-                                letterSpacing: "-1px"
+                                fontSize: "2.3rem"
                             }}
                         >
 
@@ -144,12 +225,11 @@ function Dashboard() {
                         <p
                             className="mt-2"
                             style={{
-                                color: "#94a3b8",
-                                fontSize: "0.95rem"
+                                color: "#94a3b8"
                             }}
                         >
 
-                            Student Analytics Dashboard
+                            Student Analytics
 
                         </p>
 
@@ -166,9 +246,7 @@ function Dashboard() {
                                 background:
                                     "linear-gradient(to right, #ffffff, #dbeafe)",
                                 color: "#111827",
-                                border: "none",
-                                boxShadow:
-                                    "0 10px 30px rgba(255,255,255,0.1)"
+                                border: "none"
                             }}
                         >
 
@@ -249,9 +327,7 @@ function Dashboard() {
                                     alignItems: "center",
                                     justifyContent: "center",
                                     fontWeight: "bold",
-                                    fontSize: "1.5rem",
-                                    boxShadow:
-                                        "0 10px 30px rgba(59,130,246,0.3)"
+                                    fontSize: "1.5rem"
                                 }}
                             >
 
@@ -261,12 +337,7 @@ function Dashboard() {
 
                             <div>
 
-                                <h6
-                                    className="mb-1"
-                                    style={{
-                                        fontWeight: "600"
-                                    }}
-                                >
+                                <h6 className="mb-1">
 
                                     Shyam Goud
 
@@ -296,15 +367,14 @@ function Dashboard() {
 
                 <div className="col-lg-10 col-md-9 p-5">
 
-                    {/* TOP */}
+                    {/* HEADER */}
 
                     <div className="mb-5">
 
                         <h1
                             style={{
                                 fontSize: "4rem",
-                                fontWeight: "700",
-                                letterSpacing: "-2px"
+                                fontWeight: "700"
                             }}
                         >
 
@@ -320,8 +390,8 @@ function Dashboard() {
                             }}
                         >
 
-                            Monitor semester performance,
-                            analytics and subject insights.
+                            Monitor your semester performance
+                            and analytics.
 
                         </p>
 
@@ -333,22 +403,14 @@ function Dashboard() {
 
                     <div className="row g-4 mb-5">
 
-                        {/* CARD */}
-
-                        <div className="col-xl-3 col-md-6">
+                        <div className="col-xl-4 col-md-6">
 
                             <div
-                                className="p-4 h-100"
+                                className="p-4"
                                 style={{
                                     borderRadius: "30px",
                                     background:
-                                        "rgba(255,255,255,0.05)",
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
-                                    backdropFilter:
-                                        "blur(20px)",
-                                    boxShadow:
-                                        "0 20px 40px rgba(0,0,0,0.3)"
+                                        "rgba(255,255,255,0.05)"
                                 }}
                             >
 
@@ -377,20 +439,14 @@ function Dashboard() {
 
                         </div>
 
-                        {/* CARD */}
-
-                        <div className="col-xl-3 col-md-6">
+                        <div className="col-xl-4 col-md-6">
 
                             <div
-                                className="p-4 h-100"
+                                className="p-4"
                                 style={{
                                     borderRadius: "30px",
                                     background:
-                                        "rgba(255,255,255,0.05)",
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
-                                    backdropFilter:
-                                        "blur(20px)"
+                                        "rgba(255,255,255,0.05)"
                                 }}
                             >
 
@@ -419,58 +475,14 @@ function Dashboard() {
 
                         </div>
 
-                        {/* CARD */}
-
-                        <div className="col-xl-3 col-md-6">
+                        <div className="col-xl-4 col-md-6">
 
                             <div
-                                className="p-4 h-100"
+                                className="p-4"
                                 style={{
                                     borderRadius: "30px",
                                     background:
-                                        "rgba(255,255,255,0.05)",
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)"
-                                }}
-                            >
-
-                                <p
-                                    style={{
-                                        color: "#94a3b8"
-                                    }}
-                                >
-
-                                    Subjects
-
-                                </p>
-
-                                <h1
-                                    style={{
-                                        fontSize: "3.5rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    {subjects.length}
-
-                                </h1>
-
-                            </div>
-
-                        </div>
-
-                        {/* CARD */}
-
-                        <div className="col-xl-3 col-md-6">
-
-                            <div
-                                className="p-4 h-100"
-                                style={{
-                                    borderRadius: "30px",
-                                    background:
-                                        "rgba(255,255,255,0.05)",
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)"
+                                        "rgba(255,255,255,0.05)"
                                 }}
                             >
 
@@ -510,41 +522,15 @@ function Dashboard() {
                         style={{
                             borderRadius: "30px",
                             background:
-                                "rgba(255,255,255,0.05)",
-                            border:
-                                "1px solid rgba(255,255,255,0.08)"
+                                "rgba(255,255,255,0.05)"
                         }}
                     >
 
-                        <div className="d-flex justify-content-between align-items-center mb-5">
+                        <h2 className="mb-5">
 
-                            <div>
+                            Semester Performance
 
-                                <h2
-                                    style={{
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    Semester Performance
-
-                                </h2>
-
-                                <p
-                                    style={{
-                                        color: "#94a3b8"
-                                    }}
-                                >
-
-                                    SGPA trend visualization
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        {/* BAR GRAPH */}
+                        </h2>
 
                         <div
                             className="d-flex align-items-end gap-4"
@@ -553,49 +539,67 @@ function Dashboard() {
                             }}
                         >
 
-                            {[70, 85, 90, 100].map(
-                                (height, index) => (
+                            {
 
-                                    <div
-                                        key={index}
-                                        className="flex-fill text-center"
-                                    >
+                                subjects.map(
+
+                                    (s, index) => (
 
                                         <div
-                                            style={{
-                                                height:
-                                                    `${height}%`,
-                                                borderRadius:
-                                                    "20px 20px 0 0",
-                                                background:
-                                                    "linear-gradient(to top, #3b82f6, #8b5cf6)",
-                                                boxShadow:
-                                                    "0 20px 40px rgba(59,130,246,0.25)"
-                                            }}
-                                        />
-
-                                        <p
-                                            className="mt-3"
-                                            style={{
-                                                color:
-                                                    "#94a3b8"
-                                            }}
+                                            key={index}
+                                            className="flex-fill text-center"
                                         >
 
-                                            Sem {index + 1}
+                                            <div
+                                                style={{
+                                                    height:
 
-                                        </p>
+                                                        `${Number(
 
-                                    </div>
+                                                            grades[s.Cid]
+
+                                                            ??
+
+                                                            s.Grade_point
+
+                                                            ??
+
+                                                            0
+
+                                                        ) * 10}%`,
+
+                                                    borderRadius:
+                                                        "20px 20px 0 0",
+
+                                                    background:
+                                                        "linear-gradient(to top, #3b82f6, #8b5cf6)"
+                                                }}
+                                            />
+
+                                            <p
+                                                className="mt-3"
+                                                style={{
+                                                    color:
+                                                        "#94a3b8"
+                                                }}
+                                            >
+
+                                                {s.Cid}
+
+                                            </p>
+
+                                        </div>
+                                    )
                                 )
-                            )}
+
+                            }
 
                         </div>
 
                     </div>
 
                     {/* ================================= */}
-                    {/* SEMESTER BUTTONS */}
+                    {/* SEM BUTTONS */}
                     {/* ================================= */}
 
                     <div
@@ -603,9 +607,7 @@ function Dashboard() {
                         style={{
                             borderRadius: "30px",
                             background:
-                                "rgba(255,255,255,0.05)",
-                            border:
-                                "1px solid rgba(255,255,255,0.08)"
+                                "rgba(255,255,255,0.05)"
                         }}
                     >
 
@@ -616,9 +618,11 @@ function Dashboard() {
                                 <button
                                     key={sem}
                                     className="btn"
+
                                     onClick={() =>
                                         setSelectedSem(sem)
                                     }
+
                                     style={{
 
                                         borderRadius:
@@ -626,9 +630,6 @@ function Dashboard() {
 
                                         padding:
                                             "14px 28px",
-
-                                        fontWeight:
-                                            "600",
 
                                         background:
 
@@ -660,7 +661,7 @@ function Dashboard() {
                     </div>
 
                     {/* ================================= */}
-                    {/* SUBJECT TABLE */}
+                    {/* TABLE */}
                     {/* ================================= */}
 
                     <div
@@ -668,9 +669,7 @@ function Dashboard() {
                         style={{
                             borderRadius: "30px",
                             background:
-                                "rgba(255,255,255,0.05)",
-                            border:
-                                "1px solid rgba(255,255,255,0.08)"
+                                "rgba(255,255,255,0.05)"
                         }}
                     >
 
@@ -678,11 +677,7 @@ function Dashboard() {
 
                             <div>
 
-                                <h2
-                                    style={{
-                                        fontWeight: "700"
-                                    }}
-                                >
+                                <h2>
 
                                     Semester {selectedSem} Subjects
 
@@ -701,16 +696,29 @@ function Dashboard() {
                             </div>
 
                             <button
+
                                 className="btn"
+
+                                onClick={saveGrades}
+
                                 style={{
+
                                     background:
                                         "linear-gradient(to right, #3b82f6, #8b5cf6)",
+
                                     color: "white",
+
                                     borderRadius: "18px",
+
                                     padding:
                                         "12px 24px",
-                                    fontWeight: "600"
+
+                                    fontWeight: "600",
+
+                                    border: "none"
+
                                 }}
+
                             >
 
                                 Save Grades
@@ -719,7 +727,24 @@ function Dashboard() {
 
                         </div>
 
-                        {/* TABLE */}
+                        {
+
+                            loading && (
+
+                                <h5
+                                    className="mb-4"
+                                    style={{
+                                        color: "#94a3b8"
+                                    }}
+                                >
+
+                                    Loading subjects...
+
+                                </h5>
+
+                            )
+
+                        }
 
                         <div className="table-responsive">
 
@@ -732,12 +757,7 @@ function Dashboard() {
 
                                 <thead>
 
-                                    <tr
-                                        style={{
-                                            borderColor:
-                                                "rgba(255,255,255,0.08)"
-                                        }}
-                                    >
+                                    <tr>
 
                                         <th>CID</th>
 
@@ -753,62 +773,117 @@ function Dashboard() {
 
                                 <tbody>
 
-                                    {subjects.map(
-                                        (sub, index) => (
+                                    {
 
-                                            <tr
-                                                key={index}
-                                                style={{
-                                                    borderColor:
-                                                        "rgba(255,255,255,0.05)"
-                                                }}
-                                            >
+                                        subjects.length > 0
 
-                                                <td>
+                                            ?
 
-                                                    {sub.Cid}
+                                            subjects.map(
 
-                                                </td>
+                                                (sub, index) => (
 
-                                                <td>
+                                                    <tr
+                                                        key={index}
+                                                    >
 
-                                                    {sub.Course_name}
+                                                        <td>
 
-                                                </td>
+                                                            {sub.Cid}
 
-                                                <td>
+                                                        </td>
 
-                                                    {sub.Credits}
+                                                        <td>
 
-                                                </td>
+                                                            {sub.Course_name}
 
-                                                <td>
+                                                        </td>
 
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        max="10"
-                                                        defaultValue={
-                                                            sub.Grade_point || ""
-                                                        }
-                                                        className="form-control"
-                                                        style={{
-                                                            background:
-                                                                "#0f172a",
-                                                            color:
-                                                                "white",
-                                                            border:
-                                                                "1px solid rgba(255,255,255,0.08)",
-                                                            borderRadius:
-                                                                "14px"
-                                                        }}
-                                                    />
+                                                        <td>
 
-                                                </td>
+                                                            {sub.Credits}
 
-                                            </tr>
-                                        )
-                                    )}
+                                                        </td>
+
+                                                        <td>
+
+                                                            <input
+
+                                                                type="number"
+
+                                                                min="0"
+
+                                                                max="10"
+
+                                                                value={
+
+                                                                    grades[sub.Cid]
+
+                                                                    ??
+
+                                                                    sub.Grade_point
+
+                                                                    ??
+
+                                                                    ""
+                                                                }
+
+                                                                onChange={(e) => {
+
+                                                                    setGrades({
+
+                                                                        ...grades,
+
+                                                                        [sub.Cid]:
+
+                                                                            e.target.value
+                                                                    });
+
+                                                                }}
+
+                                                                className="form-control"
+
+                                                                style={{
+
+                                                                    background:
+                                                                        "#0f172a",
+
+                                                                    color:
+                                                                        "white",
+
+                                                                    border:
+                                                                        "1px solid rgba(255,255,255,0.08)",
+
+                                                                    borderRadius:
+                                                                        "14px"
+                                                                }}
+                                                            />
+
+                                                        </td>
+
+                                                    </tr>
+                                                )
+                                            )
+
+                                            :
+
+                                            (
+
+                                                <tr>
+
+                                                    <td
+                                                        colSpan="4"
+                                                        className="text-center py-5"
+                                                    >
+
+                                                        No Subjects Found
+
+                                                    </td>
+
+                                                </tr>
+                                            )
+
+                                    }
 
                                 </tbody>
 
