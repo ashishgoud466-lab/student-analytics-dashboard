@@ -72,7 +72,18 @@ function AdminLogin() {
                     Login
 
                 </button>
+<button
+    className="btn btn-secondary mt-2"
+    onClick={() => {
 
+        window.location.href = "/#/";
+
+    }}
+>
+
+    Back to Student Login
+
+</button>
                 {
 
                     message &&
