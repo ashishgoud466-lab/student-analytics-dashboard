@@ -5,7 +5,11 @@ import {
 } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 
+import Settings from "./pages/Settings";
+
+import ForgotPassword from "./pages/ForgotPassword";
 function App() {
 
     return (
