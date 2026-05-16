@@ -4,12 +4,21 @@ import {
     Route
 } from "react-router-dom";
 
+import Login from "./pages/Login";
+
 import Dashboard from "./pages/Dashboard";
+
 import Analytics from "./pages/Analytics";
 
 import Settings from "./pages/Settings";
 
 import ForgotPassword from "./pages/ForgotPassword";
+
+import ChangePassword from "./pages/ChangePassword";
+
+import AdminLogin from "./pages/AdminLogin";
+
+import AdminUsers from "./pages/AdminUsers";
 function App() {
 
     return (
