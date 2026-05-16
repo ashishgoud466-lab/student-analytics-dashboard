@@ -1,7 +1,11 @@
 import {
+
     HashRouter,
+
     Routes,
+
     Route
+
 } from "react-router-dom";
 
 import Login from "./pages/Login";
@@ -19,6 +23,7 @@ import ChangePassword from "./pages/ChangePassword";
 import AdminLogin from "./pages/AdminLogin";
 
 import AdminUsers from "./pages/AdminUsers";
+
 function App() {
 
     return (
@@ -26,53 +31,71 @@ function App() {
         <HashRouter>
 
             <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-
-<Route path="/analytics" element={<Analytics />} />
-
-<Route path="/settings" element={<Settings />} />
 
                 <Route
+
                     path="/"
-                    element={<Dashboard />}
+
+                    element={<Login />}
+
                 />
-<Route path="/" element={<Login />} />
 
-<Route
-path="/dashboard"
-element={<Dashboard />}
-/>
+                <Route
 
-<Route
-path="/analytics"
-element={<Analytics />}
-/>
+                    path="/dashboard"
 
-<Route
-path="/settings"
-element={<Settings />}
-/>
+                    element={<Dashboard />}
 
-<Route
-path="/change-password"
-element={<ChangePassword />}
-/>
+                />
 
-<Route
-path="/admin-login"
-element={<AdminLogin />}
-/>
+                <Route
 
-<Route
-path="/admin-users"
-element={<AdminUsers />}
-/>
+                    path="/analytics"
 
-<Route
-path="/forgot-password"
-element={<ForgotPassword />}
-/>
-<Toaster />
+                    element={<Analytics />}
+
+                />
+
+                <Route
+
+                    path="/settings"
+
+                    element={<Settings />}
+
+                />
+
+                <Route
+
+                    path="/forgot-password"
+
+                    element={<ForgotPassword />}
+
+                />
+
+                <Route
+
+                    path="/change-password"
+
+                    element={<ChangePassword />}
+
+                />
+
+                <Route
+
+                    path="/admin-login"
+
+                    element={<AdminLogin />}
+
+                />
+
+                <Route
+
+                    path="/admin-users"
+
+                    element={<AdminUsers />}
+
+                />
+
             </Routes>
 
         </HashRouter>
