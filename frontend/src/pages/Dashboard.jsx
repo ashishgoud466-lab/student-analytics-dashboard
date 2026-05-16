@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+
 import toast from "react-hot-toast";
+
 import { useNavigate } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -85,6 +87,13 @@ function Dashboard() {
                 const data =
                     await response.json();
 
+                if (!Array.isArray(data)) {
+
+                    setSubjects([]);
+
+                    return;
+                }
+
                 setSubjects(data);
 
             }
@@ -121,8 +130,6 @@ function Dashboard() {
 
             setSaving(true);
 
-            setMessage("");
-
             for (const cid in grades) {
 
                 await fetch(
@@ -152,7 +159,9 @@ function Dashboard() {
                 );
             }
 
-           toast.success("Grades Saved");
+            toast.success(
+                "Grades Saved Successfully"
+            );
 
         }
 
@@ -160,9 +169,9 @@ function Dashboard() {
 
             console.error(err);
 
-            
-                toast.error("Failed to save");
-           
+            toast.error(
+                "Failed to Save Grades"
+            );
         }
 
         finally {
@@ -193,6 +202,7 @@ function Dashboard() {
             (sum, sub) =>
 
                 sum +
+
                 Number(sub.Credits || 0),
 
             0
@@ -269,6 +279,94 @@ function Dashboard() {
 
     }, [subjects, grades]);
 
+    const lowestGP = useMemo(() => {
+
+        if (subjects.length === 0) {
+
+            return 0;
+        }
+
+        return Math.min(
+
+            ...subjects.map(
+
+                (sub) =>
+
+                    Number(
+
+                        grades[sub.Cid]
+
+                        ??
+
+                        sub.Grade_point
+
+                        ??
+
+                        0
+                    )
+            )
+        );
+
+    }, [subjects, grades]);
+
+    const sgpa = useMemo(() => {
+
+        if (
+            subjects.length === 0
+            ||
+            totalCredits === 0
+        ) {
+
+            return 0;
+        }
+
+        const weightedTotal = subjects.reduce(
+
+            (sum, sub) => {
+
+                const gp = Number(
+
+                    grades[sub.Cid]
+
+                    ??
+
+                    sub.Grade_point
+
+                    ??
+
+                    0
+                );
+
+                return (
+
+                    sum +
+
+                    gp *
+
+                    Number(sub.Credits || 0)
+                );
+            },
+
+            0
+        );
+
+        return (
+
+            weightedTotal
+
+            /
+
+            totalCredits
+
+        ).toFixed(2);
+
+    }, [
+
+        subjects,
+        grades,
+        totalCredits
+    ]);
+
     // =====================================
     // STYLES
     // =====================================
@@ -281,11 +379,14 @@ function Dashboard() {
         border:
             "1px solid rgba(255,255,255,0.08)",
 
-        borderRadius: "28px",
+        borderRadius: "30px",
 
-        backdropFilter: "blur(18px)",
+        backdropFilter: "blur(20px)",
 
-        transition: "0.3s ease"
+        transition: "0.3s ease",
+
+        boxShadow:
+            "0 10px 30px rgba(0,0,0,0.2)"
     };
 
     // =====================================
@@ -310,9 +411,7 @@ function Dashboard() {
 
             <div className="row min-vh-100">
 
-                {/* ================================= */}
                 {/* SIDEBAR */}
-                {/* ================================= */}
 
                 <div
 
@@ -328,17 +427,12 @@ function Dashboard() {
                     }}
                 >
 
-                    {/* LOGO */}
-
                     <div className="mb-5">
 
                         <h1
-
                             style={{
-
                                 fontWeight: "700",
-
-                                fontSize: "2.4rem"
+                                fontSize: "2.5rem"
                             }}
                         >
 
@@ -353,7 +447,17 @@ function Dashboard() {
                         >
 
                             Student Analytics
+
                         </p>
+
+                        <div
+                            className="mt-3"
+                            style={{
+                                height: "2px",
+                                background:
+                                    "linear-gradient(to right,#3b82f6,#8b5cf6)"
+                            }}
+                        />
 
                     </div>
 
@@ -461,9 +565,7 @@ function Dashboard() {
                     {/* PROFILE */}
 
                     <div
-
-                        className="mt-5 p-3"
-
+                        className="mt-5 p-4"
                         style={glassCard}
                     >
 
@@ -473,9 +575,9 @@ function Dashboard() {
 
                                 style={{
 
-                                    height: "60px",
+                                    width: "65px",
 
-                                    width: "60px",
+                                    height: "65px",
 
                                     borderRadius: "50%",
 
@@ -488,9 +590,9 @@ function Dashboard() {
 
                                     justifyContent: "center",
 
-                                    fontWeight: "700",
+                                    fontSize: "1.6rem",
 
-                                    fontSize: "1.5rem"
+                                    fontWeight: "700"
                                 }}
                             >
 
@@ -500,7 +602,7 @@ function Dashboard() {
 
                             <div>
 
-                                <h6 className="mb-1">
+                                <h6>
 
                                     Student
 
@@ -524,9 +626,7 @@ function Dashboard() {
 
                 </div>
 
-                {/* ================================= */}
                 {/* MAIN */}
-                {/* ================================= */}
 
                 <div className="col-lg-10 col-md-9 p-5">
 
@@ -535,11 +635,8 @@ function Dashboard() {
                     <div className="mb-5">
 
                         <h1
-
                             style={{
-
                                 fontSize: "4rem",
-
                                 fontWeight: "700"
                             }}
                         >
@@ -549,80 +646,44 @@ function Dashboard() {
                         </h1>
 
                         <p
-
-                            className="mt-3"
-
                             style={{
-
                                 color: "#94a3b8",
-
                                 fontSize: "1.1rem"
                             }}
                         >
 
-                            Track semester performance
-                            and academic analytics.
+                            Track your academic
+                            performance and grades.
 
                         </p>
 
                     </div>
 
-                    {/* MESSAGE */}
-
-                    {
-
-                        message && (
-
-                            <div
-
-                                className="alert alert-info border-0"
-
-                                style={{
-
-                                    background:
-                                        "rgba(59,130,246,0.12)",
-
-                                    color: "white",
-
-                                    borderRadius: "18px"
-                                }}
-                            >
-
-                                {message}
-
-                            </div>
-                        )
-                    }
-
                     {/* STATS */}
 
                     <div className="row g-4 mb-5">
 
-                        <div className="col-xl-4 col-md-6">
+                        <div className="col-xl-2 col-md-6">
 
                             <div
                                 className="p-4 h-100"
-                                style={glassCard}
+                                style={{
+                                    ...glassCard,
+                                    background:
+                                        "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.18))"
+                                }}
                             >
 
-                                <p
-                                    style={{
-                                        color: "#94a3b8"
-                                    }}
-                                >
-
-                                    Average GP
-
-                                </p>
+                                <p>SGPA</p>
 
                                 <h1
                                     style={{
-                                        fontSize: "3.5rem",
+                                        fontSize: "2.8rem",
                                         fontWeight: "700"
                                     }}
                                 >
 
-                                    {averageGP}
+                                    {sgpa}
 
                                 </h1>
 
@@ -630,26 +691,18 @@ function Dashboard() {
 
                         </div>
 
-                        <div className="col-xl-4 col-md-6">
+                        <div className="col-xl-2 col-md-6">
 
                             <div
                                 className="p-4 h-100"
                                 style={glassCard}
                             >
 
-                                <p
-                                    style={{
-                                        color: "#94a3b8"
-                                    }}
-                                >
-
-                                    Highest GP
-
-                                </p>
+                                <p>Highest</p>
 
                                 <h1
                                     style={{
-                                        fontSize: "3.5rem",
+                                        fontSize: "2.8rem",
                                         fontWeight: "700"
                                     }}
                                 >
@@ -662,31 +715,95 @@ function Dashboard() {
 
                         </div>
 
-                        <div className="col-xl-4 col-md-6">
+                        <div className="col-xl-2 col-md-6">
 
                             <div
                                 className="p-4 h-100"
                                 style={glassCard}
                             >
 
-                                <p
-                                    style={{
-                                        color: "#94a3b8"
-                                    }}
-                                >
-
-                                    Total Credits
-
-                                </p>
+                                <p>Lowest</p>
 
                                 <h1
                                     style={{
-                                        fontSize: "3.5rem",
+                                        fontSize: "2.8rem",
+                                        fontWeight: "700"
+                                    }}
+                                >
+
+                                    {lowestGP}
+
+                                </h1>
+
+                            </div>
+
+                        </div>
+
+                        <div className="col-xl-2 col-md-6">
+
+                            <div
+                                className="p-4 h-100"
+                                style={glassCard}
+                            >
+
+                                <p>Average</p>
+
+                                <h1
+                                    style={{
+                                        fontSize: "2.8rem",
+                                        fontWeight: "700"
+                                    }}
+                                >
+
+                                    {averageGP}
+
+                                </h1>
+
+                            </div>
+
+                        </div>
+
+                        <div className="col-xl-2 col-md-6">
+
+                            <div
+                                className="p-4 h-100"
+                                style={glassCard}
+                            >
+
+                                <p>Credits</p>
+
+                                <h1
+                                    style={{
+                                        fontSize: "2.8rem",
                                         fontWeight: "700"
                                     }}
                                 >
 
                                     {totalCredits}
+
+                                </h1>
+
+                            </div>
+
+                        </div>
+
+                        <div className="col-xl-2 col-md-6">
+
+                            <div
+                                className="p-4 h-100"
+                                style={glassCard}
+                            >
+
+                                <p>Subjects</p>
+
+                                <h1
+                                    style={{
+                                        fontSize: "2.8rem",
+                                        fontWeight: "700"
+                                    }}
+                                >
+
+                                    {subjects.length}
 
                                 </h1>
 
@@ -705,7 +822,7 @@ function Dashboard() {
 
                         <h2 className="mb-5">
 
-                            Semester Performance
+                            📈 Semester Performance
 
                         </h2>
 
@@ -714,9 +831,21 @@ function Dashboard() {
                             className="d-flex align-items-end gap-4"
 
                             style={{
-                                height: "250px"
+                                height: "320px"
                             }}
                         >
+
+                            {
+
+                                subjects.length === 0 && (
+
+                                    <div className="w-100 text-center">
+
+                                        No Performance Data
+
+                                    </div>
+                                )
+                            }
 
                             {
 
@@ -725,9 +854,7 @@ function Dashboard() {
                                     (subject, index) => (
 
                                         <div
-
                                             key={index}
-
                                             className="flex-fill text-center"
                                         >
 
@@ -752,19 +879,23 @@ function Dashboard() {
                                                         ) * 10}%`,
 
                                                     borderRadius:
-                                                        "20px 20px 0 0",
+                                                        "24px 24px 0 0",
 
                                                     background:
-                                                        "linear-gradient(to top,#3b82f6,#8b5cf6)"
+                                                        "linear-gradient(to top,#2563eb,#7c3aed,#c084fc)",
+
+                                                    transition:
+                                                        "0.5s ease",
+
+                                                    boxShadow:
+                                                        "0 10px 25px rgba(124,58,237,0.35)"
                                                 }}
                                             />
 
                                             <p
-
                                                 className="mt-3"
-
                                                 style={{
-                                                    color: "#94a3b8"
+                                                    color: "#cbd5e1"
                                                 }}
                                             >
 
@@ -844,7 +975,7 @@ function Dashboard() {
 
                     </div>
 
-                    {/* SUBJECT TABLE */}
+                    {/* TABLE */}
 
                     <div
                         className="p-4"
@@ -867,7 +998,7 @@ function Dashboard() {
                                     }}
                                 >
 
-                                    Dynamic semester subjects
+                                    Subject Grade Management
 
                                 </p>
 
@@ -895,7 +1026,10 @@ function Dashboard() {
 
                                     fontWeight: "600",
 
-                                    border: "none"
+                                    border: "none",
+
+                                    boxShadow:
+                                        "0 10px 30px rgba(59,130,246,0.35)"
                                 }}
                             >
 
@@ -926,7 +1060,7 @@ function Dashboard() {
 
                                 <div className="text-center py-5">
 
-                                    Loading subjects...
+                                    Loading Subjects...
 
                                 </div>
 
@@ -939,9 +1073,7 @@ function Dashboard() {
                                 <div className="table-responsive">
 
                                     <table
-
                                         className="table align-middle"
-
                                         style={{
                                             color: "white"
                                         }}
@@ -966,10 +1098,6 @@ function Dashboard() {
                                         <tbody>
 
                                             {
-
-                                                subjects.length > 0
-
-                                                ?
 
                                                 subjects.map(
 
@@ -1020,15 +1148,23 @@ function Dashboard() {
 
                                                                     onChange={(e) => {
 
+                                                                        const value = Math.max(
+
+                                                                            0,
+
+                                                                            Math.min(
+                                                                                10,
+                                                                                Number(e.target.value)
+                                                                            )
+                                                                        );
+
                                                                         setGrades({
 
                                                                             ...grades,
 
                                                                             [sub.Cid]:
-
-                                                                                e.target.value
+                                                                                value
                                                                         });
-
                                                                     }}
 
                                                                     className="form-control"
@@ -1045,7 +1181,13 @@ function Dashboard() {
                                                                             "1px solid rgba(255,255,255,0.08)",
 
                                                                         borderRadius:
-                                                                            "14px"
+                                                                            "14px",
+
+                                                                        padding:
+                                                                            "10px",
+
+                                                                        fontWeight:
+                                                                            "600"
                                                                     }}
                                                                 />
 
@@ -1053,26 +1195,6 @@ function Dashboard() {
 
                                                         </tr>
                                                     )
-                                                )
-
-                                                :
-
-                                                (
-
-                                                    <tr>
-
-                                                        <td
-
-                                                            colSpan="4"
-
-                                                            className="text-center py-5"
-                                                        >
-
-                                                            No Subjects Found
-
-                                                        </td>
-
-                                                    </tr>
                                                 )
                                             }
 

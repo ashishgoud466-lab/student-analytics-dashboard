@@ -24,6 +24,48 @@ app.add_middleware(
 # ==========================================
 # HOME
 # ==========================================
+@app.post("/admin-reset-password")
+
+def admin_reset_password(
+    data: dict = Body(...)
+):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    roll = data["roll_no"]
+
+    temp_password =
+        data["temp_password"]
+
+    cursor.execute("""
+
+        UPDATE Users
+
+        SET
+
+            Temp_Password = %s,
+
+            Password = NULL
+
+        WHERE Roll_no = %s
+
+    """, (
+
+        temp_password,
+        roll
+
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return {
+
+        "success": True
+    }
 @app.get("/semester/{sem}/{roll}")
 
 def get_semester_subjects(
