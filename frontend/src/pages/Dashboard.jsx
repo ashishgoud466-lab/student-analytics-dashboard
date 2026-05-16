@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -6,9 +8,22 @@ import API_BASE from "../services/api";
 
 function Dashboard() {
 
-    // =========================================
+    // =====================================
+    // NAVIGATION
+    // =====================================
+
+    const navigate = useNavigate();
+
+    // =====================================
+    // USER
+    // =====================================
+
+    const rollNo =
+        localStorage.getItem("roll_no");
+
+    // =====================================
     // STATES
-    // =========================================
+    // =====================================
 
     const [selectedSem, setSelectedSem] =
         useState(1);
@@ -22,45 +37,91 @@ function Dashboard() {
     const [loading, setLoading] =
         useState(true);
 
-    // =========================================
-    // FETCH SUBJECTS
-    // =========================================
+    const [saving, setSaving] =
+        useState(false);
+
+    const [message, setMessage] =
+        useState("");
+
+    // =====================================
+    // LOGIN PROTECTION
+    // =====================================
 
     useEffect(() => {
 
-        setLoading(true);
+        if (!rollNo) {
 
-        fetch(
-            `${API_BASE}/semester/${selectedSem}`
-        )
+            navigate("/");
+        }
 
-            .then((res) => res.json())
+    }, [rollNo, navigate]);
 
-            .then((data) => {
+    // =====================================
+    // FETCH SUBJECTS
+    // =====================================
+
+    useEffect(() => {
+
+        const fetchSubjects = async () => {
+
+            try {
+
+                setLoading(true);
+
+                setMessage("");
+
+                const response = await fetch(
+
+                    `${API_BASE}/semester/${selectedSem}/${rollNo}`
+                );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to fetch subjects"
+                    );
+                }
+
+                const data =
+                    await response.json();
 
                 setSubjects(data);
 
-                setLoading(false);
+            }
 
-            })
-
-            .catch((err) => {
+            catch (err) {
 
                 console.error(err);
 
+                setMessage(
+                    "Unable to load subjects"
+                );
+            }
+
+            finally {
+
                 setLoading(false);
+            }
+        };
 
-            });
+        if (rollNo) {
 
-    }, [selectedSem]);
+            fetchSubjects();
+        }
 
-    // =========================================
+    }, [selectedSem, rollNo]);
+
+    // =====================================
     // SAVE GRADES
-    // =========================================
+    // =====================================
 
     const saveGrades = async () => {
 
         try {
+
+            setSaving(true);
+
+            setMessage("");
 
             for (const cid in grades) {
 
@@ -80,51 +141,80 @@ function Dashboard() {
 
                         body: JSON.stringify({
 
-                            roll_no:
-                                "24011M2104",
+                            roll_no: rollNo,
 
                             cid: cid,
 
                             grade_point:
-                                grades[cid]
+                                Number(grades[cid])
                         })
                     }
                 );
             }
 
-            alert("Grades Saved Successfully");
+           toast.success("Grades Saved");
 
-        } catch (err) {
+        }
+
+        catch (err) {
 
             console.error(err);
 
-            alert("Error Saving Grades");
+            
+                toast.error("Failed to save");
+           
+        }
+
+        finally {
+
+            setSaving(false);
         }
     };
 
-    // =========================================
+    // =====================================
+    // LOGOUT
+    // =====================================
+
+    const handleLogout = () => {
+
+        localStorage.clear();
+
+        navigate("/");
+    };
+
+    // =====================================
     // CALCULATIONS
-    // =========================================
+    // =====================================
 
-    const totalCredits = subjects.reduce(
+    const totalCredits = useMemo(() => {
 
-        (sum, sub) =>
+        return subjects.reduce(
 
-            sum + Number(sub.Credits || 0),
+            (sum, sub) =>
 
-        0
-    );
+                sum +
+                Number(sub.Credits || 0),
 
-    const averageGP = subjects.length > 0
+            0
+        );
 
-        ?
+    }, [subjects]);
 
-        (
-            subjects.reduce(
+    const averageGP = useMemo(() => {
 
-                (sum, sub) =>
+        if (subjects.length === 0) {
+
+            return 0;
+        }
+
+        const total = subjects.reduce(
+
+            (sum, sub) => {
+
+                return (
 
                     sum +
+
                     Number(
 
                         grades[sub.Cid]
@@ -136,58 +226,83 @@ function Dashboard() {
                         ??
 
                         0
-                    ),
+                    )
+                );
+            },
 
-                0
+            0
+        );
 
-            ) / subjects.length
+        return (
+            total / subjects.length
+        ).toFixed(2);
 
-        ).toFixed(2)
+    }, [subjects, grades]);
 
-        :
+    const highestGP = useMemo(() => {
 
-        0;
+        if (subjects.length === 0) {
 
-    const highestGP = subjects.length > 0
+            return 0;
+        }
 
-        ?
-
-        Math.max(
+        return Math.max(
 
             ...subjects.map(
 
-                (s) =>
+                (sub) =>
 
                     Number(
 
-                        grades[s.Cid]
+                        grades[sub.Cid]
 
                         ??
 
-                        s.Grade_point
+                        sub.Grade_point
 
                         ??
 
                         0
                     )
             )
-        )
+        );
 
-        :
+    }, [subjects, grades]);
 
-        0;
+    // =====================================
+    // STYLES
+    // =====================================
 
-    // =========================================
+    const glassCard = {
+
+        background:
+            "rgba(255,255,255,0.05)",
+
+        border:
+            "1px solid rgba(255,255,255,0.08)",
+
+        borderRadius: "28px",
+
+        backdropFilter: "blur(18px)",
+
+        transition: "0.3s ease"
+    };
+
+    // =====================================
     // UI
-    // =========================================
+    // =====================================
 
     return (
 
         <div
+
             className="container-fluid min-vh-100 text-white"
+
             style={{
+
                 background:
-                    "linear-gradient(135deg, #020617, #0f172a, #111827)",
+                    "linear-gradient(135deg,#020617,#0f172a,#111827)",
+
                 fontFamily:
                     "'Poppins', sans-serif"
             }}
@@ -200,21 +315,30 @@ function Dashboard() {
                 {/* ================================= */}
 
                 <div
+
                     className="col-lg-2 col-md-3 p-4"
+
                     style={{
+
                         background:
-                            "rgba(15, 23, 42, 0.95)",
+                            "rgba(15,23,42,0.96)",
+
                         borderRight:
                             "1px solid rgba(255,255,255,0.08)"
                     }}
                 >
 
+                    {/* LOGO */}
+
                     <div className="mb-5">
 
                         <h1
+
                             style={{
+
                                 fontWeight: "700",
-                                fontSize: "2.3rem"
+
+                                fontSize: "2.4rem"
                             }}
                         >
 
@@ -223,14 +347,12 @@ function Dashboard() {
                         </h1>
 
                         <p
-                            className="mt-2"
                             style={{
                                 color: "#94a3b8"
                             }}
                         >
 
                             Student Analytics
-
                         </p>
 
                     </div>
@@ -240,12 +362,22 @@ function Dashboard() {
                     <div className="d-grid gap-3">
 
                         <button
+
                             className="btn text-start fw-semibold py-3"
+
+                            onClick={() =>
+                                navigate("/dashboard")
+                            }
+
                             style={{
+
                                 borderRadius: "18px",
+
                                 background:
-                                    "linear-gradient(to right, #ffffff, #dbeafe)",
+                                    "linear-gradient(to right,#ffffff,#dbeafe)",
+
                                 color: "#111827",
+
                                 border: "none"
                             }}
                         >
@@ -255,26 +387,20 @@ function Dashboard() {
                         </button>
 
                         <button
+
                             className="btn text-start text-white py-3"
+
+                            onClick={() =>
+                                navigate("/analytics")
+                            }
+
                             style={{
+
                                 borderRadius: "18px",
+
                                 background:
                                     "rgba(255,255,255,0.05)",
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)"
-                            }}
-                        >
 
-                            📚 Semesters
-
-                        </button>
-
-                        <button
-                            className="btn text-start text-white py-3"
-                            style={{
-                                borderRadius: "18px",
-                                background:
-                                    "rgba(255,255,255,0.05)",
                                 border:
                                     "1px solid rgba(255,255,255,0.08)"
                             }}
@@ -285,11 +411,20 @@ function Dashboard() {
                         </button>
 
                         <button
+
                             className="btn text-start text-white py-3"
+
+                            onClick={() =>
+                                navigate("/settings")
+                            }
+
                             style={{
+
                                 borderRadius: "18px",
+
                                 background:
                                     "rgba(255,255,255,0.05)",
+
                                 border:
                                     "1px solid rgba(255,255,255,0.08)"
                             }}
@@ -299,34 +434,62 @@ function Dashboard() {
 
                         </button>
 
+                        <button
+
+                            className="btn text-start text-danger py-3"
+
+                            onClick={handleLogout}
+
+                            style={{
+
+                                borderRadius: "18px",
+
+                                background:
+                                    "rgba(239,68,68,0.08)",
+
+                                border:
+                                    "1px solid rgba(239,68,68,0.15)"
+                            }}
+                        >
+
+                            🚪 Logout
+
+                        </button>
+
                     </div>
 
                     {/* PROFILE */}
 
                     <div
+
                         className="mt-5 p-3"
-                        style={{
-                            background:
-                                "rgba(255,255,255,0.05)",
-                            borderRadius: "24px",
-                            border:
-                                "1px solid rgba(255,255,255,0.08)"
-                        }}
+
+                        style={glassCard}
                     >
 
                         <div className="d-flex align-items-center gap-3">
 
                             <div
+
                                 style={{
+
                                     height: "60px",
+
                                     width: "60px",
+
                                     borderRadius: "50%",
+
                                     background:
-                                        "linear-gradient(to right, #3b82f6, #8b5cf6)",
+                                        "linear-gradient(to right,#3b82f6,#8b5cf6)",
+
                                     display: "flex",
+
                                     alignItems: "center",
+
                                     justifyContent: "center",
-                                    fontWeight: "bold",
+
+                                    fontWeight: "700",
+
                                     fontSize: "1.5rem"
                                 }}
                             >
@@ -339,7 +502,7 @@ function Dashboard() {
 
                                 <h6 className="mb-1">
 
-                                    Shyam Goud
+                                    Student
 
                                 </h6>
 
@@ -349,7 +512,7 @@ function Dashboard() {
                                     }}
                                 >
 
-                                    24011M2104
+                                    {rollNo}
 
                                 </small>
 
@@ -372,8 +535,11 @@ function Dashboard() {
                     <div className="mb-5">
 
                         <h1
+
                             style={{
+
                                 fontSize: "4rem",
+
                                 fontWeight: "700"
                             }}
                         >
@@ -383,35 +549,60 @@ function Dashboard() {
                         </h1>
 
                         <p
+
                             className="mt-3"
+
                             style={{
+
                                 color: "#94a3b8",
+
                                 fontSize: "1.1rem"
                             }}
                         >
 
-                            Monitor your semester performance
-                            and analytics.
+                            Track semester performance
+                            and academic analytics.
 
                         </p>
 
                     </div>
 
-                    {/* ================================= */}
+                    {/* MESSAGE */}
+
+                    {
+
+                        message && (
+
+                            <div
+
+                                className="alert alert-info border-0"
+
+                                style={{
+
+                                    background:
+                                        "rgba(59,130,246,0.12)",
+
+                                    color: "white",
+
+                                    borderRadius: "18px"
+                                }}
+                            >
+
+                                {message}
+
+                            </div>
+                        )
+                    }
+
                     {/* STATS */}
-                    {/* ================================= */}
 
                     <div className="row g-4 mb-5">
 
                         <div className="col-xl-4 col-md-6">
 
                             <div
-                                className="p-4"
-                                style={{
-                                    borderRadius: "30px",
-                                    background:
-                                        "rgba(255,255,255,0.05)"
-                                }}
+                                className="p-4 h-100"
+                                style={glassCard}
                             >
 
                                 <p
@@ -442,12 +633,8 @@ function Dashboard() {
                         <div className="col-xl-4 col-md-6">
 
                             <div
-                                className="p-4"
-                                style={{
-                                    borderRadius: "30px",
-                                    background:
-                                        "rgba(255,255,255,0.05)"
-                                }}
+                                className="p-4 h-100"
+                                style={glassCard}
                             >
 
                                 <p
@@ -478,12 +665,8 @@ function Dashboard() {
                         <div className="col-xl-4 col-md-6">
 
                             <div
-                                className="p-4"
-                                style={{
-                                    borderRadius: "30px",
-                                    background:
-                                        "rgba(255,255,255,0.05)"
-                                }}
+                                className="p-4 h-100"
+                                style={glassCard}
                             >
 
                                 <p
@@ -513,17 +696,11 @@ function Dashboard() {
 
                     </div>
 
-                    {/* ================================= */}
                     {/* GRAPH */}
-                    {/* ================================= */}
 
                     <div
                         className="p-5 mb-5"
-                        style={{
-                            borderRadius: "30px",
-                            background:
-                                "rgba(255,255,255,0.05)"
-                        }}
+                        style={glassCard}
                     >
 
                         <h2 className="mb-5">
@@ -533,7 +710,9 @@ function Dashboard() {
                         </h2>
 
                         <div
+
                             className="d-flex align-items-end gap-4"
+
                             style={{
                                 height: "250px"
                             }}
@@ -543,24 +722,28 @@ function Dashboard() {
 
                                 subjects.map(
 
-                                    (s, index) => (
+                                    (subject, index) => (
 
                                         <div
+
                                             key={index}
+
                                             className="flex-fill text-center"
                                         >
 
                                             <div
+
                                                 style={{
+
                                                     height:
 
                                                         `${Number(
 
-                                                            grades[s.Cid]
+                                                            grades[subject.Cid]
 
                                                             ??
 
-                                                            s.Grade_point
+                                                            subject.Grade_point
 
                                                             ??
 
@@ -572,105 +755,100 @@ function Dashboard() {
                                                         "20px 20px 0 0",
 
                                                     background:
-                                                        "linear-gradient(to top, #3b82f6, #8b5cf6)"
+                                                        "linear-gradient(to top,#3b82f6,#8b5cf6)"
                                                 }}
                                             />
 
                                             <p
+
                                                 className="mt-3"
+
                                                 style={{
-                                                    color:
-                                                        "#94a3b8"
+                                                    color: "#94a3b8"
                                                 }}
                                             >
 
-                                                {s.Cid}
+                                                {subject.Cid}
 
                                             </p>
 
                                         </div>
                                     )
                                 )
-
                             }
 
                         </div>
 
                     </div>
 
-                    {/* ================================= */}
                     {/* SEM BUTTONS */}
-                    {/* ================================= */}
 
                     <div
                         className="p-4 mb-5"
-                        style={{
-                            borderRadius: "30px",
-                            background:
-                                "rgba(255,255,255,0.05)"
-                        }}
+                        style={glassCard}
                     >
 
                         <div className="d-flex gap-3 flex-wrap">
 
-                            {[1,2,3,4].map((sem) => (
+                            {
 
-                                <button
-                                    key={sem}
-                                    className="btn"
+                                [1,2,3,4].map(
 
-                                    onClick={() =>
-                                        setSelectedSem(sem)
-                                    }
+                                    (sem) => (
 
-                                    style={{
+                                        <button
 
-                                        borderRadius:
-                                            "18px",
+                                            key={sem}
 
-                                        padding:
-                                            "14px 28px",
+                                            className="btn"
 
-                                        background:
+                                            onClick={() =>
+                                                setSelectedSem(sem)
+                                            }
 
-                                            selectedSem === sem
+                                            style={{
 
-                                                ?
+                                                borderRadius:
+                                                    "18px",
 
-                                                "linear-gradient(to right, #3b82f6, #8b5cf6)"
+                                                padding:
+                                                    "14px 28px",
 
-                                                :
+                                                background:
 
-                                                "rgba(255,255,255,0.05)",
+                                                    selectedSem === sem
 
-                                        color: "white",
+                                                        ?
 
-                                        border:
-                                            "1px solid rgba(255,255,255,0.08)"
-                                    }}
-                                >
+                                                        "linear-gradient(to right,#3b82f6,#8b5cf6)"
 
-                                    Semester {sem}
+                                                        :
 
-                                </button>
+                                                        "rgba(255,255,255,0.05)",
 
-                            ))}
+                                                color: "white",
+
+                                                border:
+                                                    "1px solid rgba(255,255,255,0.08)"
+                                            }}
+                                        >
+
+                                            Semester {sem}
+
+                                        </button>
+                                    )
+                                )
+                            }
 
                         </div>
 
                     </div>
 
-                    {/* ================================= */}
-                    {/* TABLE */}
-                    {/* ================================= */}
+                    {/* SUBJECT TABLE */}
 
                     <div
                         className="p-4"
-                        style={{
-                            borderRadius: "30px",
-                            background:
-                                "rgba(255,255,255,0.05)"
-                        }}
+                        style={glassCard}
                     >
 
                         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -679,7 +857,7 @@ function Dashboard() {
 
                                 <h2>
 
-                                    Semester {selectedSem} Subjects
+                                    Semester {selectedSem}
 
                                 </h2>
 
@@ -689,7 +867,7 @@ function Dashboard() {
                                     }}
                                 >
 
-                                    Dynamic SQL-powered subjects
+                                    Dynamic semester subjects
 
                                 </p>
 
@@ -701,10 +879,12 @@ function Dashboard() {
 
                                 onClick={saveGrades}
 
+                                disabled={saving}
+
                                 style={{
 
                                     background:
-                                        "linear-gradient(to right, #3b82f6, #8b5cf6)",
+                                        "linear-gradient(to right,#3b82f6,#8b5cf6)",
 
                                     color: "white",
 
@@ -716,12 +896,21 @@ function Dashboard() {
                                     fontWeight: "600",
 
                                     border: "none"
-
                                 }}
-
                             >
 
-                                Save Grades
+                                {
+
+                                    saving
+
+                                        ?
+
+                                        "Saving..."
+
+                                        :
+
+                                        "Save Grades"
+                                }
 
                             </button>
 
@@ -729,167 +918,171 @@ function Dashboard() {
 
                         {
 
-                            loading && (
+                            loading
 
-                                <h5
-                                    className="mb-4"
-                                    style={{
-                                        color: "#94a3b8"
-                                    }}
-                                >
+                            ?
+
+                            (
+
+                                <div className="text-center py-5">
 
                                     Loading subjects...
 
-                                </h5>
+                                </div>
 
                             )
 
-                        }
+                            :
 
-                        <div className="table-responsive">
+                            (
 
-                            <table
-                                className="table align-middle"
-                                style={{
-                                    color: "white"
-                                }}
-                            >
+                                <div className="table-responsive">
 
-                                <thead>
+                                    <table
 
-                                    <tr>
+                                        className="table align-middle"
 
-                                        <th>CID</th>
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
 
-                                        <th>Subject</th>
+                                        <thead>
 
-                                        <th>Credits</th>
+                                            <tr>
 
-                                        <th>Grade Point</th>
+                                                <th>CID</th>
 
-                                    </tr>
+                                                <th>Subject</th>
 
-                                </thead>
+                                                <th>Credits</th>
 
-                                <tbody>
+                                                <th>Grade Point</th>
 
-                                    {
+                                            </tr>
 
-                                        subjects.length > 0
+                                        </thead>
 
-                                            ?
+                                        <tbody>
 
-                                            subjects.map(
+                                            {
 
-                                                (sub, index) => (
+                                                subjects.length > 0
 
-                                                    <tr
-                                                        key={index}
-                                                    >
+                                                ?
 
-                                                        <td>
+                                                subjects.map(
 
-                                                            {sub.Cid}
+                                                    (sub, index) => (
 
-                                                        </td>
+                                                        <tr key={index}>
 
-                                                        <td>
+                                                            <td>
 
-                                                            {sub.Course_name}
+                                                                {sub.Cid}
 
-                                                        </td>
+                                                            </td>
 
-                                                        <td>
+                                                            <td>
 
-                                                            {sub.Credits}
+                                                                {sub.Course_name}
 
-                                                        </td>
+                                                            </td>
 
-                                                        <td>
+                                                            <td>
 
-                                                            <input
+                                                                {sub.Credits}
 
-                                                                type="number"
+                                                            </td>
 
-                                                                min="0"
+                                                            <td>
 
-                                                                max="10"
+                                                                <input
 
-                                                                value={
+                                                                    type="number"
 
-                                                                    grades[sub.Cid]
+                                                                    min="0"
 
-                                                                    ??
+                                                                    max="10"
 
-                                                                    sub.Grade_point
+                                                                    value={
 
-                                                                    ??
+                                                                        grades[sub.Cid]
 
-                                                                    ""
-                                                                }
+                                                                        ??
 
-                                                                onChange={(e) => {
+                                                                        sub.Grade_point
 
-                                                                    setGrades({
+                                                                        ??
 
-                                                                        ...grades,
+                                                                        ""
+                                                                    }
 
-                                                                        [sub.Cid]:
+                                                                    onChange={(e) => {
 
-                                                                            e.target.value
-                                                                    });
+                                                                        setGrades({
 
-                                                                }}
+                                                                            ...grades,
 
-                                                                className="form-control"
+                                                                            [sub.Cid]:
 
-                                                                style={{
+                                                                                e.target.value
+                                                                        });
 
-                                                                    background:
-                                                                        "#0f172a",
+                                                                    }}
 
-                                                                    color:
-                                                                        "white",
+                                                                    className="form-control"
 
-                                                                    border:
-                                                                        "1px solid rgba(255,255,255,0.08)",
+                                                                    style={{
 
-                                                                    borderRadius:
-                                                                        "14px"
-                                                                }}
-                                                            />
+                                                                        background:
+                                                                            "#0f172a",
+
+                                                                        color:
+                                                                            "white",
+
+                                                                        border:
+                                                                            "1px solid rgba(255,255,255,0.08)",
+
+                                                                        borderRadius:
+                                                                            "14px"
+                                                                    }}
+                                                                />
+
+                                                            </td>
+
+                                                        </tr>
+                                                    )
+                                                )
+
+                                                :
+
+                                                (
+
+                                                    <tr>
+
+                                                        <td
+
+                                                            colSpan="4"
+
+                                                            className="text-center py-5"
+                                                        >
+
+                                                            No Subjects Found
 
                                                         </td>
 
                                                     </tr>
                                                 )
-                                            )
+                                            }
 
-                                            :
+                                        </tbody>
 
-                                            (
+                                    </table>
 
-                                                <tr>
-
-                                                    <td
-                                                        colSpan="4"
-                                                        className="text-center py-5"
-                                                    >
-
-                                                        No Subjects Found
-
-                                                    </td>
-
-                                                </tr>
-                                            )
-
-                                    }
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
+                                </div>
+                            )
+                        }
 
                     </div>
 

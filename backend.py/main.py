@@ -24,23 +24,12 @@ app.add_middleware(
 # ==========================================
 # HOME
 # ==========================================
+@app.get("/semester/{sem}/{roll}")
 
-@app.get("/")
-
-def home():
-
-    return {
-
-        "message": "Student Analytics API Running"
-    }
-
-# ==========================================
-# SEMESTER SUBJECTS
-# ==========================================
-
-@app.get("/semester/{sem}")
-
-def get_semester_subjects(sem: int):
+def get_semester_subjects(
+    sem: int,
+    roll: str
+):
 
     conn = get_connection()
 
@@ -48,25 +37,36 @@ def get_semester_subjects(sem: int):
 
     cursor.execute("""
 
-    SELECT
+        SELECT
 
-        C.Cid,
-        C.Course_name,
-        C.Credits,
-        C.Sem_id,
-        E.Grade_point
+            C.Cid,
+            C.Course_name,
+            C.Credits,
+            C.Sem_id,
+            E.Grade_point
 
-    FROM Courses C
+        FROM Courses C
 
-    LEFT JOIN Enroll E
+        LEFT JOIN Enroll E
 
-    ON C.Cid = E.Cid
+        ON
 
-    WHERE C.Sem_id = %s
+            C.Cid = E.Cid
 
-    ORDER BY C.Cid
+        AND
 
-""", (sem,))
+            E.Roll_no = %s
+
+        WHERE C.Sem_id = %s
+
+        ORDER BY C.Cid
+
+    """, (
+
+        roll,
+        sem
+
+    ))
 
     data = cursor.fetchall()
 
