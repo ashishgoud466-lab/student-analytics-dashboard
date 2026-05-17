@@ -6,7 +6,11 @@ from db import get_connection
 
 import queries
 
+import smtplib
 
+import random
+
+from email.mime.text import MIMEText
 app = FastAPI()
 
 # ==========================================
