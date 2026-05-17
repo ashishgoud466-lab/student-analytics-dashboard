@@ -300,7 +300,7 @@ function Settings() {
 
                             <h4>
 
-                                Student
+                                {localStorage.getItem("student_name")}
 
                             </h4>
 

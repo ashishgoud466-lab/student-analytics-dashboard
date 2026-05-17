@@ -60,20 +60,43 @@ function Login() {
 
             const data = await res.json();
 
-            // ============================
-            // SUCCESS
-            // ============================
-
             if (data.success) {
 
-                // SAVE LOGIN
+             localStorage.setItem(
 
-                localStorage.setItem(
+    "student_name",
 
-                    "roll_no",
+    data.name
+);
 
-                    data.roll_no
-                );
+localStorage.setItem(
+
+    "branch",
+
+    data.branch
+);
+
+localStorage.setItem(
+
+    "programme",
+
+    data.programme
+);
+
+localStorage.setItem(
+
+    "year",
+
+    data.year
+);
+
+localStorage.setItem(
+
+    "sem_id",
+
+    data.sem_id
+);
+                
 
                 localStorage.setItem(
 
@@ -82,31 +105,17 @@ function Login() {
                     data.role
                 );
 
-                // ======================
-                // FIRST LOGIN
-                // ======================
+                localStorage.setItem(
 
-                if (data.first_login) {
+                    "student_name",
 
-                    window.location.href =
-                        "/#/change-password";
-                }
+                    data.name || "Student"
+                );
 
-                // ======================
-                // NORMAL LOGIN
-                // ======================
-
-                else {
-
-                    window.location.href =
-                        "/#/dashboard";
-                }
+                window.location.href =
+                    "/#/dashboard";
 
             }
-
-            // ============================
-            // FAILED LOGIN
-            // ============================
 
             else {
 
@@ -125,7 +134,6 @@ function Login() {
             console.error(err);
 
             setMessage(
-
                 "Server error. Try again."
             );
         }
@@ -137,7 +145,7 @@ function Login() {
     };
 
     // =====================================
-    // ENTER KEY LOGIN
+    // ENTER KEY
     // =====================================
 
     const handleKeyPress = (e) => {
@@ -155,294 +163,518 @@ function Login() {
     return (
 
         <div
-            className="container-fluid min-vh-100 d-flex justify-content-center align-items-center"
+
+            className="container-fluid min-vh-100"
+
             style={{
+
                 background:
-                    "linear-gradient(135deg, #020617, #0f172a, #111827)",
+                    "linear-gradient(135deg,#020617,#0f172a,#111827)",
+
                 fontFamily:
-                    "'Poppins', sans-serif"
+                    "'Poppins', sans-serif",
+
+                overflow: "hidden"
             }}
         >
 
-            <div
-                className="card border-0 shadow-lg p-5"
-                style={{
-                    width: "100%",
-                    maxWidth: "450px",
-                    borderRadius: "32px",
-                    background:
-                        "rgba(15,23,42,0.92)",
-                    backdropFilter:
-                        "blur(20px)",
-                    color: "white"
-                }}
-            >
+            <div className="row min-vh-100">
 
-                {/* LOGO */}
+                {/* LEFT SIDE */}
 
-                <div className="text-center mb-4">
+                <div
+
+                    className="col-lg-6 d-none d-lg-flex flex-column justify-content-center p-5"
+
+                    style={{
+                        position: "relative"
+                    }}
+                >
 
                     <div
                         style={{
-                            width: "90px",
-                            height: "90px",
-                            borderRadius: "50%",
-                            margin: "0 auto",
-                            background:
-                                "linear-gradient(to right, #3b82f6, #8b5cf6)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "2rem",
-                            fontWeight: "700",
-                            boxShadow:
-                                "0 20px 40px rgba(59,130,246,0.35)"
+                            maxWidth: "600px"
                         }}
                     >
 
-                        🎓
+                        <div
+                            className="mb-4"
+                            style={{
+                                width: "120px",
+                                height: "120px",
+                                borderRadius: "32px",
+                                background:
+                                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "4rem",
+                                boxShadow:
+                                    "0 25px 60px rgba(59,130,246,0.35)"
+                            }}
+                        >
+
+                            🎓
+
+                        </div>
+
+                        <h1
+                            className="mt-5"
+                            style={{
+                                fontSize: "4.5rem",
+                                fontWeight: "800",
+                                lineHeight: "1.1"
+                            }}
+                        >
+
+                            <span
+                                style={{
+                                    background:
+                                        "linear-gradient(to right,#38bdf8,#8b5cf6)",
+                                    WebkitBackgroundClip:
+                                        "text",
+                                    WebkitTextFillColor:
+                                        "transparent"
+                                }}
+                            >
+
+                                Student Analytics Portal
+
+                            </span>
+
+                        </h1>
+
+                        <p
+                            className="mt-4"
+                            style={{
+                                color: "#94a3b8",
+                                fontSize: "1.2rem",
+                                lineHeight: "2"
+                            }}
+                        >
+
+                            A modern academic analytics platform
+                            for monitoring grades, SGPA trends,
+                            semester performance and academic insights.
+
+                        </p>
+
+                        <div
+                            className="mt-5 p-4"
+                            style={{
+                                background:
+                                    "rgba(255,255,255,0.05)",
+                                border:
+                                    "1px solid rgba(255,255,255,0.08)",
+                                borderRadius: "28px",
+                                backdropFilter:
+                                    "blur(20px)"
+                            }}
+                        >
+
+                            <h4>
+
+                                🏛️ JNTUH Hyderabad
+
+                            </h4>
+
+                            <p
+                                className="mt-3"
+                                style={{
+                                    color: "#cbd5e1",
+                                    lineHeight: "1.8"
+                                }}
+                            >
+
+                                Jawaharlal Nehru Technological University Hyderabad
+
+                                <br /><br />
+
+                                Secure student dashboard with
+                                performance analytics,
+                                grade tracking,
+                                semester insights and
+                                academic management.
+
+                            </p>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-                {/* TITLE */}
+                {/* RIGHT SIDE */}
 
-                <h1
-                    className="text-center mb-2"
-                    style={{
-                        fontWeight: "700",
-                        fontSize: "2.5rem"
-                    }}
+                <div
+
+                    className="col-lg-6 d-flex justify-content-center align-items-center p-4"
+
                 >
 
-                    Welcome Back
+                    <div
 
-                </h1>
-
-                <p
-                    className="text-center mb-5"
-                    style={{
-                        color: "#94a3b8"
-                    }}
-                >
-
-                    Login to Student Analytics Portal
-
-                </p>
-
-                {/* ROLL INPUT */}
-
-                <div className="mb-4">
-
-                    <label
-                        className="mb-2"
-                        style={{
-                            color: "#cbd5e1"
-                        }}
-                    >
-
-                        Roll Number
-
-                    </label>
-
-                    <input
-                        type="text"
-
-                        className="form-control"
-
-                        placeholder="Enter Roll Number"
-
-                        value={roll}
-
-                        onChange={(e) =>
-                            setRoll(e.target.value)
-                        }
-
-                        onKeyDown={handleKeyPress}
+                        className="p-5"
 
                         style={{
-                            background: "#0f172a",
+
+                            width: "100%",
+
+                            maxWidth: "480px",
+
+                            background:
+                                "rgba(15,23,42,0.92)",
+
                             border:
                                 "1px solid rgba(255,255,255,0.08)",
-                            color: "white",
-                            padding: "14px",
-                            borderRadius: "16px"
-                        }}
-                    />
 
-                </div>
+                            borderRadius: "36px",
 
-                {/* PASSWORD */}
+                            backdropFilter:
+                                "blur(20px)",
 
-                <div className="mb-3">
+                            boxShadow:
+                                "0 25px 60px rgba(0,0,0,0.35)",
 
-                    <label
-                        className="mb-2"
-                        style={{
-                            color: "#cbd5e1"
+                            color: "white"
                         }}
                     >
 
-                        Password
+                        {/* MOBILE TITLE */}
 
-                    </label>
+                        <div className="d-lg-none text-center mb-5">
 
-                    <input
-                        type="password"
+                            <h1
+                                style={{
+                                    fontWeight: "800"
+                                }}
+                            >
 
-                        className="form-control"
+                                🎓 Student Portal
 
-                        placeholder="Enter Password"
+                            </h1>
 
-                        value={password}
+                            <p
+                                style={{
+                                    color: "#94a3b8"
+                                }}
+                            >
 
-                        onChange={(e) =>
-                            setPassword(e.target.value)
-                        }
+                                JNTUH Hyderabad
 
-                        onKeyDown={handleKeyPress}
+                            </p>
 
-                        style={{
-                            background: "#0f172a",
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-                            color: "white",
-                            padding: "14px",
-                            borderRadius: "16px"
-                        }}
-                    />
+                        </div>
 
-                </div>
+                        {/* LOGIN TITLE */}
 
-                {/* FORGOT PASSWORD */}
-
-                <div className="text-end mb-4">
-
-                    <button
-                        className="btn btn-link p-0"
-                        style={{
-                            color: "#60a5fa",
-                            textDecoration: "none"
-                        }}
-                        onClick={() => {
-
-                            window.location.href =
-                                "/#/forgot-password";
-                        }}
-                    >
-
-                        Forgot Password?
-
-                    </button>
-
-                </div>
-
-                {/* LOGIN BUTTON */}
-
-                <button
-
-                    className="btn w-100"
-
-                    onClick={handleLogin}
-
-                    disabled={loading}
-
-                    style={{
-
-                        background:
-                            "linear-gradient(to right, #3b82f6, #8b5cf6)",
-
-                        color: "white",
-
-                        padding: "14px",
-
-                        borderRadius: "18px",
-
-                        fontWeight: "600",
-
-                        border: "none",
-
-                        fontSize: "1.05rem",
-
-                        boxShadow:
-                            "0 15px 35px rgba(59,130,246,0.25)"
-                    }}
-                >
-
-                    {
-
-                        loading
-
-                            ?
-
-                            "Logging In..."
-
-                            :
-
-                            "Login"
-                    }
-
-                </button>
-
-                {/* ADMIN BUTTON */}
-
-                <button
-
-                    className="btn w-100 mt-3"
-
-                    onClick={() => {
-
-                        window.location.href =
-                            "/#/admin-login";
-                    }}
-
-                    style={{
-
-                        background:
-                            "rgba(255,255,255,0.05)",
-
-                        color: "white",
-
-                        padding: "14px",
-
-                        borderRadius: "18px",
-
-                        fontWeight: "600",
-
-                        border:
-                            "1px solid rgba(255,255,255,0.08)"
-                    }}
-                >
-
-                    Admin Login
-
-                </button>
-
-                {/* MESSAGE */}
-
-                {
-
-                    message && (
-
-                        <div
-                            className="mt-4 text-center"
+                        <h1
+                            className="mb-2"
                             style={{
-                                color: "#f87171",
-                                fontWeight: "500"
+                                fontWeight: "700",
+                                fontSize: "3rem"
                             }}
                         >
 
-                            {message}
+                            Welcome Back 👋
+
+                        </h1>
+
+                        <p
+                            className="mb-5"
+                            style={{
+                                color: "#94a3b8",
+                                fontSize: "1.05rem"
+                            }}
+                        >
+
+                            Login to continue to your student dashboard
+
+                        </p>
+
+                        {/* ROLL */}
+
+                        <div className="mb-4">
+
+                            <label
+                                className="mb-2"
+                                style={{
+                                    color: "#cbd5e1"
+                                }}
+                            >
+
+                                Roll Number
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                placeholder="Enter Roll Number"
+
+                                value={roll}
+
+                                onChange={(e) =>
+                                    setRoll(e.target.value)
+                                }
+
+                                onKeyDown={handleKeyPress}
+
+                                className="form-control"
+
+                                style={{
+
+                                    background:
+                                        "#0f172a",
+
+                                    color:
+                                        "white",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.08)",
+
+                                    borderRadius:
+                                        "18px",
+
+                                    padding:
+                                        "16px",
+
+                                    fontSize:
+                                        "1rem"
+                                }}
+                            />
 
                         </div>
-                    )
-                }
 
-            </div>
+                        {/* PASSWORD */}
+
+                        <div className="mb-3">
+
+                            <label
+                                className="mb-2"
+                                style={{
+                                    color: "#cbd5e1"
+                                }}
+                            >
+
+                                Password
+
+                            </label>
+
+                            <input
+
+                                type="password"
+
+                                placeholder="Enter Password"
+
+                                value={password}
+
+                                onChange={(e) =>
+                                    setPassword(e.target.value)
+                                }
+
+                                onKeyDown={handleKeyPress}
+
+                                className="form-control"
+
+                                style={{
+
+                                    background:
+                                        "#0f172a",
+
+                                    color:
+                                        "white",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.08)",
+
+                                    borderRadius:
+                                        "18px",
+
+                                    padding:
+                                        "16px",
+
+                                    fontSize:
+                                        "1rem"
+                                }}
+                            />
+
+                        </div>
+
+                        {/* FORGOT */}
+
+                        <div className="text-end mb-4">
+
+                            <button
+
+                                className="btn btn-link p-0"
+
+                                style={{
+                                    color: "#60a5fa",
+                                    textDecoration:
+                                        "none"
+                                }}
+
+                                onClick={() => {
+
+                                    window.location.href =
+                                        "/#/forgot-password";
+                                }}
+                            >
+
+                                Forgot Password?
+
+                            </button>
+
+                        </div>
+
+                        {/* LOGIN */}
+
+                        <button
+
+                            className="btn w-100"
+
+                            onClick={handleLogin}
+
+                            disabled={loading}
+
+                            style={{
+
+                                background:
+                                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
+
+                                color:
+                                    "white",
+
+                                padding:
+                                    "16px",
+
+                                borderRadius:
+                                    "20px",
+
+                                fontWeight:
+                                    "700",
+
+                                border:
+                                    "none",
+
+                            fontSize:
+    "1.05rem",
+
+boxShadow:
+    "0 15px 35px rgba(59,130,246,0.25)"
+}}
+
+>
+
+    {
+
+        loading
+
+        ?
+
+        "Logging In..."
+
+        :
+
+        "Login"
+    }
+
+</button>
+
+{/* ADMIN */}
+
+<button
+
+    className="btn w-100 mt-3"
+
+    onClick={() => {
+
+        window.location.href =
+            "/#/admin-login";
+    }}
+
+    style={{
+
+        background:
+            "rgba(255,255,255,0.05)",
+
+        color:
+            "white",
+
+        padding:
+            "16px",
+
+        borderRadius:
+            "20px",
+
+        fontWeight:
+            "600",
+
+        border:
+            "1px solid rgba(255,255,255,0.08)"
+    }}
+>
+
+    Admin Login
+
+</button>
+
+{/* ERROR MESSAGE */}
+
+{
+
+    message && (
+
+        <div
+
+            className="mt-4 text-center"
+
+            style={{
+
+                color:
+                    "#f87171",
+
+                fontWeight:
+                    "500"
+            }}
+        >
+
+            {message}
 
         </div>
-    );
+    )
+}
+
+{/* FOOTER */}
+
+<div
+
+    className="text-center mt-5"
+
+    style={{
+
+        color:
+            "#64748b",
+
+        fontSize:
+            "0.9rem"
+    }}
+>
+
+    Made by Shyam 🚀
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+);
 }
 
 export default Login;

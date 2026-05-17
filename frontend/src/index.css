@@ -44,7 +44,12 @@ table {
 
     border-spacing: 0 10px;
 }
+input::placeholder {
 
+    color: #94a3b8 !important;
+
+    opacity: 1;
+}
 input:focus,
 button:focus {
 

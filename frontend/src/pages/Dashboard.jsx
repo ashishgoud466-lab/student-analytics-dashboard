@@ -13,11 +13,36 @@ function Dashboard() {
     const navigate = useNavigate();
 
     // =====================================
-    // USER
+    // LOCAL STORAGE DATA
     // =====================================
 
     const rollNo =
         localStorage.getItem("roll_no");
+
+    const studentName =
+        localStorage.getItem(
+            "student_name"
+        );
+
+    const branch =
+        localStorage.getItem(
+            "branch"
+        );
+
+    const programme =
+        localStorage.getItem(
+            "programme"
+        );
+
+    const year =
+        localStorage.getItem(
+            "year"
+        );
+
+    const semId =
+        localStorage.getItem(
+            "sem_id"
+        );
 
     // =====================================
     // STATES
@@ -37,9 +62,6 @@ function Dashboard() {
 
     const [saving, setSaving] =
         useState(false);
-
-    const [message, setMessage] =
-        useState("");
 
     // =====================================
     // LOGIN PROTECTION
@@ -71,24 +93,10 @@ function Dashboard() {
                     `${API_BASE}/semester/${selectedSem}/${rollNo}`
                 );
 
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Failed to fetch subjects"
-                    );
-                }
-
                 const data =
                     await response.json();
 
-                if (!Array.isArray(data)) {
-
-                    setSubjects([]);
-
-                    return;
-                }
-
-                setSubjects(data);
+                setSubjects(data || []);
 
             }
 
@@ -96,8 +104,8 @@ function Dashboard() {
 
                 console.error(err);
 
-                setMessage(
-                    "Unable to load subjects"
+                toast.error(
+                    "Failed to load subjects"
                 );
             }
 
@@ -107,10 +115,7 @@ function Dashboard() {
             }
         };
 
-        if (rollNo) {
-
-            fetchSubjects();
-        }
+        fetchSubjects();
 
     }, [selectedSem, rollNo]);
 
@@ -154,7 +159,7 @@ function Dashboard() {
             }
 
             toast.success(
-                "Grades Saved Successfully"
+                "Grades Updated Successfully"
             );
 
         }
@@ -164,7 +169,7 @@ function Dashboard() {
             console.error(err);
 
             toast.error(
-                "Failed to Save Grades"
+                "Failed to save grades"
             );
         }
 
@@ -204,22 +209,23 @@ function Dashboard() {
 
     }, [subjects]);
 
-    const averageGP = useMemo(() => {
+    const sgpa = useMemo(() => {
 
-        if (subjects.length === 0) {
+        if (
+            subjects.length === 0
+            ||
+            totalCredits === 0
+        ) {
 
-            return 0;
+            return "0.00";
         }
 
-        const total = subjects.reduce(
+        const weighted =
+            subjects.reduce(
 
-            (sum, sub) => {
+                (sum, sub) => {
 
-                return (
-
-                    sum +
-
-                    Number(
+                    const gp = Number(
 
                         grades[sub.Cid]
 
@@ -230,18 +236,31 @@ function Dashboard() {
                         ??
 
                         0
-                    )
-                );
-            },
+                    );
 
-            0
-        );
+                    return (
+
+                        sum +
+
+                        gp *
+
+                        Number(sub.Credits || 0)
+                    );
+                },
+
+                0
+            );
 
         return (
-            total / subjects.length
+            weighted / totalCredits
         ).toFixed(2);
 
-    }, [subjects, grades]);
+    }, [
+
+        subjects,
+        grades,
+        totalCredits
+    ]);
 
     const highestGP = useMemo(() => {
 
@@ -303,63 +322,41 @@ function Dashboard() {
 
     }, [subjects, grades]);
 
-    const sgpa = useMemo(() => {
+    const averageGP = useMemo(() => {
 
-        if (
-            subjects.length === 0
-            ||
-            totalCredits === 0
-        ) {
+        if (subjects.length === 0) {
 
-            return 0;
+            return "0.00";
         }
 
-        const weightedTotal = subjects.reduce(
+        const total =
+            subjects.reduce(
 
-            (sum, sub) => {
-
-                const gp = Number(
-
-                    grades[sub.Cid]
-
-                    ??
-
-                    sub.Grade_point
-
-                    ??
-
-                    0
-                );
-
-                return (
+                (sum, sub) =>
 
                     sum +
 
-                    gp *
+                    Number(
 
-                    Number(sub.Credits || 0)
-                );
-            },
+                        grades[sub.Cid]
 
-            0
-        );
+                        ??
+
+                        sub.Grade_point
+
+                        ??
+
+                        0
+                    ),
+
+                0
+            );
 
         return (
-
-            weightedTotal
-
-            /
-
-            totalCredits
-
+            total / subjects.length
         ).toFixed(2);
 
-    }, [
-
-        subjects,
-        grades,
-        totalCredits
-    ]);
+    }, [subjects, grades]);
 
     // =====================================
     // STYLES
@@ -376,8 +373,6 @@ function Dashboard() {
         borderRadius: "30px",
 
         backdropFilter: "blur(20px)",
-
-        transition: "0.3s ease",
 
         boxShadow:
             "0 10px 30px rgba(0,0,0,0.2)"
@@ -421,16 +416,18 @@ function Dashboard() {
                     }}
                 >
 
+                    {/* LOGO */}
+
                     <div className="mb-5">
 
                         <h1
                             style={{
-                                fontWeight: "700",
+                                fontWeight: "800",
                                 fontSize: "2.5rem"
                             }}
                         >
 
-                            🎓 Portal
+                            🎓 EduVision
 
                         </h1>
 
@@ -440,7 +437,7 @@ function Dashboard() {
                             }}
                         >
 
-                            Student Analytics
+                            JNTUH Hyderabad
 
                         </p>
 
@@ -563,17 +560,17 @@ function Dashboard() {
                         style={glassCard}
                     >
 
-                        <div className="d-flex align-items-center gap-3">
+                        <div className="d-flex align-items-start gap-3">
 
                             <div
 
                                 style={{
 
-                                    width: "65px",
+                                    width: "72px",
 
-                                    height: "65px",
+                                    height: "72px",
 
-                                    borderRadius: "50%",
+                                    borderRadius: "24px",
 
                                     background:
                                         "linear-gradient(to right,#3b82f6,#8b5cf6)",
@@ -584,33 +581,78 @@ function Dashboard() {
 
                                     justifyContent: "center",
 
-                                    fontSize: "1.6rem",
+                                    fontSize: "1.8rem",
 
-                                    fontWeight: "700"
+                                    fontWeight: "700",
+
+                                    boxShadow:
+                                        "0 10px 30px rgba(59,130,246,0.35)"
                                 }}
                             >
 
-                                S
+                                🎓
 
                             </div>
 
                             <div>
 
-                                <h6>
+                                <h5
+                                    style={{
+                                        fontWeight: "700",
+                                        marginBottom: "4px"
+                                    }}
+                                >
 
-                                    Student
+                                    {studentName}
 
-                                </h6>
+                                </h5>
 
                                 <small
                                     style={{
-                                        color: "#94a3b8"
+                                        color: "#94a3b8",
+                                        display: "block",
+                                        marginBottom: "10px"
                                     }}
                                 >
 
                                     {rollNo}
 
                                 </small>
+
+                                <p
+                                    style={{
+                                        color: "#cbd5e1",
+                                        marginBottom: "4px",
+                                        fontSize: "0.92rem"
+                                    }}
+                                >
+
+                                    {programme}
+
+                                </p>
+
+                                <p
+                                    style={{
+                                        color: "#94a3b8",
+                                        marginBottom: "4px",
+                                        fontSize: "0.9rem"
+                                    }}
+                                >
+
+                                    {branch}
+
+                                </p>
+
+                                <p
+                                    style={{
+                                        color: "#64748b",
+                                        fontSize: "0.85rem"
+                                    }}
+                                >
+
+                                    Year {year} • Semester {semId}
+
+                                </p>
 
                                 <div className="mt-3">
 
@@ -634,6 +676,49 @@ function Dashboard() {
                             </div>
 
                         </div>
+
+                    </div>
+
+                    {/* UNIVERSITY CARD */}
+
+                    <div
+                        className="mt-4 p-4"
+                        style={glassCard}
+                    >
+
+                        <h5
+                            style={{
+                                fontWeight: "700"
+                            }}
+                        >
+
+                            🏫 University
+
+                        </h5>
+
+                        <p
+                            className="mt-3"
+                            style={{
+                                color: "#cbd5e1",
+                                lineHeight: "1.7"
+                            }}
+                        >
+
+                            Jawaharlal Nehru
+                            Technological University
+                            Hyderabad
+
+                        </p>
+
+                        <small
+                            style={{
+                                color: "#64748b"
+                            }}
+                        >
+
+                            Academic Analytics Portal
+
+                        </small>
 
                     </div>
 
@@ -678,8 +763,7 @@ function Dashboard() {
                             }}
                         >
 
-                            Track your academic
-                            performance and grades.
+                            Academic analytics and performance tracking dashboard.
 
                         </p>
 
@@ -772,6 +856,100 @@ function Dashboard() {
 
                     </div>
 
+                    {/* QUICK INFO */}
+
+                    <div
+                        className="p-4 mb-5"
+                        style={glassCard}
+                    >
+
+                        <div className="row g-4">
+
+                            <div className="col-md-4">
+
+                                <div
+                                    className="p-4"
+                                    style={{
+                                        background:
+                                            "rgba(59,130,246,0.12)",
+                                        borderRadius: "24px"
+                                    }}
+                                >
+
+                                    <h5>
+
+                                        📚 Programme
+
+                                    </h5>
+
+                                    <h3 className="mt-3">
+
+                                        {programme}
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            <div className="col-md-4">
+
+                                <div
+                                    className="p-4"
+                                    style={{
+                                        background:
+                                            "rgba(34,197,94,0.12)",
+                                        borderRadius: "24px"
+                                    }}
+                                >
+
+                                    <h5>
+
+                                        🎯 Current Year
+
+                                    </h5>
+
+                                    <h3 className="mt-3">
+
+                                        {year}
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            <div className="col-md-4">
+
+                                <div
+                                    className="p-4"
+                                    style={{
+                                        background:
+                                            "rgba(139,92,246,0.12)",
+                                        borderRadius: "24px"
+                                    }}
+                                >
+
+                                    <h5>
+
+                                        📖 Active Semester
+
+                                    </h5>
+
+                                    <h3 className="mt-3">
+
+                                        {semId}
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                     {/* GRAPH */}
 
                     <div
@@ -786,9 +964,7 @@ function Dashboard() {
                         </h2>
 
                         <div
-
                             className="d-flex align-items-end gap-4"
-
                             style={{
                                 height: "320px"
                             }}
@@ -806,7 +982,6 @@ function Dashboard() {
                                         >
 
                                             <div
-
                                                 style={{
 
                                                     height:

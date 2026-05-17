@@ -240,16 +240,34 @@ def login(data: dict = Body(...)):
 
     if user:
 
-        return {
+       return {
 
-            "success": True,
+    "success": True,
 
-            "role": user["Role"],
+    "roll_no":
+        user["Roll_no"],
 
-            "roll_no": user["Roll_no"],
+    "role":
+        user["Role"],
 
-            "first_login": user["First_Login"]
-        }
+    "first_login":
+        user["First_Login"],
+
+    "name":
+        user["Student_name"],
+
+    "branch":
+        user["Branch"],
+
+    "programme":
+        user["Programme"],
+
+    "year":
+        user["Year"],
+
+    "sem_id":
+        user["Sem_id"]
+}
 
     return {
 
