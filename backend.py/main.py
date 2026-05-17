@@ -119,7 +119,11 @@ def get_semester_subjects(
 # ==========================================
 # REGISTER
 # ==========================================
-
+@app.post("/send-email-otp")
+@app.post("/verify-email-otp")
+@app.post("/change-password")
+@app.post("/forgot-password")
+POST /reset-password
 @app.post("/register")
 
 def register(data: dict = Body(...)):
