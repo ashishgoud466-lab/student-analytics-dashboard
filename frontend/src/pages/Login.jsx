@@ -25,128 +25,113 @@ function Login() {
     // =====================================
     // LOGIN
     // =====================================
-
     const handleLogin = async () => {
 
-        try {
+    try {
 
-            setLoading(true);
+        setLoading(true);
 
-            setMessage("");
+        setMessage("");
 
-            const res = await fetch(
+        const res = await fetch(
 
-                `${API_BASE}/login`,
+            `${API_BASE}/login`,
 
-                {
+            {
 
-                    method: "POST",
+                method: "POST",
 
-                    headers: {
+                headers: {
 
-                        "Content-Type":
-                            "application/json"
-                    },
+                    "Content-Type":
+                        "application/json"
+                },
 
-                    body: JSON.stringify({
+                body: JSON.stringify({
 
-                        roll_no: roll,
+                    roll_no: roll,
 
-                        password: password
+                    password: password
+                })
+            }
+        );
 
-                    })
-                }
+        const data =
+            await res.json();
+
+        if (data.success) {
+
+            localStorage.setItem(
+                "roll_no",
+                data.roll_no || ""
             );
 
-            const data = await res.json();
+            localStorage.setItem(
+                "student_name",
+                data.name || ""
+            );
 
-            if (data.success) {
+            localStorage.setItem(
+                "branch",
+                data.branch || ""
+            );
 
-             localStorage.setItem(
+            localStorage.setItem(
+                "programme",
+                data.programme || ""
+            );
 
-    "student_name",
+            localStorage.setItem(
+                "year",
+                data.year || "1"
+            );
 
-    data.name
-);
+            localStorage.setItem(
+                "sem_id",
+                data.sem_id || "1"
+            );
 
-localStorage.setItem(
+            localStorage.setItem(
+                "email",
+                data.email || ""
+            );
 
-    "branch",
+            localStorage.setItem(
+                "role",
+                data.role || ""
+            );
 
-    data.branch
-);
-
-localStorage.setItem(
-
-    "programme",
-
-    data.programme
-);
-
-localStorage.setItem(
-
-    "year",
-
-    data.year
-);
-
-localStorage.setItem(
-
-    "sem_id",
-
-    data.sem_id
-);
-                
-
-                localStorage.setItem(
-
-                    "role",
-
-                    data.role
-                );
-
-                localStorage.setItem(
-
-                    "student_name",
-
-                    data.name || "Student"
-                );
-
-                window.location.href =
-                    "/#/dashboard";
-
-            }
-
-            else {
-
-                setMessage(
-
-                    data.message ||
-
-                    "Invalid credentials"
-                );
-            }
-
+            window.location.href =
+                "/#/dashboard";
         }
 
-        catch (err) {
-
-            console.error(err);
+        else {
 
             setMessage(
-                "Server error. Try again."
+
+                data.message ||
+
+                "Invalid credentials"
             );
         }
 
-        finally {
+    }
 
-            setLoading(false);
-        }
-    };
+    catch (err) {
 
-    // =====================================
-    // ENTER KEY
-    // =====================================
+        console.error(err);
+
+        setMessage(
+            "Server error"
+        );
+    }
+
+    finally {
+
+        setLoading(false);
+    }
+};
+
 
     const handleKeyPress = (e) => {
 

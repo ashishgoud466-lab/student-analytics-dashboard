@@ -57,7 +57,20 @@ button:focus {
 
     box-shadow: none !important;
 }
+input {
 
+    color: white !important;
+}
+
+input::placeholder {
+
+    color: #94a3b8 !important;
+}
+
+::-ms-reveal {
+
+    filter: invert(1);
+}
 @keyframes fadeIn {
 
     from {

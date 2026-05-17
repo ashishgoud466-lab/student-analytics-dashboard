@@ -427,7 +427,7 @@ function Dashboard() {
                             }}
                         >
 
-                            🎓 EduVision
+                            🎓 Student Analytics Portal
 
                         </h1>
 
@@ -437,7 +437,7 @@ function Dashboard() {
                             }}
                         >
 
-                            JNTUH Hyderabad
+                       Academic Analytics
 
                         </p>
 
@@ -666,7 +666,24 @@ function Dashboard() {
                                             padding: "8px 14px"
                                         }}
                                     >
+<p
+    style={{
+        color: "#60a5fa",
+        marginBottom: "8px",
+        fontSize: "0.88rem"
+    }}
+>
 
+    {
+
+        localStorage.getItem("email")
+
+        ||
+
+        "No Email Added"
+    }
+
+</p>
                                         Active Student
 
                                     </span>
@@ -909,11 +926,60 @@ function Dashboard() {
 
                                     </h5>
 
-                                    <h3 className="mt-3">
+                                    <select
 
-                                        {year}
+    className="form-select mt-3"
 
-                                    </h3>
+    value={year}
+
+    onChange={(e) => {
+
+        localStorage.setItem(
+            "year",
+            e.target.value
+        );
+
+        window.location.reload();
+    }}
+
+    style={{
+
+        background:
+            "#0f172a",
+
+        color:
+            "white",
+
+        border:
+            "1px solid rgba(255,255,255,0.08)"
+    }}
+>
+
+    <option value="1">
+
+        1
+
+    </option>
+
+    <option value="2">
+
+        2
+
+    </option>
+
+    <option value="3">
+
+        3
+
+    </option>
+
+    <option value="4">
+
+        4
+
+    </option>
+
+</select>
 
                                 </div>
 
@@ -936,11 +1002,84 @@ function Dashboard() {
 
                                     </h5>
 
-                                    <h3 className="mt-3">
+                                    <select
 
-                                        {semId}
+    className="form-select mt-3"
 
-                                    </h3>
+    value={semId}
+
+    onChange={(e) => {
+
+        localStorage.setItem(
+            "sem_id",
+            e.target.value
+        );
+
+        window.location.reload();
+    }}
+
+    style={{
+
+        background:
+            "#0f172a",
+
+        color:
+            "white",
+
+        border:
+            "1px solid rgba(255,255,255,0.08)"
+    }}
+>
+
+    <option value="1">
+
+        1
+
+    </option>
+
+    <option value="2">
+
+        2
+
+    </option>
+
+    <option value="3">
+
+        3
+
+    </option>
+
+    <option value="4">
+
+        4
+
+    </option>
+
+    <option value="5">
+
+        5
+
+    </option>
+
+    <option value="6">
+
+        6
+
+    </option>
+
+    <option value="7">
+
+        7
+
+    </option>
+
+    <option value="8">
+
+        8
+
+    </option>
+
+</select>
 
                                 </div>
 
