@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-
 import toast from "react-hot-toast";
-
 import { useNavigate } from "react-router-dom";
-
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import API_BASE from "../services/api";
 
 function Dashboard() {
@@ -69,8 +65,6 @@ function Dashboard() {
             try {
 
                 setLoading(true);
-
-                setMessage("");
 
                 const response = await fetch(
 
@@ -618,6 +612,25 @@ function Dashboard() {
 
                                 </small>
 
+                                <div className="mt-3">
+
+                                    <span
+                                        className="badge"
+                                        style={{
+                                            background:
+                                                "rgba(34,197,94,0.18)",
+                                            color: "#4ade80",
+                                            borderRadius: "20px",
+                                            padding: "8px 14px"
+                                        }}
+                                    >
+
+                                        Active Student
+
+                                    </span>
+
+                                </div>
+
                             </div>
 
                         </div>
@@ -641,7 +654,20 @@ function Dashboard() {
                             }}
                         >
 
-                            Welcome Back 👋
+                            <span
+                                style={{
+                                    background:
+                                        "linear-gradient(to right,#38bdf8,#8b5cf6)",
+                                    WebkitBackgroundClip:
+                                        "text",
+                                    WebkitTextFillColor:
+                                        "transparent"
+                                }}
+                            >
+
+                                Welcome Back 👋
+
+                            </span>
 
                         </h1>
 
@@ -657,159 +683,92 @@ function Dashboard() {
 
                         </p>
 
+                        <div
+                            className="mt-4 badge"
+                            style={{
+                                background:
+                                    "rgba(59,130,246,0.18)",
+                                color: "#93c5fd",
+                                padding: "12px 18px",
+                                borderRadius: "20px",
+                                fontSize: "1rem"
+                            }}
+                        >
+
+                            Current SGPA: {sgpa}
+
+                        </div>
+
                     </div>
 
                     {/* STATS */}
 
                     <div className="row g-4 mb-5">
 
-                        <div className="col-xl-2 col-md-6">
+                        {
 
-                            <div
-                                className="p-4 h-100"
-                                style={{
-                                    ...glassCard,
-                                    background:
-                                        "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.18))"
-                                }}
-                            >
+                            [
 
-                                <p>SGPA</p>
+                                {
+                                    title: "SGPA",
+                                    value: sgpa
+                                },
 
-                                <h1
-                                    style={{
-                                        fontSize: "2.8rem",
-                                        fontWeight: "700"
-                                    }}
+                                {
+                                    title: "Highest",
+                                    value: highestGP
+                                },
+
+                                {
+                                    title: "Lowest",
+                                    value: lowestGP
+                                },
+
+                                {
+                                    title: "Average",
+                                    value: averageGP
+                                },
+
+                                {
+                                    title: "Credits",
+                                    value: totalCredits
+                                },
+
+                                {
+                                    title: "Subjects",
+                                    value: subjects.length
+                                }
+
+                            ].map((item, index) => (
+
+                                <div
+                                    className="col-xl-2 col-md-6"
+                                    key={index}
                                 >
 
-                                    {sgpa}
+                                    <div
+                                        className="p-4 h-100"
+                                        style={glassCard}
+                                    >
 
-                                </h1>
+                                        <p>{item.title}</p>
 
-                            </div>
+                                        <h1
+                                            style={{
+                                                fontSize: "2.5rem",
+                                                fontWeight: "700"
+                                            }}
+                                        >
 
-                        </div>
+                                            {item.value}
 
-                        <div className="col-xl-2 col-md-6">
+                                        </h1>
 
-                            <div
-                                className="p-4 h-100"
-                                style={glassCard}
-                            >
+                                    </div>
 
-                                <p>Highest</p>
-
-                                <h1
-                                    style={{
-                                        fontSize: "2.8rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    {highestGP}
-
-                                </h1>
-
-                            </div>
-
-                        </div>
-
-                        <div className="col-xl-2 col-md-6">
-
-                            <div
-                                className="p-4 h-100"
-                                style={glassCard}
-                            >
-
-                                <p>Lowest</p>
-
-                                <h1
-                                    style={{
-                                        fontSize: "2.8rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    {lowestGP}
-
-                                </h1>
-
-                            </div>
-
-                        </div>
-
-                        <div className="col-xl-2 col-md-6">
-
-                            <div
-                                className="p-4 h-100"
-                                style={glassCard}
-                            >
-
-                                <p>Average</p>
-
-                                <h1
-                                    style={{
-                                        fontSize: "2.8rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    {averageGP}
-
-                                </h1>
-
-                            </div>
-
-                        </div>
-
-                        <div className="col-xl-2 col-md-6">
-
-                            <div
-                                className="p-4 h-100"
-                                style={glassCard}
-                            >
-
-                                <p>Credits</p>
-
-                                <h1
-                                    style={{
-                                        fontSize: "2.8rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    {totalCredits}
-
-                                </h1>
-
-                            </div>
-
-                        </div>
-
-                        <div className="col-xl-2 col-md-6">
-
-                            <div
-                                className="p-4 h-100"
-                                style={glassCard}
-                            >
-
-                                <p>Subjects</p>
-
-                                <h1
-                                    style={{
-                                        fontSize: "2.8rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-
-                                    {subjects.length}
-
-                                </h1>
-
-                            </div>
-
-                        </div>
+                                </div>
+                            ))
+                        }
 
                     </div>
 
@@ -834,18 +793,6 @@ function Dashboard() {
                                 height: "320px"
                             }}
                         >
-
-                            {
-
-                                subjects.length === 0 && (
-
-                                    <div className="w-100 text-center">
-
-                                        No Performance Data
-
-                                    </div>
-                                )
-                            }
 
                             {
 
@@ -882,10 +829,13 @@ function Dashboard() {
                                                         "24px 24px 0 0",
 
                                                     background:
-                                                        "linear-gradient(to top,#2563eb,#7c3aed,#c084fc)",
+                                                        "linear-gradient(180deg,#38bdf8,#6366f1,#8b5cf6)",
 
                                                     transition:
                                                         "0.5s ease",
+
+                                                    cursor:
+                                                        "pointer",
 
                                                     boxShadow:
                                                         "0 10px 25px rgba(124,58,237,0.35)"
@@ -907,6 +857,175 @@ function Dashboard() {
                                     )
                                 )
                             }
+
+                        </div>
+
+                    </div>
+
+                    {/* INSIGHTS */}
+
+                    <div
+                        className="p-5 mb-5"
+                        style={glassCard}
+                    >
+
+                        <h2 className="mb-4">
+
+                            📊 Performance Insights
+
+                        </h2>
+
+                        <div className="row g-4">
+
+                            <div className="col-lg-4">
+
+                                <div
+                                    className="p-4 h-100"
+                                    style={{
+                                        background:
+                                            "rgba(34,197,94,0.12)",
+                                        borderRadius: "24px"
+                                    }}
+                                >
+
+                                    <h5>
+
+                                        🚀 Strongest Subject
+
+                                    </h5>
+
+                                    <h3 className="mt-4">
+
+                                        {
+
+                                            subjects.length > 0
+
+                                            ?
+
+                                            [...subjects].sort(
+
+                                                (a, b) =>
+
+                                                    Number(b.Grade_point || 0)
+
+                                                    -
+
+                                                    Number(a.Grade_point || 0)
+
+                                            )[0]?.Course_name
+
+                                            :
+
+                                            "N/A"
+                                        }
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            <div className="col-lg-4">
+
+                                <div
+                                    className="p-4 h-100"
+                                    style={{
+                                        background:
+                                            "rgba(239,68,68,0.12)",
+                                        borderRadius: "24px"
+                                    }}
+                                >
+
+                                    <h5>
+
+                                        📉 Weakest Subject
+
+                                    </h5>
+
+                                    <h3 className="mt-4">
+
+                                        {
+
+                                            subjects.length > 0
+
+                                            ?
+
+                                            [...subjects].sort(
+
+                                                (a, b) =>
+
+                                                    Number(a.Grade_point || 0)
+
+                                                    -
+
+                                                    Number(b.Grade_point || 0)
+
+                                            )[0]?.Course_name
+
+                                            :
+
+                                            "N/A"
+                                        }
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            <div className="col-lg-4">
+
+                                <div
+                                    className="p-4 h-100"
+                                    style={{
+                                        background:
+                                            "rgba(59,130,246,0.12)",
+                                        borderRadius: "24px"
+                                    }}
+                                >
+
+                                    <h5>
+
+                                        🎯 Academic Status
+
+                                    </h5>
+
+                                    <h2 className="mt-4">
+
+                                        {
+
+                                            Number(sgpa) >= 9
+
+                                            ?
+
+                                            "Excellent"
+
+                                            :
+
+                                            Number(sgpa) >= 8
+
+                                            ?
+
+                                            "Very Good"
+
+                                            :
+
+                                            Number(sgpa) >= 7
+
+                                            ?
+
+                                            "Good"
+
+                                            :
+
+                                            "Needs Improvement"
+                                        }
+
+                                    </h2>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
@@ -944,6 +1063,9 @@ function Dashboard() {
 
                                                 padding:
                                                     "14px 28px",
+
+                                                transition:
+                                                    "0.3s ease",
 
                                                 background:
 
@@ -1026,10 +1148,7 @@ function Dashboard() {
 
                                     fontWeight: "600",
 
-                                    border: "none",
-
-                                    boxShadow:
-                                        "0 10px 30px rgba(59,130,246,0.35)"
+                                    border: "none"
                                 }}
                             >
 
@@ -1079,7 +1198,12 @@ function Dashboard() {
                                         }}
                                     >
 
-                                        <thead>
+                                        <thead
+                                            style={{
+                                                background:
+                                                    "rgba(255,255,255,0.05)"
+                                            }}
+                                        >
 
                                             <tr>
 
@@ -1205,6 +1329,20 @@ function Dashboard() {
                                 </div>
                             )
                         }
+
+                    </div>
+
+                    {/* FOOTER */}
+
+                    <div
+                        className="text-center mt-5"
+                        style={{
+                            color: "#64748b",
+                            fontSize: "0.95rem"
+                        }}
+                    >
+
+                        Made by Shyam 🚀
 
                     </div>
 
