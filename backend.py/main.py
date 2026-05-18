@@ -1,16 +1,11 @@
+# Fixed backend/main.py
+
+```python
 from fastapi.middleware.cors import CORSMiddleware
-
 from fastapi import FastAPI, Body
-
 from db import get_connection
-
 import queries
 
-import smtplib
-
-import random
-
-from email.mime.text import MIMEText
 app = FastAPI()
 
 # ==========================================
@@ -26,22 +21,32 @@ app.add_middleware(
 )
 
 # ==========================================
-# HOME
+# HEALTH
 # ==========================================
-@app.post("/admin-reset-password")
 
+@app.get("/health")
+def health():
+
+    return {
+        "status": "running"
+    }
+
+# ==========================================
+# ADMIN RESET PASSWORD
+# ==========================================
+
+@app.post("/admin-reset-password")
 def admin_reset_password(
     data: dict = Body(...)
 ):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     roll = data["roll_no"]
 
-    temp_password =
-        data["temp_password"]
+    temp_password = data["temp_password"]
 
     cursor.execute("""
 
@@ -67,11 +72,14 @@ def admin_reset_password(
     conn.close()
 
     return {
-
         "success": True
     }
-@app.get("/semester/{sem}/{roll}")
 
+# ==========================================
+# SEMESTER SUBJECTS
+# ==========================================
+
+@app.get("/semester/{sem}/{roll}")
 def get_semester_subjects(
     sem: int,
     roll: str
@@ -79,7 +87,7 @@ def get_semester_subjects(
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
 
@@ -123,24 +131,17 @@ def get_semester_subjects(
 # ==========================================
 # REGISTER
 # ==========================================
-@app.post("/send-email-otp")
-@app.post("/verify-email-otp")
-@app.post("/change-password")
-@app.post("/forgot-password")
-POST /reset-password
-@app.post("/register")
 
+@app.post("/register")
 def register(data: dict = Body(...)):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     roll = data["roll_no"]
 
     password = data["password"]
-
-    # CHECK USER EXISTS
 
     cursor.execute("""
 
@@ -159,13 +160,9 @@ def register(data: dict = Body(...)):
         conn.close()
 
         return {
-
             "success": False,
-
             "message": "User already exists"
         }
-
-    # INSERT USER
 
     cursor.execute("""
 
@@ -186,7 +183,6 @@ def register(data: dict = Body(...)):
     conn.close()
 
     return {
-
         "success": True
     }
 
@@ -195,12 +191,11 @@ def register(data: dict = Body(...)):
 # ==========================================
 
 @app.post("/login")
-
 def login(data: dict = Body(...)):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     roll = data["roll_no"]
 
@@ -240,34 +235,37 @@ def login(data: dict = Body(...)):
 
     if user:
 
-       return {
+        return {
 
-    "success": True,
+            "success": True,
 
-    "roll_no":
-        user["Roll_no"],
+            "roll_no":
+                user["Roll_no"],
 
-    "role":
-        user["Role"],
+            "role":
+                user.get("Role", "student"),
 
-    "first_login":
-        user["First_Login"],
+            "first_login":
+                user.get("First_Login", False),
 
-    "name":
-        user["Student_name"],
+            "name":
+                user.get("Student_name", "Student"),
 
-    "branch":
-        user["Branch"],
+            "branch":
+                user.get("Branch", "N/A"),
 
-    "programme":
-        user["Programme"],
+            "programme":
+                user.get("Programme", "N/A"),
 
-    "year":
-        user["Year"],
+            "year":
+                user.get("Year", 1),
 
-    "sem_id":
-        user["Sem_id"]
-}
+            "sem_id":
+                user.get("Sem_id", 1),
+
+            "email":
+                user.get("Email", "")
+        }
 
     return {
 
@@ -281,18 +279,17 @@ def login(data: dict = Body(...)):
 # ==========================================
 
 @app.post("/change-password")
-
 def change_password(data: dict = Body(...)):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     roll = data["roll_no"]
 
     new_password = data["new_password"]
 
-    email = data["email"]
+    email = data.get("email", "")
 
     cursor.execute("""
 
@@ -332,12 +329,11 @@ def change_password(data: dict = Body(...)):
 # ==========================================
 
 @app.get("/ranklist", tags=["Analytics"])
-
 def ranklist():
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
 
@@ -365,14 +361,11 @@ def ranklist():
 # ==========================================
 
 @app.get("/student/{roll}")
-
 def get_student(roll: str):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
-
-    # STUDENT INFO
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
 
@@ -386,8 +379,6 @@ def get_student(roll: str):
 
     student = cursor.fetchone()
 
-    # SUBJECTS
-
     cursor.execute("""
 
         SELECT
@@ -395,7 +386,7 @@ def get_student(roll: str):
             C.Cid,
             C.Course_name,
             C.Credits,
-            C.Semester,
+            C.Sem_id,
             E.Grade_point
 
         FROM Enroll E
@@ -406,7 +397,7 @@ def get_student(roll: str):
 
         WHERE E.Roll_no = %s
 
-        ORDER BY C.Semester
+        ORDER BY C.Sem_id
 
     """, (roll,))
 
@@ -426,12 +417,11 @@ def get_student(roll: str):
 # ==========================================
 
 @app.get("/admin/users")
-
 def admin_users():
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
 
@@ -460,12 +450,11 @@ def admin_users():
 # ==========================================
 
 @app.get("/above-class-average")
-
 def above_average():
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute(
         queries.students_above_average_query
@@ -482,12 +471,11 @@ def above_average():
 # ==========================================
 
 @app.get("/programme-toppers")
-
 def programme_toppers():
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute(
         queries.programme_toppers_query
@@ -504,12 +492,11 @@ def programme_toppers():
 # ==========================================
 
 @app.get("/backlogs")
-
 def backlogs():
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     cursor.execute(
         queries.backlog_count_query
@@ -522,23 +509,21 @@ def backlogs():
     return data
 
 # ==========================================
-# SEARCH
+# UPDATE GRADE
 # ==========================================
-@app.post("/update-grade")
 
+@app.post("/update-grade")
 def update_grade(data: dict = Body(...)):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     roll = data["roll_no"]
 
     cid = data["cid"]
 
     gp = data["grade_point"]
-
-    # CHECK EXISTING
 
     cursor.execute("""
 
@@ -563,8 +548,6 @@ def update_grade(data: dict = Body(...)):
 
     existing = cursor.fetchone()
 
-    # UPDATE
-
     if existing:
 
         cursor.execute("""
@@ -588,8 +571,6 @@ def update_grade(data: dict = Body(...)):
             cid
 
         ))
-
-    # INSERT
 
     else:
 
@@ -621,13 +602,17 @@ def update_grade(data: dict = Body(...)):
 
         "success": True
     }
-@app.get("/search/{name}", tags=["Search"])
 
+# ==========================================
+# SEARCH
+# ==========================================
+
+@app.get("/search/{name}", tags=["Search"])
 def search_student(name: str):
 
     conn = get_connection()
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     query = '''
 
@@ -646,16 +631,4 @@ def search_student(name: str):
     conn.close()
 
     return data
-
-# ==========================================
-# HEALTH
-# ==========================================
-
-@app.get("/health")
-
-def health():
-
-    return {
-
-        "status": "running"
-    }
+```

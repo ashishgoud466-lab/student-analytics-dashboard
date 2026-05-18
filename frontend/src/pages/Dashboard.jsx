@@ -555,147 +555,167 @@ function Dashboard() {
 
                     {/* PROFILE */}
 
-                    <div
-                        className="mt-5 p-4"
-                        style={glassCard}
-                    >
-
-                        <div className="d-flex align-items-start gap-3">
-
-                            <div
-
-                                style={{
-
-                                    width: "72px",
-
-                                    height: "72px",
-
-                                    borderRadius: "24px",
-
-                                    background:
-                                        "linear-gradient(to right,#3b82f6,#8b5cf6)",
-
-                                    display: "flex",
-
-                                    alignItems: "center",
-
-                                    justifyContent: "center",
-
-                                    fontSize: "1.8rem",
-
-                                    fontWeight: "700",
-
-                                    boxShadow:
-                                        "0 10px 30px rgba(59,130,246,0.35)"
-                                }}
-                            >
-
-                                🎓
-
-                            </div>
-
-                            <div>
-
-                                <h5
-                                    style={{
-                                        fontWeight: "700",
-                                        marginBottom: "4px"
-                                    }}
-                                >
-
-                                    {studentName}
-
-                                </h5>
-
-                                <small
-                                    style={{
-                                        color: "#94a3b8",
-                                        display: "block",
-                                        marginBottom: "10px"
-                                    }}
-                                >
-
-                                    {rollNo}
-
-                                </small>
-
-                                <p
-                                    style={{
-                                        color: "#cbd5e1",
-                                        marginBottom: "4px",
-                                        fontSize: "0.92rem"
-                                    }}
-                                >
-
-                                    {programme}
-
-                                </p>
-
-                                <p
-                                    style={{
-                                        color: "#94a3b8",
-                                        marginBottom: "4px",
-                                        fontSize: "0.9rem"
-                                    }}
-                                >
-
-                                    {branch}
-
-                                </p>
-
-                                <p
-                                    style={{
-                                        color: "#64748b",
-                                        fontSize: "0.85rem"
-                                    }}
-                                >
-
-                                    Year {year} • Semester {semId}
-
-                                </p>
-
-                                <div className="mt-3">
-
-                                    <span
-                                        className="badge"
-                                        style={{
-                                            background:
-                                                "rgba(34,197,94,0.18)",
-                                            color: "#4ade80",
-                                            borderRadius: "20px",
-                                            padding: "8px 14px"
-                                        }}
-                                    >
-<p
+       <div
+    className="mt-5 p-4"
     style={{
-        color: "#60a5fa",
-        marginBottom: "8px",
-        fontSize: "0.88rem"
+        ...glassCard,
+        overflow: "hidden"
     }}
 >
 
-    {
+    <div className="text-center">
 
-        localStorage.getItem("email")
+        <div
 
-        ||
+            className="mx-auto mb-4"
 
-        "No Email Added"
-    }
+            style={{
 
-</p>
-                                        Active Student
+                width: "82px",
 
-                                    </span>
+                height: "82px",
 
-                                </div>
+                borderRadius: "24px",
 
-                            </div>
+                background:
+                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
 
-                        </div>
+                display: "flex",
 
-                    </div>
+                alignItems: "center",
 
+                justifyContent: "center",
+
+                fontSize: "2rem",
+
+                fontWeight: "700",
+
+                boxShadow:
+                    "0 10px 30px rgba(59,130,246,0.35)"
+            }}
+        >
+
+            🎓
+
+        </div>
+
+        <h5
+            style={{
+                fontWeight: "700",
+                marginBottom: "4px"
+            }}
+        >
+
+            {
+
+                studentName ||
+
+                "Student"
+            }
+
+        </h5>
+
+        <p
+            style={{
+                color: "#94a3b8",
+                marginBottom: "6px",
+                fontSize: "0.9rem"
+            }}
+        >
+
+            {rollNo}
+
+        </p>
+
+        <p
+            style={{
+                color: "#60a5fa",
+                marginBottom: "10px",
+                fontSize: "0.82rem",
+                wordBreak: "break-word"
+            }}
+        >
+
+            {
+
+                localStorage.getItem("email")
+
+                ||
+
+                "No Email Added"
+            }
+
+        </p>
+
+        <div
+            className="mt-3 p-3"
+            style={{
+                background:
+                    "rgba(255,255,255,0.03)",
+                borderRadius: "18px"
+            }}
+        >
+
+            <p
+                style={{
+                    color: "#cbd5e1",
+                    marginBottom: "6px",
+                    fontSize: "0.9rem"
+                }}
+            >
+
+                {programme}
+
+            </p>
+
+            <p
+                style={{
+                    color: "#94a3b8",
+                    marginBottom: "6px",
+                    fontSize: "0.85rem"
+                }}
+            >
+
+                {branch}
+
+            </p>
+
+            <p
+                style={{
+                    color: "#64748b",
+                    fontSize: "0.82rem",
+                    marginBottom: "0"
+                }}
+            >
+
+                Year {year} • Semester {semId}
+
+            </p>
+
+        </div>
+
+        <div className="mt-3">
+
+            <span
+                className="badge"
+                style={{
+                    background:
+                        "rgba(34,197,94,0.18)",
+                    color: "#4ade80",
+                    borderRadius: "20px",
+                    padding: "8px 14px"
+                }}
+            >
+
+                Active Student
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
                     {/* UNIVERSITY CARD */}
 
                     <div
@@ -1505,140 +1525,265 @@ function Dashboard() {
 
                                 <div className="table-responsive">
 
+                                   
                                     <table
-                                        className="table align-middle"
-                                        style={{
-                                            color: "white"
-                                        }}
-                                    >
+    className="table align-middle border-0"
+    style={{
 
-                                        <thead
-                                            style={{
-                                                background:
-                                                    "rgba(255,255,255,0.05)"
-                                            }}
-                                        >
+        color: "white",
 
-                                            <tr>
+        borderCollapse:
+            "separate",
 
-                                                <th>CID</th>
+        borderSpacing:
+            "0 14px"
+    }}
+>
 
-                                                <th>Subject</th>
+    <thead>
 
-                                                <th>Credits</th>
+        <tr>
 
-                                                <th>Grade Point</th>
+            {
 
-                                            </tr>
+                [
 
-                                        </thead>
+                    "CID",
 
-                                        <tbody>
+                    "Subject",
 
-                                            {
+                    "Credits",
 
-                                                subjects.map(
+                    "Grade Point"
+                ].map((head, index) => (
 
-                                                    (sub, index) => (
+                    <th
 
-                                                        <tr key={index}>
+                        key={index}
 
-                                                            <td>
+                        style={{
 
-                                                                {sub.Cid}
+                            background:
+                                "rgba(59,130,246,0.12)",
 
-                                                            </td>
+                            color:
+                                "#93c5fd",
 
-                                                            <td>
+                            border:
+                                "none",
 
-                                                                {sub.Course_name}
+                            padding:
+                                "18px",
 
-                                                            </td>
+                            fontWeight:
+                                "600",
 
-                                                            <td>
+                            fontSize:
+                                "0.95rem"
+                        }}
+                    >
 
-                                                                {sub.Credits}
+                        {head}
 
-                                                            </td>
+                    </th>
+                ))
+            }
 
-                                                            <td>
+        </tr>
 
-                                                                <input
+    </thead>
 
-                                                                    type="number"
+    <tbody>
 
-                                                                    min="0"
+        {
 
-                                                                    max="10"
+            subjects.map(
 
-                                                                    value={
+                (sub, index) => (
 
-                                                                        grades[sub.Cid]
+                    <tr
+                        key={index}
+                    >
 
-                                                                        ??
+                        <td
+                            style={{
 
-                                                                        sub.Grade_point
+                                background:
+                                    "rgba(255,255,255,0.03)",
 
-                                                                        ??
+                                border:
+                                    "none",
 
-                                                                        ""
-                                                                    }
+                                padding:
+                                    "18px",
 
-                                                                    onChange={(e) => {
+                                borderTopLeftRadius:
+                                    "18px",
 
-                                                                        const value = Math.max(
+                                borderBottomLeftRadius:
+                                    "18px",
 
-                                                                            0,
+                                color:
+                                    "#cbd5e1"
+                            }}
+                        >
 
-                                                                            Math.min(
-                                                                                10,
-                                                                                Number(e.target.value)
-                                                                            )
-                                                                        );
+                            {sub.Cid}
 
-                                                                        setGrades({
+                        </td>
 
-                                                                            ...grades,
+                        <td
+                            style={{
 
-                                                                            [sub.Cid]:
-                                                                                value
-                                                                        });
-                                                                    }}
+                                background:
+                                    "rgba(255,255,255,0.03)",
 
-                                                                    className="form-control"
+                                border:
+                                    "none",
 
-                                                                    style={{
+                                padding:
+                                    "18px",
 
-                                                                        background:
-                                                                            "#0f172a",
+                                color:
+                                    "white",
 
-                                                                        color:
-                                                                            "white",
+                                fontWeight:
+                                    "500"
+                            }}
+                        >
 
-                                                                        border:
-                                                                            "1px solid rgba(255,255,255,0.08)",
+                            {sub.Course_name}
 
-                                                                        borderRadius:
-                                                                            "14px",
+                        </td>
 
-                                                                        padding:
-                                                                            "10px",
+                        <td
+                            style={{
 
-                                                                        fontWeight:
-                                                                            "600"
-                                                                    }}
-                                                                />
+                                background:
+                                    "rgba(255,255,255,0.03)",
 
-                                                            </td>
+                                border:
+                                    "none",
 
-                                                        </tr>
-                                                    )
-                                                )
-                                            }
+                                padding:
+                                    "18px",
 
-                                        </tbody>
+                                color:
+                                    "#93c5fd",
 
-                                    </table>
+                                fontWeight:
+                                    "600"
+                            }}
+                        >
+
+                            {sub.Credits}
+
+                        </td>
+
+                        <td
+                            style={{
+
+                                background:
+                                    "rgba(255,255,255,0.03)",
+
+                                border:
+                                    "none",
+
+                                padding:
+                                    "18px",
+
+                                borderTopRightRadius:
+                                    "18px",
+
+                                borderBottomRightRadius:
+                                    "18px"
+                            }}
+                        >
+
+                            <input
+
+                                type="number"
+
+                                min="0"
+
+                                max="10"
+
+                                value={
+
+                                    grades[sub.Cid]
+
+                                    ??
+
+                                    sub.Grade_point
+
+                                    ??
+
+                                    ""
+                                }
+
+                                onChange={(e) => {
+
+                                    const value = Math.max(
+
+                                        0,
+
+                                        Math.min(
+                                            10,
+                                            Number(
+                                                e.target.value
+                                            )
+                                        )
+                                    );
+
+                                    setGrades({
+
+                                        ...grades,
+
+                                        [sub.Cid]:
+                                            value
+                                    });
+                                }}
+
+                                className="form-control"
+
+                                style={{
+
+                                    background:
+                                        "#0f172a",
+
+                                    color:
+                                        "white",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.08)",
+
+                                    borderRadius:
+                                        "14px",
+
+                                    padding:
+                                        "12px",
+
+                                    fontWeight:
+                                        "600",
+
+                                    textAlign:
+                                        "center",
+
+                                    width:
+                                        "100px"
+                                }}
+                            />
+
+                        </td>
+
+                    </tr>
+                )
+            )
+        }
+
+    </tbody>
+
+</table>
 
                                 </div>
                             )

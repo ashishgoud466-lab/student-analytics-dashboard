@@ -16,6 +16,8 @@ import Analytics from "./pages/Analytics";
 
 import Settings from "./pages/Settings";
 
+import Analytics from "./pages/Analytics";
+
 import ForgotPassword from "./pages/ForgotPassword";
 
 import ChangePassword from "./pages/ChangePassword";
@@ -47,7 +49,10 @@ function App() {
                     element={<Dashboard />}
 
                 />
-
+                <Route
+    path="/analytics"
+    element={<Analytics />}
+/>
                 <Route
 
                     path="/analytics"
