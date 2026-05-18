@@ -21,6 +21,13 @@ app.add_middleware(
 # HEALTH
 # ==========================================
 
+@app.get("/")
+def root():
+
+    return {
+        "message": "Backend Running 🚀"
+    }
+
 @app.get("/health")
 def health():
 
@@ -76,10 +83,6 @@ def admin_reset_password(
 # SEMESTER SUBJECTS
 # ==========================================
 
-# ==========================================
-# SEMESTER SUBJECTS
-# ==========================================
-
 @app.get("/semester/{sem}/{roll}")
 def get_semester_subjects(
     sem: int,
@@ -100,23 +103,27 @@ def get_semester_subjects(
                 C.Course_name,
                 C.Credits,
                 C.Sem_id,
-                E.Grade_point
+
+                COALESCE(
+                    E.Grade_point,
+                    0
+                ) AS Grade_point
 
             FROM Courses C
 
             LEFT JOIN Enroll E
 
             ON
-
                 C.Cid = E.Cid
 
             AND
-
                 E.Roll_no = %s
 
-            WHERE C.Sem_id = %s
+            WHERE
+                C.Sem_id = %s
 
-            ORDER BY C.Cid
+            ORDER BY
+                C.Cid
 
         """, (
 
@@ -304,7 +311,8 @@ def login(data: dict = Body(...)):
 
     except Exception as e:
 
-        print("LOGIN ERROR:", str(e))
+        print("LOGIN ERROR:")
+        print(str(e))
 
         return {
 
@@ -478,6 +486,69 @@ def admin_users():
         ORDER BY Roll_no ASC
 
     """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+# ==========================================
+# ABOVE CLASS AVERAGE
+# ==========================================
+
+@app.get("/above-class-average")
+def above_average():
+
+    conn = get_connection()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        queries.students_above_average_query
+    )
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+# ==========================================
+# PROGRAMME TOPPERS
+# ==========================================
+
+@app.get("/programme-toppers")
+def programme_toppers():
+
+    conn = get_connection()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        queries.programme_toppers_query
+    )
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+# ==========================================
+# BACKLOGS
+# ==========================================
+
+@app.get("/backlogs")
+def backlogs():
+
+    conn = get_connection()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        queries.backlog_count_query
+    )
 
     data = cursor.fetchall()
 

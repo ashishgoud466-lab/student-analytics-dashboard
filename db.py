@@ -1,12 +1,14 @@
 import mysql.connector
 
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="Student_appdemo_db"
-)
+def get_connection():
 
-cursor = conn.cursor(dictionary=True)
+    return mysql.connector.connect(
 
-print("✅ Database Connected")
+        host="localhost",
+
+        user="root",
+
+        password="root",
+
+        database="Student_appdemo_db"
+    )
