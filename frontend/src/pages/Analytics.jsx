@@ -10,30 +10,42 @@ import {
 
 } from "recharts";
 
+import { useEffect, useState } from "react";
+
 function Analytics() {
 
-    const sgpaData = [
+    const [sgpaData, setSgpaData] = useState([]);
 
-        {
-            semester: "Sem 1",
-            sgpa: 7.8
-        },
+    useEffect(() => {
 
-        {
-            semester: "Sem 2",
-            sgpa: 8.2
-        },
+        const fetchAnalytics = async () => {
 
-        {
-            semester: "Sem 3",
-            sgpa: 8.9
-        },
+            try {
 
-        {
-            semester: "Sem 4",
-            sgpa: 9.1
-        }
-    ];
+                const rollNo = localStorage.getItem("roll_no");
+
+                const res = await fetch(
+
+                    `https://student-analytics-dashboard-ekzt.onrender.com/analytics/${rollNo}`
+                );
+
+                const data = await res.json();
+
+                console.log(data);
+
+                setSgpaData(data.analytics || []);
+
+            }
+
+            catch (err) {
+
+                console.log(err);
+            }
+        };
+
+        fetchAnalytics();
+
+    }, []);
 
     return (
 
@@ -86,13 +98,13 @@ function Analytics() {
 
                 <div style={{ height: "400px" }}>
 
-                    <ResponsiveContainer>
+                    <ResponsiveContainer width="100%" height="100%">
 
                         <LineChart data={sgpaData}>
 
                             <CartesianGrid strokeDasharray="3 3" />
 
-                            <XAxis dataKey="semester" />
+                            <XAxis dataKey="Sem_id" />
 
                             <YAxis />
 
@@ -102,7 +114,7 @@ function Analytics() {
 
                                 type="monotone"
 
-                                dataKey="sgpa"
+                                dataKey="SGPA"
 
                                 stroke="#8b5cf6"
 

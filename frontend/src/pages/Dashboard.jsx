@@ -196,7 +196,7 @@ function Dashboard() {
 
     const totalCredits = useMemo(() => {
 
-        return subjects.reduce(
+        return (subjects || []).reduce(
 
             (sum, sub) =>
 
@@ -221,7 +221,7 @@ function Dashboard() {
         }
 
         const weighted =
-            subjects.reduce(
+          (subjects || []).reduce(
 
                 (sum, sub) => {
 
@@ -330,7 +330,7 @@ function Dashboard() {
         }
 
         const total =
-            subjects.reduce(
+            (subjects || []).reduce(
 
                 (sum, sub) =>
 
