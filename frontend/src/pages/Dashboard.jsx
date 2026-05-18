@@ -93,7 +93,14 @@ function Dashboard() {
 
                 const data =
                     await response.json();
+console.log("FULL DATA:", data);
 
+console.log("SUBJECTS:", data.subjects);
+
+console.log(
+    "IS ARRAY:",
+    Array.isArray(data.subjects)
+);
                 setSubjects(Array.isArray(data.subjects) ? data.subjects : []);
 
             }
