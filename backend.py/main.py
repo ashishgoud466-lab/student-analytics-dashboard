@@ -76,54 +76,66 @@ def admin_reset_password(
 # SEMESTER SUBJECTS
 # ==========================================
 
+# ==========================================
+# SEMESTER SUBJECTS
+# ==========================================
+
 @app.get("/semester/{sem}/{roll}")
 def get_semester_subjects(
     sem: int,
     roll: str
 ):
 
-    conn = get_connection()
+    try:
 
-    cursor = conn.cursor(dictionary=True)
+        conn = get_connection()
 
-    cursor.execute("""
+        cursor = conn.cursor(dictionary=True)
 
-        SELECT
+        cursor.execute("""
 
-            C.Cid,
-            C.Course_name,
-            C.Credits,
-            C.Sem_id,
-            E.Grade_point
+            SELECT
 
-        FROM Courses C
+                C.Cid,
+                C.Course_name,
+                C.Credits,
+                C.Sem_id,
+                E.Grade_point
 
-        LEFT JOIN Enroll E
+            FROM Courses C
 
-        ON
+            LEFT JOIN Enroll E
 
-            C.Cid = E.Cid
+            ON
 
-        AND
+                C.Cid = E.Cid
 
-            E.Roll_no = %s
+            AND
 
-        WHERE C.Sem_id = %s
+                E.Roll_no = %s
 
-        ORDER BY C.Cid
+            WHERE C.Sem_id = %s
 
-    """, (
+            ORDER BY C.Cid
 
-        roll,
-        sem
+        """, (
 
-    ))
+            roll,
+            sem
+        ))
 
-    data = cursor.fetchall()
+        data = cursor.fetchall()
 
-    conn.close()
+        conn.close()
 
-    return data
+        return data
+
+    except Exception as e:
+
+        print("SEMESTER API ERROR:")
+        print(str(e))
+
+        return []
 
 # ==========================================
 # REGISTER
