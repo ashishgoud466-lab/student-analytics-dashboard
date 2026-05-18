@@ -51,9 +51,7 @@ function Dashboard() {
     const [selectedSem, setSelectedSem] =
         useState(1);
 
-    const [subjects, setSubjects] =
-        useState([]);
-
+    const [subjects, setSubjects] = useState([]);
     const [grades, setGrades] =
         useState({});
 
@@ -96,7 +94,7 @@ function Dashboard() {
                 const data =
                     await response.json();
 
-                setSubjects(data || []);
+                setSubjects(Array.isArray(data.subjects) ? data.subjects : []);
 
             }
 
