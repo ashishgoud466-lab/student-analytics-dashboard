@@ -1,6 +1,3 @@
-# Fixed backend/main.py
-
-
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Body
 from db import get_connection
@@ -193,86 +190,117 @@ def register(data: dict = Body(...)):
 @app.post("/login")
 def login(data: dict = Body(...)):
 
-    conn = get_connection()
+    try:
 
-    cursor = conn.cursor(dictionary=True)
+        conn = get_connection()
 
-    roll = data["roll_no"]
+        cursor = conn.cursor(dictionary=True)
 
-    password = data["password"]
+        roll = data["roll_no"]
 
-    cursor.execute("""
+        password = data["password"]
 
-        SELECT *
+        cursor.execute("""
 
-        FROM Users
+            SELECT
 
-        WHERE
+                U.Roll_no,
+                U.Password,
+                U.Temp_Password,
+                U.Role,
+                U.First_Login,
+                U.Email,
 
-            BINARY Roll_no = %s
+                S.Student_name,
+                S.Branch,
+                S.Programme,
+                S.Admission_Year
 
-        AND
+            FROM Users U
 
-        (
-            BINARY Temp_Password = %s
+            LEFT JOIN Student_info S
 
-            OR
+            ON U.Roll_no = S.Roll_no
 
-            BINARY Password = %s
-        )
+            WHERE
 
-    """, (
+                BINARY U.Roll_no = %s
 
-        roll,
-        password,
-        password
+            AND
 
-    ))
+            (
 
-    user = cursor.fetchone()
-    print(user)
-    conn.close()
+                BINARY U.Temp_Password = %s
 
-    if user:
+                OR
+
+                BINARY U.Password = %s
+            )
+
+        """, (
+
+            roll,
+            password,
+            password
+        ))
+
+        user = cursor.fetchone()
+
+        conn.close()
+
+        if user:
+
+            return {
+
+                "success": True,
+
+                "roll_no":
+                    user.get("Roll_no", ""),
+
+                "role":
+                    user.get("Role", "student"),
+
+                "first_login":
+                    user.get("First_Login", False),
+
+                "name":
+                    user.get("Student_name", "Student"),
+
+                "branch":
+                    user.get("Branch", "N/A"),
+
+                "programme":
+                    user.get("Programme", "N/A"),
+
+                "year":
+                    user.get("Admission_Year", 1),
+
+                "sem_id":
+                    4,
+
+                "email":
+                    user.get("Email", "")
+            }
 
         return {
 
-            "success": True,
+            "success": False,
 
-            "roll_no":
-                user["Roll_no"],
-
-            "role":
-                user.get("Role", "student"),
-
-            "first_login":
-                user.get("First_Login", False),
-
-            "name":
-                user.get("Student_name", "Student"),
-
-            "branch":
-                user.get("Branch", "N/A"),
-
-            "programme":
-                user.get("Programme", "N/A"),
-
-            "year":
-                user.get("Year", 1),
-
-            "sem_id":
-                user.get("Sem_id", 1),
-
-            "email":
-                user.get("Email", "")
+            "message":
+                "Invalid credentials"
         }
 
-    return {
+    except Exception as e:
 
-        "success": False,
+        print("LOGIN ERROR:", str(e))
 
-        "message": "Invalid credentials"
-    }
+        return {
+
+            "success": False,
+
+            "message":
+                str(e)
+        }
 
 # ==========================================
 # CHANGE PASSWORD
@@ -328,7 +356,7 @@ def change_password(data: dict = Body(...)):
 # RANK LIST
 # ==========================================
 
-@app.get("/ranklist", tags=["Analytics"])
+@app.get("/ranklist")
 def ranklist():
 
     conn = get_connection()
@@ -444,191 +472,3 @@ def admin_users():
     conn.close()
 
     return data
-
-# ==========================================
-# ABOVE CLASS AVERAGE
-# ==========================================
-
-@app.get("/above-class-average")
-def above_average():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute(
-        queries.students_above_average_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# PROGRAMME TOPPERS
-# ==========================================
-
-@app.get("/programme-toppers")
-def programme_toppers():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute(
-        queries.programme_toppers_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# BACKLOGS
-# ==========================================
-
-@app.get("/backlogs")
-def backlogs():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute(
-        queries.backlog_count_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# UPDATE GRADE
-# ==========================================
-
-@app.post("/update-grade")
-def update_grade(data: dict = Body(...)):
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    roll = data["roll_no"]
-
-    cid = data["cid"]
-
-    gp = data["grade_point"]
-
-    cursor.execute("""
-
-        SELECT *
-
-        FROM Enroll
-
-        WHERE
-
-            Roll_no = %s
-
-        AND
-
-            Cid = %s
-
-    """, (
-
-        roll,
-        cid
-
-    ))
-
-    existing = cursor.fetchone()
-
-    if existing:
-
-        cursor.execute("""
-
-            UPDATE Enroll
-
-            SET Grade_point = %s
-
-            WHERE
-
-                Roll_no = %s
-
-            AND
-
-                Cid = %s
-
-        """, (
-
-            gp,
-            roll,
-            cid
-
-        ))
-
-    else:
-
-        cursor.execute("""
-
-            INSERT INTO Enroll
-
-            (
-                Roll_no,
-                Cid,
-                Grade_point
-            )
-
-            VALUES (%s, %s, %s)
-
-        """, (
-
-            roll,
-            cid,
-            gp
-
-        ))
-
-    conn.commit()
-
-    conn.close()
-
-    return {
-
-        "success": True
-    }
-
-# ==========================================
-# SEARCH
-# ==========================================
-
-@app.get("/search/{name}", tags=["Search"])
-def search_student(name: str):
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    query = '''
-
-    SELECT *
-
-    FROM student_analytics_view
-
-    WHERE Student_name LIKE %s
-
-    '''
-
-    cursor.execute(query, (f"%{name}%",))
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
