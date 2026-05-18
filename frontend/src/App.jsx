@@ -12,7 +12,7 @@ import Login from "./pages/Login";
 
 import Dashboard from "./pages/Dashboard";
 
-import Analytics from "./pages/Analytics";
+
 
 import Settings from "./pages/Settings";
 
@@ -49,10 +49,7 @@ function App() {
                     element={<Dashboard />}
 
                 />
-                <Route
-    path="/analytics"
-    element={<Analytics />}
-/>
+                
                 <Route
 
                     path="/analytics"
