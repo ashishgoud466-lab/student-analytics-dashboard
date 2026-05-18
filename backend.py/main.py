@@ -1,13 +1,11 @@
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Body
-from db import get_connection
-import queries
+from fastapi.middleware.cors import CORSMiddleware
+import mysql.connector
+from mysql.connector import Error
 
 app = FastAPI()
 
-# ==========================================
-# CORS
-# ==========================================
+# ---------------- CORS ---------------- #
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,194 +15,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ==========================================
-# HEALTH
-# ==========================================
+# ---------------- DATABASE ---------------- #
+
+
+import os
+
+
+def get_connection():
+
+    return mysql.connector.connect(
+
+        host=os.getenv("DB_HOST"),
+
+        port=int(os.getenv("DB_PORT")),
+
+        user=os.getenv("DB_USER"),
+
+        password=os.getenv("DB_PASSWORD"),
+
+        database=os.getenv("DB_NAME"),
+
+        ssl_disabled=False
+    )
+
+# ---------------- HOME ---------------- #
 
 @app.get("/")
-def root():
+def home():
 
     return {
-        "message": "Backend Running 🚀"
+        "message": "Student Analytics API Running"
     }
 
-@app.get("/health")
-def health():
-
-    return {
-        "status": "running"
-    }
-
-# ==========================================
-# ADMIN RESET PASSWORD
-# ==========================================
-
-@app.post("/admin-reset-password")
-def admin_reset_password(
-    data: dict = Body(...)
-):
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    roll = data["roll_no"]
-
-    temp_password = data["temp_password"]
-
-    cursor.execute("""
-
-        UPDATE Users
-
-        SET
-
-            Temp_Password = %s,
-
-            Password = NULL
-
-        WHERE Roll_no = %s
-
-    """, (
-
-        temp_password,
-        roll
-
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-    return {
-        "success": True
-    }
-
-# ==========================================
-# SEMESTER SUBJECTS
-# ==========================================
-
-@app.get("/semester/{sem}/{roll}")
-def get_semester_subjects(
-    sem: int,
-    roll: str
-):
-
-    try:
-
-        conn = get_connection()
-
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("""
-
-            SELECT
-
-                C.Cid,
-                C.Course_name,
-                C.Credits,
-                C.Sem_id,
-
-                COALESCE(
-                    E.Grade_point,
-                    0
-                ) AS Grade_point
-
-            FROM Courses C
-
-            LEFT JOIN Enroll E
-
-            ON
-                C.Cid = E.Cid
-
-            AND
-                E.Roll_no = %s
-
-            WHERE
-                C.Sem_id = %s
-
-            ORDER BY
-                C.Cid
-
-        """, (
-
-            roll,
-            sem
-        ))
-
-        data = cursor.fetchall()
-
-        conn.close()
-
-        return data
-
-    except Exception as e:
-
-        print("SEMESTER API ERROR:")
-        print(str(e))
-
-        return []
-
-# ==========================================
-# REGISTER
-# ==========================================
-
-@app.post("/register")
-def register(data: dict = Body(...)):
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    roll = data["roll_no"]
-
-    password = data["password"]
-
-    cursor.execute("""
-
-        SELECT *
-
-        FROM Users
-
-        WHERE Roll_no = %s
-
-    """, (roll,))
-
-    existing = cursor.fetchone()
-
-    if existing:
-
-        conn.close()
-
-        return {
-            "success": False,
-            "message": "User already exists"
-        }
-
-    cursor.execute("""
-
-        INSERT INTO Users
-        (Roll_no, Password)
-
-        VALUES (%s, %s)
-
-    """, (
-
-        roll,
-        password
-
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-    return {
-        "success": True
-    }
-
-# ==========================================
-# LOGIN
-# ==========================================
+# ---------------- LOGIN ---------------- #
 
 @app.post("/login")
 def login(data: dict = Body(...)):
@@ -215,45 +58,24 @@ def login(data: dict = Body(...)):
 
         cursor = conn.cursor(dictionary=True)
 
-        roll = data["roll_no"]
-
-        password = data["password"]
+        roll = data.get("roll_no")
+        password = data.get("password")
 
         cursor.execute("""
 
-            SELECT
+            SELECT *
 
-                U.Roll_no,
-                U.Password,
-                U.Temp_Password,
-                U.Role,
-                U.First_Login,
-                U.Email,
+            FROM Users
 
-                S.Student_name,
-                S.Branch,
-                S.Programme,
-                S.Admission_Year
-
-            FROM Users U
-
-            LEFT JOIN Student_info S
-
-            ON U.Roll_no = S.Roll_no
-
-            WHERE
-
-                BINARY U.Roll_no = %s
+            WHERE Roll_no = %s
 
             AND
-
             (
-
-                BINARY U.Temp_Password = %s
+                Password = %s
 
                 OR
 
-                BINARY U.Password = %s
+                Temp_Password = %s
             )
 
         """, (
@@ -261,297 +83,257 @@ def login(data: dict = Body(...)):
             roll,
             password,
             password
+
         ))
 
         user = cursor.fetchone()
 
-        conn.close()
-
-        if user:
+        if not user:
 
             return {
 
-                "success": True,
+                "success": False,
 
-                "roll_no":
-                    user.get("Roll_no", ""),
-
-                "role":
-                    user.get("Role", "student"),
-
-                "first_login":
-                    user.get("First_Login", False),
-
-                "name":
-                    user.get("Student_name", "Student"),
-
-                "branch":
-                    user.get("Branch", "N/A"),
-
-                "programme":
-                    user.get("Programme", "N/A"),
-
-                "year":
-                    user.get("Admission_Year", 1),
-
-                "sem_id":
-                    4,
-
-                "email":
-                    user.get("Email", "")
+                "message": "Invalid credentials"
             }
+
+        # -------- STUDENT INFO -------- #
+
+        cursor.execute("""
+
+            SELECT *
+
+            FROM student_info
+
+            WHERE Roll_no = %s
+
+        """, (roll,))
+
+        student = cursor.fetchone()
+
+        conn.close()
 
         return {
 
-            "success": False,
+            "success": True,
 
-            "message":
-                "Invalid credentials"
+            "roll_no": user.get("Roll_no", ""),
+
+            "role": user.get("Role", "student"),
+
+            "first_login": user.get("First_Login", 0),
+
+            "name": student.get("Student_name", ""),
+
+            "branch": student.get("Branch", ""),
+
+            "programme": student.get("Programme", ""),
+
+            "year": 1,
+
+            "sem_id": 1,
+
+            "email": user.get("Email", "")
         }
 
     except Exception as e:
 
-        print("LOGIN ERROR:")
-        print(str(e))
+        return {
+
+            "success": False,
+
+            "message": str(e)
+        }
+
+# ---------------- SEMESTER DATA ---------------- #
+
+@app.get("/semester/{sem_id}/{roll_no}")
+def semester_data(sem_id: int, roll_no: str):
+
+    try:
+
+        conn = get_connection()
+
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+
+            SELECT
+
+                e.Cid,
+                c.Course_name,
+                c.Credits,
+                e.Grade_point
+
+            FROM enroll e
+
+            JOIN courses c
+
+            ON e.Cid = c.Cid
+
+            WHERE
+                e.Roll_no = %s
+
+            AND
+                e.Sem_id = %s
+
+            AND
+                e.is_latest = 1
+
+        """, (
+
+            roll_no,
+            sem_id
+
+        ))
+
+        subjects = cursor.fetchall()
+
+        total_points = 0
+        total_credits = 0
+
+        for sub in subjects:
+
+            gp = sub["Grade_point"] or 0
+            cr = float(sub["Credits"] or 0)
+
+            total_points += gp * cr
+            total_credits += cr
+
+        sgpa = 0
+
+        if total_credits > 0:
+
+            sgpa = round(total_points / total_credits, 2)
+
+        conn.close()
+
+        return {
+
+            "success": True,
+
+            "subjects": subjects,
+
+            "sgpa": sgpa
+        }
+
+    except Exception as e:
 
         return {
 
             "success": False,
 
-            "message":
-                str(e)
+            "message": str(e)
         }
 
-# ==========================================
-# CHANGE PASSWORD
-# ==========================================
+# ---------------- ANALYTICS ---------------- #
 
-@app.post("/change-password")
-def change_password(data: dict = Body(...)):
+@app.get("/analytics/{roll_no}")
+def analytics(roll_no: str):
 
-    conn = get_connection()
+    try:
 
-    cursor = conn.cursor(dictionary=True)
+        conn = get_connection()
 
-    roll = data["roll_no"]
+        cursor = conn.cursor(dictionary=True)
 
-    new_password = data["new_password"]
+        cursor.execute("""
 
-    email = data.get("email", "")
+            SELECT
 
-    cursor.execute("""
+                e.Sem_id,
 
-        UPDATE Users
+                ROUND(
+                    SUM(e.Grade_point * c.Credits)
+                    /
+                    SUM(c.Credits),
+                    2
+                ) AS SGPA
 
-        SET
+            FROM enroll e
 
-            Password = %s,
+            JOIN courses c
 
-            Email = %s,
+            ON e.Cid = c.Cid
 
-            First_Login = FALSE
+            WHERE
+                e.Roll_no = %s
 
-        WHERE Roll_no = %s
+            AND
+                e.is_latest = 1
 
-    """, (
+            GROUP BY e.Sem_id
 
-        new_password,
-        email,
-        roll
+            ORDER BY e.Sem_id
 
-    ))
+        """, (roll_no,))
 
-    conn.commit()
+        data = cursor.fetchall()
 
-    conn.close()
+        conn.close()
 
-    return {
+        return {
 
-        "success": True,
+            "success": True,
 
-        "message": "Password updated"
-    }
+            "analytics": data
+        }
 
-# ==========================================
-# RANK LIST
-# ==========================================
+    except Exception as e:
 
-@app.get("/ranklist")
-def ranklist():
+        return {
 
-    conn = get_connection()
+            "success": False,
 
-    cursor = conn.cursor(dictionary=True)
+            "message": str(e)
+        }
 
-    cursor.execute("""
+# ---------------- STUDENT PROFILE ---------------- #
 
-        SELECT *
+@app.get("/student/{roll_no}")
+def student_profile(roll_no: str):
 
-        FROM student_analytics_view
+    try:
 
-        ORDER BY Roll_no ASC
+        conn = get_connection()
 
-    """)
+        cursor = conn.cursor(dictionary=True)
 
-    data = cursor.fetchall()
+        cursor.execute("""
 
-    conn.close()
+            SELECT *
 
-    return {
+            FROM student_info
 
-        "total_students": len(data),
+            WHERE Roll_no = %s
 
-        "results": data
-    }
+        """, (roll_no,))
 
-# ==========================================
-# STUDENT DETAILS
-# ==========================================
+        student = cursor.fetchone()
 
-@app.get("/student/{roll}")
-def get_student(roll: str):
+        conn.close()
 
-    conn = get_connection()
+        if not student:
 
-    cursor = conn.cursor(dictionary=True)
+            return {
 
-    cursor.execute("""
+                "success": False,
 
-        SELECT *
+                "message": "Student not found"
+            }
 
-        FROM student_analytics_view
+        return {
 
-        WHERE Roll_no = %s
+            "success": True,
 
-    """, (roll,))
+            "student": student
+        }
 
-    student = cursor.fetchone()
+    except Exception as e:
 
-    cursor.execute("""
+        return {
 
-        SELECT
+            "success": False,
 
-            C.Cid,
-            C.Course_name,
-            C.Credits,
-            C.Sem_id,
-            E.Grade_point
-
-        FROM Enroll E
-
-        JOIN Courses C
-
-        ON E.Cid = C.Cid
-
-        WHERE E.Roll_no = %s
-
-        ORDER BY C.Sem_id
-
-    """, (roll,))
-
-    subjects = cursor.fetchall()
-
-    conn.close()
-
-    return {
-
-        "student": student,
-
-        "subjects": subjects
-    }
-
-# ==========================================
-# ADMIN USERS
-# ==========================================
-
-@app.get("/admin/users")
-def admin_users():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-
-        SELECT
-
-            Roll_no,
-            Temp_Password,
-            Password,
-            Email,
-            First_Login
-
-        FROM Users
-
-        ORDER BY Roll_no ASC
-
-    """)
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# ABOVE CLASS AVERAGE
-# ==========================================
-
-@app.get("/above-class-average")
-def above_average():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute(
-        queries.students_above_average_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# PROGRAMME TOPPERS
-# ==========================================
-
-@app.get("/programme-toppers")
-def programme_toppers():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute(
-        queries.programme_toppers_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
-
-# ==========================================
-# BACKLOGS
-# ==========================================
-
-@app.get("/backlogs")
-def backlogs():
-
-    conn = get_connection()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute(
-        queries.backlog_count_query
-    )
-
-    data = cursor.fetchall()
-
-    conn.close()
-
-    return data
+            "message": str(e)
+        }

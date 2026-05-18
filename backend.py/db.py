@@ -1,11 +1,12 @@
-import pymysql
-import os
+import mysql.connector
 
 def get_connection():
 
-    return pymysql.connect(
+    conn = mysql.connector.connect(
 
-        host=os.getenv("DB_HOST"),
+         host=os.getenv("DB_HOST"),
+
+        port=int(os.getenv("DB_PORT")),
 
         user=os.getenv("DB_USER"),
 
@@ -13,10 +14,7 @@ def get_connection():
 
         database=os.getenv("DB_NAME"),
 
-        port=int(os.getenv("DB_PORT")),
-
-        ssl={"ssl": {}},
-
-        cursorclass=pymysql.cursors.DictCursor
-
+        ssl_disabled=False
     )
+
+    return conn

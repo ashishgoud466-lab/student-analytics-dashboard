@@ -1,2 +1,5 @@
+.env
+backend.py/.env
 __pycache__/
 *.pyc
+dump.sql
