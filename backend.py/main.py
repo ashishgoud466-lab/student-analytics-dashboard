@@ -1,6 +1,6 @@
 # Fixed backend/main.py
 
-```python
+
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Body
 from db import get_connection
@@ -230,7 +230,7 @@ def login(data: dict = Body(...)):
     ))
 
     user = cursor.fetchone()
-
+    print(user)
     conn.close()
 
     if user:
@@ -631,4 +631,4 @@ def search_student(name: str):
     conn.close()
 
     return data
-```
+
