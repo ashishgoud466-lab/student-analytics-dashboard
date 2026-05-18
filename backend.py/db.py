@@ -9,9 +9,6 @@ def get_connection():
     db_password = os.environ.get("DB_PASSWORD")
     db_name = os.environ.get("DB_NAME")
 
-    print("DB_HOST:", db_host)
-    print("DB_PORT:", db_port)
-
     conn = mysql.connector.connect(
 
         host=db_host,
