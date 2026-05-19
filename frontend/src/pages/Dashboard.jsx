@@ -34,22 +34,14 @@ function Dashboard() {
             "programme"
         );
 
-    const year =
-        localStorage.getItem(
-            "year"
-        );
+    const year = 2;
 
-    const semId =
-        localStorage.getItem(
-            "sem_id"
-        );
-
+    const semId = 2;
     // =====================================
     // STATES
     // =====================================
 
-    const [selectedSem, setSelectedSem] =
-        useState(1);
+    const selectedSem = 2;
 
     const [subjects, setSubjects] = useState([]);
     const [grades, setGrades] =
@@ -88,7 +80,7 @@ function Dashboard() {
 
                 const response = await fetch(
 
-                    `${API_BASE}/semester/${selectedSem}/${rollNo}`
+                    `${API_BASE}/semester/2/${rollNo}`
                 );
 
                 const data =
@@ -362,7 +354,45 @@ console.log(
         ).toFixed(2);
 
     }, [subjects, grades]);
+const completion = (
 
+subjects.length===0
+
+?0
+
+:
+
+Math.round(
+
+Object.keys(
+grades
+).length
+
+/
+
+subjects.length
+
+*100
+
+)
+
+);
+
+const level=
+
+Number(sgpa)>=9
+
+?"Elite"
+
+:Number(sgpa)>=8
+
+?"Advanced"
+
+:Number(sgpa)>=7
+
+?"Growing"
+
+:"Starter";
     // =====================================
     // STYLES
     // =====================================
@@ -395,8 +425,8 @@ console.log(
 
             style={{
 
-                background:
-                    "linear-gradient(135deg,#020617,#0f172a,#111827)",
+               background:
+"linear-gradient(135deg,#050816,#091226,#101828,#1e1b4b)" ,
 
                 fontFamily:
                     "'Poppins', sans-serif"
@@ -458,105 +488,65 @@ console.log(
                     </div>
 
                     {/* MENU */}
+{/* MENU */}
 
-                    <div className="d-grid gap-3">
+<div className="d-grid gap-3">
 
-                        <button
+<button
+className="btn text-start fw-semibold py-3"
+onClick={()=>navigate("/dashboard")}
+style={{
+borderRadius:"18px",
+background:
+"linear-gradient(to right,#ffffff,#dbeafe)",
+color:"#111827",
+border:"none"
+}}
+>
 
-                            className="btn text-start fw-semibold py-3"
+📊 Dashboard
 
-                            onClick={() =>
-                                navigate("/dashboard")
-                            }
+</button>
 
-                            style={{
+<button
+className="btn text-start text-white py-3"
+style={{
+borderRadius:"18px",
+background:"rgba(255,255,255,0.05)"
+}}
+>
 
-                                borderRadius: "18px",
+🏆 Achievements
 
-                                background:
-                                    "linear-gradient(to right,#ffffff,#dbeafe)",
+</button>
 
-                                color: "#111827",
+<button
+className="btn text-start text-white py-3"
+style={{
+borderRadius:"18px",
+background:"rgba(255,255,255,0.05)"
+}}
+>
 
-                                border: "none"
-                            }}
-                        >
+⚙️ Settings
 
-                            📊 Dashboard
+</button>
 
-                        </button>
+<button
+className="btn text-start text-danger py-3"
+onClick={handleLogout}
+style={{
+borderRadius:"18px",
+background:
+"rgba(239,68,68,0.08)"
+}}
+>
 
-                        <button
+🚪 Logout
 
-                            className="btn text-start text-white py-3"
+</button>
 
-                            onClick={() =>
-                                navigate("/analytics")
-                            }
-
-                            style={{
-
-                                borderRadius: "18px",
-
-                                background:
-                                    "rgba(255,255,255,0.05)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)"
-                            }}
-                        >
-
-                            📈 Analytics
-
-                        </button>
-
-                        <button
-
-                            className="btn text-start text-white py-3"
-
-                            onClick={() =>
-                                navigate("/settings")
-                            }
-
-                            style={{
-
-                                borderRadius: "18px",
-
-                                background:
-                                    "rgba(255,255,255,0.05)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)"
-                            }}
-                        >
-
-                            ⚙️ Settings
-
-                        </button>
-
-                        <button
-
-                            className="btn text-start text-danger py-3"
-
-                            onClick={handleLogout}
-
-                            style={{
-
-                                borderRadius: "18px",
-
-                                background:
-                                    "rgba(239,68,68,0.08)",
-
-                                border:
-                                    "1px solid rgba(239,68,68,0.15)"
-                            }}
-                        >
-
-                            🚪 Logout
-
-                        </button>
-
-                    </div>
+</div>
 
                     {/* PROFILE */}
 
@@ -792,7 +782,8 @@ console.log(
                                 }}
                             >
 
-                                Welcome Back 👋
+                               Welcome back,
+{studentName}
 
                             </span>
 
@@ -821,14 +812,85 @@ console.log(
                             }}
                         >
 
-                            Current SGPA: {sgpa}
+                           Current SGPA • Live {sgpa}
 
-                        </div>
+</div>
 
-                    </div>
+<div
+className="mt-4 d-flex justify-content-center"
+>
 
-                    {/* STATS */}
+<div
+style={{
 
+width:"180px",
+
+height:"180px",
+
+borderRadius:"50%",
+
+background:
+
+`conic-gradient(
+#3b82f6 ${
+Number(sgpa)*10
+}%,
+#1e293b 0
+)`,
+
+display:"flex",
+
+alignItems:"center",
+
+justifyContent:"center",
+
+fontSize:"2rem",
+
+fontWeight:"700",
+
+boxShadow:
+
+"0 15px 40px rgba(59,130,246,0.3)"
+
+}}
+
+>
+
+{sgpa}
+
+</div>
+
+</div>
+                    <div
+
+style={glassCard}
+
+className="p-3 mt-4"
+
+>
+
+💾 Saved Grades
+
+{
+
+Object.keys(
+grades
+).length
+
+}
+
+</div>
+
+<div
+style={glassCard}
+className="p-4"
+>
+
+🗓 Today
+
+{new Date().toLocaleDateString()}
+
+</div>
                     <div className="row g-4 mb-5">
 
                         {
@@ -864,7 +926,11 @@ console.log(
                                     title: "Subjects",
                                     value: subjects.length
                                 }
-
+,
+{
+title:"Completion",
+value:`${completion}%`
+}
                             ].map((item, index) => (
 
                                 <div
@@ -945,66 +1011,11 @@ console.log(
                                     }}
                                 >
 
-                                    <h5>
+                                    <h5>🎯 Current Year</h5>
 
-                                        🎯 Current Year
+<h1>2</h1>
 
-                                    </h5>
-
-                                    <select
-
-    className="form-select mt-3"
-
-    value={year}
-
-    onChange={(e) => {
-
-        localStorage.setItem(
-            "year",
-            e.target.value
-        );
-
-        window.location.reload();
-    }}
-
-    style={{
-
-        background:
-            "#0f172a",
-
-        color:
-            "white",
-
-        border:
-            "1px solid rgba(255,255,255,0.08)"
-    }}
->
-
-    <option value="1">
-
-        1
-
-    </option>
-
-    <option value="2">
-
-        2
-
-    </option>
-
-    <option value="3">
-
-        3
-
-    </option>
-
-    <option value="4">
-
-        4
-
-    </option>
-
-</select>
+<p>Second Academic Year</p>
 
                                 </div>
 
@@ -1021,90 +1032,11 @@ console.log(
                                     }}
                                 >
 
-                                    <h5>
+                                    <h5>📖 Active Semester</h5>
 
-                                        📖 Active Semester
+<h1>2</h1>
 
-                                    </h5>
-
-                                    <select
-
-    className="form-select mt-3"
-
-    value={semId}
-
-    onChange={(e) => {
-
-        localStorage.setItem(
-            "sem_id",
-            e.target.value
-        );
-
-        window.location.reload();
-    }}
-
-    style={{
-
-        background:
-            "#0f172a",
-
-        color:
-            "white",
-
-        border:
-            "1px solid rgba(255,255,255,0.08)"
-    }}
->
-
-    <option value="1">
-
-        1
-
-    </option>
-
-    <option value="2">
-
-        2
-
-    </option>
-
-    <option value="3">
-
-        3
-
-    </option>
-
-    <option value="4">
-
-        4
-
-    </option>
-
-    <option value="5">
-
-        5
-
-    </option>
-
-    <option value="6">
-
-        6
-
-    </option>
-
-    <option value="7">
-
-        7
-
-    </option>
-
-    <option value="8">
-
-        8
-
-    </option>
-
-</select>
+<p>Current Semester</p>
 
                                 </div>
 
@@ -1322,46 +1254,47 @@ console.log(
                                         borderRadius: "24px"
                                     }}
                                 >
+<h5>
 
-                                    <h5>
+🎯 Academic Status
 
-                                        🎯 Academic Status
+</h5>
 
-                                    </h5>
+<h2 className="mt-4">
 
-                                    <h2 className="mt-4">
+{
 
-                                        {
+Number(sgpa)>=9
 
-                                            Number(sgpa) >= 9
+?
 
-                                            ?
+"Excellent"
 
-                                            "Excellent"
+:
 
-                                            :
+Number(sgpa)>=8
 
-                                            Number(sgpa) >= 8
+?
 
-                                            ?
+"Very Good"
 
-                                            "Very Good"
+:
 
-                                            :
+Number(sgpa)>=7
 
-                                            Number(sgpa) >= 7
+?
 
-                                            ?
+"Good"
 
-                                            "Good"
+:
 
-                                            :
+"Needs Improvement"
 
-                                            "Needs Improvement"
-                                        }
+}
 
-                                    </h2>
+</h2>
 
+                                    
                                 </div>
 
                             </div>
@@ -1372,72 +1305,37 @@ console.log(
 
                     {/* SEM BUTTONS */}
 
-                    <div
-                        className="p-4 mb-5"
-                        style={glassCard}
-                    >
-
-                        <div className="d-flex gap-3 flex-wrap">
-
-                            {
-
-                                [1,2,3,4].map(
-
-                                    (sem) => (
-
-                                        <button
-
-                                            key={sem}
-
-                                            className="btn"
-
-                                            onClick={() =>
-                                                setSelectedSem(sem)
-                                            }
-
-                                            style={{
-
-                                                borderRadius:
-                                                    "18px",
-
-                                                padding:
-                                                    "14px 28px",
-
-                                                transition:
-                                                    "0.3s ease",
-
-                                                background:
-
-                                                    selectedSem === sem
-
-                                                        ?
-
-                                                        "linear-gradient(to right,#3b82f6,#8b5cf6)"
-
-                                                        :
-
-                                                        "rgba(255,255,255,0.05)",
-
-                                                color: "white",
-
-                                                border:
-                                                    "1px solid rgba(255,255,255,0.08)"
-                                            }}
-                                        >
-
-                                            Semester {sem}
-
-                                        </button>
-                                    )
-                                )
-                            }
-
-                        </div>
-
-                    </div>
 
                     {/* TABLE */}
+<div
 
+className="mb-4 p-4"
+
+style={{
+background:
+"linear-gradient(90deg,#2563eb,#7c3aed)",
+
+borderRadius:
+"22px"
+}}
+
+>
+
+{
+
+Number(sgpa)>=8
+
+?
+
+"🚀 Excellent pace"
+
+:
+
+"🌱 Keep improving"
+
+}
+
+</div>
                     <div
                         className="p-4"
                         style={glassCard}
@@ -1505,7 +1403,19 @@ console.log(
                                 }
 
                             </button>
+<small
 
+style={{
+
+color:"#94a3b8"
+
+}}
+
+>
+
+Changes save only after pressing Save
+
+</small>
                         </div>
 
                         {
@@ -1600,193 +1510,126 @@ console.log(
 
     <tbody>
 
-        {
+{
 
-            subjects.map(
+subjects.map((sub,index)=>(
 
-                (sub, index) => (
+<tr key={index}>
 
-                    <tr
-                        key={index}
-                    >
+<td
+style={{
+background:
+"rgba(255,255,255,0.03)",
+padding:"18px"
+}}
+>
 
-                        <td
-                            style={{
+{sub.Cid}
 
-                                background:
-                                    "rgba(255,255,255,0.03)",
+</td>
 
-                                border:
-                                    "none",
+<td
+style={{
+background:
+"rgba(255,255,255,0.03)",
+padding:"18px"
+}}
+>
 
-                                padding:
-                                    "18px",
+<div>
 
-                                borderTopLeftRadius:
-                                    "18px",
+{sub.Course_name}
 
-                                borderBottomLeftRadius:
-                                    "18px",
+<div
+style={{
+color:"#60a5fa",
+fontSize:"12px"
+}}
+>
 
-                                color:
-                                    "#cbd5e1"
-                            }}
-                        >
+Core Course
 
-                            {sub.Cid}
+</div>
 
-                        </td>
+</div>
 
-                        <td
-                            style={{
+</td>
 
-                                background:
-                                    "rgba(255,255,255,0.03)",
+<td
+style={{
+background:
+"rgba(255,255,255,0.03)",
+padding:"18px"
+}}
+>
 
-                                border:
-                                    "none",
+{sub.Credits}
 
-                                padding:
-                                    "18px",
+</td>
 
-                                color:
-                                    "white",
+<td
+style={{
+background:
+"rgba(255,255,255,0.03)",
+padding:"18px"
+}}
+>
 
-                                fontWeight:
-                                    "500"
-                            }}
-                        >
+<input
+type="number"
+min="0"
+max="10"
 
-                            {sub.Course_name}
+value={
+grades[sub.Cid]
+??
+sub.Grade_point
+??
+""
+}
 
-                        </td>
+onChange={(e)=>{
 
-                        <td
-                            style={{
+const value =
 
-                                background:
-                                    "rgba(255,255,255,0.03)",
+Math.max(
+0,
 
-                                border:
-                                    "none",
+Math.min(
+10,
 
-                                padding:
-                                    "18px",
+Number(
+e.target.value
+)||0
+)
 
-                                color:
-                                    "#93c5fd",
+);
 
-                                fontWeight:
-                                    "600"
-                            }}
-                        >
+setGrades({
 
-                            {sub.Credits}
+...grades,
 
-                        </td>
+[sub.Cid]:
 
-                        <td
-                            style={{
+value
 
-                                background:
-                                    "rgba(255,255,255,0.03)",
+});
 
-                                border:
-                                    "none",
+}}
 
-                                padding:
-                                    "18px",
 
-                                borderTopRightRadius:
-                                    "18px",
+className="form-control"
+/>
 
-                                borderBottomRightRadius:
-                                    "18px"
-                            }}
-                        >
+</td>
 
-                            <input
+</tr>
 
-                                type="number"
+))
 
-                                min="0"
+}
 
-                                max="10"
-
-                                value={
-
-                                    grades[sub.Cid]
-
-                                    ??
-
-                                    sub.Grade_point
-
-                                    ??
-
-                                    ""
-                                }
-
-                                onChange={(e) => {
-
-                                    const value = Math.max(
-
-                                        0,
-
-                                        Math.min(
-                                            10,
-                                            Number(
-                                                e.target.value
-                                            )
-                                        )
-                                    );
-
-                                    setGrades({
-
-                                        ...grades,
-
-                                        [sub.Cid]:
-                                            value
-                                    });
-                                }}
-
-                                className="form-control"
-
-                                style={{
-
-                                    background:
-                                        "#0f172a",
-
-                                    color:
-                                        "white",
-
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
-
-                                    borderRadius:
-                                        "14px",
-
-                                    padding:
-                                        "12px",
-
-                                    fontWeight:
-                                        "600",
-
-                                    textAlign:
-                                        "center",
-
-                                    width:
-                                        "100px"
-                                }}
-                            />
-
-                        </td>
-
-                    </tr>
-                )
-            )
-        }
-
-    </tbody>
+</tbody>
 
 </table>
 
