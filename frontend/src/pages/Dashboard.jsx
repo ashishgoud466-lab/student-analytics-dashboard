@@ -1510,60 +1510,36 @@ Changes save only after pressing Save
 
     <tbody>
 
-{
-
-subjects.map((sub,index)=>(
-
-<tr key={index}>
-
-<td
-style={{
-background:
-"rgba(255,255,255,0.03)",
-padding:"18px"
-}}
->
-
-{sub.Cid}
-
-</td>
-
-<td
-style={{
-background:
-"rgba(255,255,255,0.03)",
-padding:"18px"
-}}
->
-
-<div>
-
-<tbody>
-
 {subjects.map((sub, index) => (
 
 <tr key={index}>
 
-<td style={{
+<td
+style={{
 background:"rgba(255,255,255,0.03)",
 padding:"18px"
-}}>
+}}
+>
 {sub.Cid}
 </td>
 
-<td style={{
+<td
+style={{
 background:"rgba(255,255,255,0.03)",
 padding:"18px"
-}}>
+}}
+>
 
 <div>
 
 {sub.Course_name}
 
-<div style={{
+<div
+style={{
 color:"#60a5fa",
 fontSize:"12px"
-}}>
+}}
+>
 
 Core Course
 
@@ -1573,17 +1549,21 @@ Core Course
 
 </td>
 
-<td style={{
+<td
+style={{
 background:"rgba(255,255,255,0.03)",
 padding:"18px"
-}}>
+}}
+>
 {sub.Credits}
 </td>
 
-<td style={{
+<td
+style={{
 background:"rgba(255,255,255,0.03)",
 padding:"18px"
-}}>
+}}
+>
 
 <input
 type="number"
