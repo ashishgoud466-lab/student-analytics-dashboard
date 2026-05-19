@@ -963,7 +963,7 @@ value:`${completion}%`
                         }
 
                     </div>
-
+</div>
                     {/* QUICK INFO */}
 
                     <div
