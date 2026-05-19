@@ -160,25 +160,25 @@ def semester_data(sem_id: int, roll_no: str):
 
             SELECT
 
-                e.Cid,
+                c.Cid,
                 c.Course_name,
                 c.Credits,
+
                 e.Grade_point
 
-            FROM enroll e
+            FROM courses c
 
-            JOIN courses c
+            LEFT JOIN enroll e
 
-            ON e.Cid = c.Cid
+            ON c.Cid = e.Cid
 
-            WHERE
-                e.Roll_no = %s
+            AND e.Roll_no = %s
 
-            AND
-                e.Sem_id = %s
+            AND e.is_latest = 1
 
-            AND
-                e.is_latest = 1
+            WHERE c.Sem_id = %s
+
+            ORDER BY c.Cid
 
         """, (
 
@@ -192,10 +192,14 @@ def semester_data(sem_id: int, roll_no: str):
         total_points = 0
         total_credits = 0
 
-        for sub in subjects:
+        for s in subjects:
 
-            gp = sub["Grade_point"] or 0
-            cr = float(sub["Credits"] or 0)
+            if s["Grade_point"] is None:
+
+                s["Grade_point"] = ""
+
+            gp = s["Grade_point"] or 0
+            cr = float(s["Credits"] or 0)
 
             total_points += gp * cr
             total_credits += cr
@@ -204,7 +208,10 @@ def semester_data(sem_id: int, roll_no: str):
 
         if total_credits > 0:
 
-            sgpa = round(total_points / total_credits, 2)
+            sgpa = round(
+                total_points / total_credits,
+                2
+            )
 
         conn.close()
 
@@ -226,6 +233,7 @@ def semester_data(sem_id: int, roll_no: str):
             "message": str(e)
         }
 
+
 # ---------------- ANALYTICS ---------------- #
 
 @app.get("/analytics/{roll_no}")
@@ -241,32 +249,50 @@ def analytics(roll_no: str):
 
             SELECT
 
-                e.Sem_id,
+                c.Sem_id,
 
                 ROUND(
-                    SUM(e.Grade_point * c.Credits)
+
+                    SUM(
+
+                        IFNULL(
+                            e.Grade_point,
+                            0
+                        )
+
+                        *
+
+                        c.Credits
+
+                    )
+
                     /
-                    SUM(c.Credits),
+
+                    SUM(
+                        c.Credits
+                    ),
+
                     2
+
                 ) AS SGPA
 
-            FROM enroll e
+            FROM courses c
 
-            JOIN courses c
+            LEFT JOIN enroll e
 
-            ON e.Cid = c.Cid
+            ON c.Cid = e.Cid
 
-            WHERE
-                e.Roll_no = %s
+            AND e.Roll_no = %s
 
-            AND
-                e.is_latest = 1
+            GROUP BY c.Sem_id
 
-            GROUP BY e.Sem_id
+            ORDER BY c.Sem_id
 
-            ORDER BY e.Sem_id
+        """, (
 
-        """, (roll_no,))
+            roll_no,
+
+        ))
 
         data = cursor.fetchall()
 
@@ -277,6 +303,7 @@ def analytics(roll_no: str):
             "success": True,
 
             "analytics": data
+
         }
 
     except Exception as e:
@@ -286,6 +313,7 @@ def analytics(roll_no: str):
             "success": False,
 
             "message": str(e)
+
         }
 
 # ---------------- STUDENT PROFILE ---------------- #
