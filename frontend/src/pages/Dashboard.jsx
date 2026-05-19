@@ -1538,14 +1538,32 @@ padding:"18px"
 
 <div>
 
+<tbody>
+
+{subjects.map((sub, index) => (
+
+<tr key={index}>
+
+<td style={{
+background:"rgba(255,255,255,0.03)",
+padding:"18px"
+}}>
+{sub.Cid}
+</td>
+
+<td style={{
+background:"rgba(255,255,255,0.03)",
+padding:"18px"
+}}>
+
+<div>
+
 {sub.Course_name}
 
-<div
-style={{
+<div style={{
 color:"#60a5fa",
 fontSize:"12px"
-}}
->
+}}>
 
 Core Course
 
@@ -1555,31 +1573,22 @@ Core Course
 
 </td>
 
-<td
-style={{
-background:
-"rgba(255,255,255,0.03)",
+<td style={{
+background:"rgba(255,255,255,0.03)",
 padding:"18px"
-}}
->
-
+}}>
 {sub.Credits}
-
 </td>
 
-<td
-style={{
-background:
-"rgba(255,255,255,0.03)",
+<td style={{
+background:"rgba(255,255,255,0.03)",
 padding:"18px"
-}}
->
+}}>
 
 <input
 type="number"
 min="0"
 max="10"
-
 value={
 grades[sub.Cid]
 ??
@@ -1587,22 +1596,15 @@ sub.Grade_point
 ??
 ""
 }
-
 onChange={(e)=>{
 
 const value =
-
 Math.max(
 0,
-
 Math.min(
 10,
-
-Number(
-e.target.value
-)||0
+Number(e.target.value)||0
 )
-
 );
 
 setGrades({
@@ -1610,14 +1612,11 @@ setGrades({
 ...grades,
 
 [sub.Cid]:
-
 value
 
 });
 
 }}
-
-
 className="form-control"
 />
 
@@ -1625,12 +1624,9 @@ className="form-control"
 
 </tr>
 
-))
-
-}
+))}
 
 </tbody>
-
 </table>
 
                                 </div>
