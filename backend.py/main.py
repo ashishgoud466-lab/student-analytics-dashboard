@@ -131,7 +131,7 @@ def login(data: dict = Body(...)):
 
             "year": 1,
 
-            "sem_id": 1,
+            ""sem_id": student.get("Current_sem", 1),
 
             "email": user.get("Email", "")
         }
