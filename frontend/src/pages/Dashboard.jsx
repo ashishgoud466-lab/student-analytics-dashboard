@@ -416,7 +416,7 @@ borderRadius:
 "24px",
 
 padding:
-"28px",
+"32px",
 
 boxShadow:
 "0 8px 24px rgba(0,0,0,.25)"
@@ -605,7 +605,7 @@ background:
 
                 height: "82px",
 
-                borderRadius: "24px",
+                borderRadius: "30px",
 
                 background:
                     "linear-gradient(to right,#3b82f6,#8b5cf6)",
@@ -680,7 +680,7 @@ background:
         <div
             className="mt-3 p-3"
             style={{
-               background:"#111827"
+               background:"#111827",
                 borderRadius: "18px"
             }}
         >
@@ -800,7 +800,7 @@ background:
 
                         <h1
                             style={{
-                                fontSize: "2.7rem",
+                                fontSize: "3.2rem",
                                 fontWeight: "700"
                             }}
                         >
@@ -808,17 +808,14 @@ background:
                             <span
                                 style={{
                                     background:
-                                        "linear-gradient(to right,#38bdf8,#8b5cf6)",
+                                        "linear-gradient(to right,#93c5fd,#c4b5fd)",
                                     WebkitBackgroundClip:
                                         "text",
                                     WebkitTextFillColor:
                                         "transparent"
                                 }}
                             >
-
-                               Welcome back,
-{studentName}
-
+Welcome back, {studentName} 👋
                             </span>
 
                         </h1>
@@ -857,42 +854,41 @@ className="mb-5"
 style={{
 
 background:
-"linear-gradient(135deg,#1d4ed8,#6d28d9)",
+"linear-gradient(135deg,#2563eb 0%,#7c3aed 100%)",
 
-color:"#fff",
+padding:"40px",
 
-padding:"36px",
-
-borderRadius:"28px",
+borderRadius:"34px",
 
 border:
-"1px solid rgba(255,255,255,.08)",
+"1px solid rgba(255,255,255,.12)",
 
 boxShadow:
-"0 8px 30px rgba(59,130,246,.18)"
+"0 25px 80px rgba(59,130,246,.35)",
+
+position:"relative",
+
+overflow:"hidden"
 
 }}
 >
 
-<h5
+<h6
 style={{
-opacity:.9
+opacity:.8,
+letterSpacing:"1px"
 }}
 >
-
-Current SGPA
-
-</h5>
-
+CURRENT SGPA
+</h6>
 <h1
 style={{
 
-fontSize:"5rem",
+fontSize:"5.2rem",
 
 fontWeight:"800",
 
-marginBottom:"8px"
-
+marginBottom:"0"
 }}
 >
 
@@ -910,6 +906,16 @@ Semester {selectedSem} • Academic Tracker
 
 </p>
 
+<div
+style={{
+marginTop:"18px",
+opacity:.9,
+fontSize:"1rem"
+}}
+>
+
+Level • {level}
+</div>
 </div>
                     <div className="row g-4 mb-4">
 
@@ -917,11 +923,7 @@ Semester {selectedSem} • Academic Tracker
 
                             [
 
-                                {
-                                    title: "SGPA",
-                                    value: sgpa
-                                },
-
+                               
                                 {
                                     title: "Highest",
                                     value: highestGP
@@ -965,11 +967,10 @@ value:`${completion}%`
 
                                         <p>{item.title}</p>
 
-                                        <h1
-                                            style={{
-                                                fontSize: "2.5rem",
-                                                fontWeight: "700"
-                                            }}
+                                        <h1 style={{
+fontSize:"2.2rem",
+fontWeight:"800"
+}}
                                         >
 
                                             {item.value}
@@ -1078,7 +1079,7 @@ e.target.value
 className="form-select"
 
 style={{
-background:"#0b1220"
+background:"#0b1220",
 
 color:
 "white",
@@ -1137,7 +1138,7 @@ Semester {s}
                         <div
                             className="d-flex align-items-end gap-4"
                             style={{
-                                height: "170px"
+                                height: "260px"
                             }}
                         >
 
@@ -1155,21 +1156,27 @@ Semester {s}
                                             <div
                                                 style={{
 
-                                                    height:
+                                                   height:
 
-                                                        `${Number(
+`${Math.max(
 
-                                                            grades[subject.Cid]
+45,
 
-                                                            ??
+Number(
 
-                                                            subject.Grade_point
+grades[subject.Cid]
 
-                                                            ??
+??
 
-                                                            0
+subject.Grade_point
 
-                                                        ) * 8}%`,
+??
+
+0
+
+)*20
+
+)}px` ,
 
                                                     borderRadius:
                                                         "24px 24px 0 0",
@@ -1423,7 +1430,16 @@ Number(sgpa)>=8
                                 <h2>
 
                                     Semester {selectedSem}
+<div
+style={{
+marginTop:"12px",
+opacity:.85
+}}
+>
 
+Progress • {completion}%
+
+</div>
                                 </h2>
 
                                 <p
@@ -1460,7 +1476,9 @@ Number(sgpa)>=8
 
                                     fontWeight: "700",
 
-                                    border: "none"
+                                    border: "none",
+                                    boxShadow:
+"0 8px 25px rgba(59,130,246,.35)"
                                 }}
                             >
 
@@ -1474,7 +1492,7 @@ Number(sgpa)>=8
 
                                         :
 
-                                        "Save Grades"
+                                        "💾 Save Grades"
                                 }
 
                             </button>
@@ -1568,7 +1586,7 @@ Changes save only after pressing Save
                             fontWeight:
                                 "600",
 borderBottom:
-"10px solid transparent"
+"10px solid transparent",
                             fontSize:
                                 "0.95rem"
                         }}
@@ -1588,15 +1606,19 @@ borderBottom:
 
 {subjects.map((sub, index) => (
 
-<tr key={index}>
+<tr
+key={index}
+
+style={{
+borderBottom:
+"10px solid transparent"
+}}
+>
 
 <td
 style={{
-
-background:"#0b1220"
-
+background:"#0b1220",
 padding:"18px"
-
 }}
 >
 {sub.Cid}
@@ -1604,7 +1626,8 @@ padding:"18px"
 
 <td
 style={{
-background:"rgba(255,255,255,0.03)",
+background:
+"#172554",
 padding:"18px"
 }}
 >
@@ -1619,8 +1642,7 @@ color:"#60a5fa",
 fontSize:"12px"
 }}
 >
-
-Semester Subject
+{sub.Credits} Credits
 
 </div>
 
@@ -1630,7 +1652,7 @@ Semester Subject
 
 <td
 style={{
-background:"#111827"
+background:"#111827",
 padding:"18px"
 }}
 >
@@ -1639,7 +1661,7 @@ padding:"18px"
 
 <td
 style={{
-background:"#111827"
+background:"#111827",
 padding:"18px"
 }}
 >
@@ -1688,41 +1710,49 @@ value
 
 }}
 
+onFocus={(e)=>{
+
+e.target.style.border=
+"2px solid #60a5fa";
+
+}}
+
+onBlur={(e)=>{
+
+e.target.style.border=
+"2px solid #3b82f6";
+
+}}
+
 className="form-control"
 
 style={{
 
-background:
-"#020817",
+background:"#172554",
 
-color:
-"#f8fafc",
+color:"#ffffff",
 
-border:
-"1px solid #2563eb",
+border:"2px solid #3b82f6",
 
-height:
-"56px",
+height:"58px",
 
-width:
-"120px",
+width:"120px",
 
-fontWeight:
-"600",
+fontWeight:"800",
 
-fontSize:
-"20px",
+fontSize:"22px",
 
-textAlign:
-"center",
+textAlign:"center",
 
-borderRadius:
-"16px"
+borderRadius:"18px",
+
+outline:"none",
+
+transition:".2s"
 
 }}
 
 />
-
 </td>
 
 </tr>
