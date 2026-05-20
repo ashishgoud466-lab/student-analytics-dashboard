@@ -404,21 +404,24 @@ Number(sgpa)>=9
     // STYLES
     // =====================================
 
-    const glassCard = {
+    const glassCard={
 
-        background:
-            "rgba(255,255,255,0.05)",
+background:
+"linear-gradient(180deg,#0f172a,#172554)",
 
-        border:
-            "1px solid rgba(255,255,255,0.08)",
+border:
+"1px solid rgba(96,165,250,.12)",
 
-        borderRadius: "30px",
+borderRadius:
+"28px",
 
-        backdropFilter: "blur(20px)",
+backdropFilter:
+"blur(20px)",
 
-        boxShadow:
-            "0 10px 30px rgba(0,0,0,0.2)"
-    };
+padding:
+"26px"
+
+};
 
     // =====================================
     // UI
@@ -528,7 +531,7 @@ style={{
 borderRadius:"18px",
 
 background:
-"rgba(255,255,255,.05)"
+"rgba(37,99,235,.12)"
 
 }}
 
@@ -885,7 +888,9 @@ style={{
 background:
 "linear-gradient(135deg,#2563eb,#7c3aed)",
 
-padding:"36px",
+color:"#fff",
+
+padding:"24px",
 
 borderRadius:"32px",
 
@@ -895,7 +900,11 @@ boxShadow:
 }}
 >
 
-<h5>
+<h5
+style={{
+opacity:.9
+}}
+>
 
 Current SGPA
 
@@ -903,8 +912,13 @@ Current SGPA
 
 <h1
 style={{
-fontSize:"5rem",
-fontWeight:"800"
+
+fontSize:"4rem",
+
+fontWeight:"800",
+
+marginBottom:"8px"
+
 }}
 >
 
@@ -912,9 +926,13 @@ fontWeight:"800"
 
 </h1>
 
-<p>
+<p
+style={{
+margin:0
+}}
+>
 
-Semester {selectedSem}
+Semester {selectedSem} • Academic Tracker
 
 </p>
 
@@ -1601,8 +1619,12 @@ Changes save only after pressing Save
 
 <td
 style={{
-background:"rgba(255,255,255,0.03)",
+
+background:
+"#172554",
+
 padding:"18px"
+
 }}
 >
 {sub.Cid}
@@ -1651,9 +1673,13 @@ padding:"18px"
 >
 
 <input
+
 type="number"
+
 min="0"
+
 max="10"
+
 value={
 grades[sub.Cid]
 ??
@@ -1661,15 +1687,22 @@ sub.Grade_point
 ??
 ""
 }
+
 onChange={(e)=>{
 
 const value =
+
 Math.max(
 0,
+
 Math.min(
 10,
-Number(e.target.value)||0
+
+Number(
+e.target.value
+)||0
 )
+
 );
 
 setGrades({
@@ -1682,7 +1715,37 @@ value
 });
 
 }}
+
 className="form-control"
+
+style={{
+
+background:
+"#0f172a",
+
+color:
+"#ffffff",
+
+border:
+"1px solid rgba(96,165,250,.3)",
+
+borderRadius:
+"14px",
+
+height:
+"54px",
+
+fontWeight:
+"700",
+
+textAlign:
+"center",
+
+fontSize:
+"18px"
+
+}}
+
 />
 
 </td>
