@@ -497,7 +497,7 @@ Number(sgpa)>=9
                     {/* MENU */}
 {/* MENU */}
 
-<div className="d-grid gap-3 mt-4 ">
+<div className="d-grid gap-2 mt-5">
 
 <button
 className="btn text-start fw-semibold py-3"
@@ -516,16 +516,26 @@ border:"none"
 </button>
 
 <button
+
 className="btn text-start text-white py-3"
-style={{
-borderRadius:"18px",
-background:"rgba(255,255,255,0.05)"
-}}
->
-📈 Statistics
+
 onClick={()=>
-navigate("/analytics")
+navigate("/Analytics")
 }
+
+style={{
+
+borderRadius:"18px",
+
+background:
+"rgba(255,255,255,.05)"
+
+}}
+
+>
+
+📈 Statistics
+
 </button>
 
 <button
@@ -834,7 +844,6 @@ background:
                             }}
                         >
 
-                           Current SGPA • Live {sgpa}
 
 </div>
 
@@ -848,7 +857,6 @@ className="p-3 mt-4"
 
 >
 
-💾 Saved Grades
 
 {
 
@@ -865,12 +873,53 @@ style={glassCard}
 className="p-4"
 >
 
-🗓 Today
+
 
 {new Date().toLocaleDateString()}
 
 </div>
-                    <div className="row g-5 mb-5">
+<div
+className="mb-5"
+style={{
+
+background:
+"linear-gradient(135deg,#2563eb,#7c3aed)",
+
+padding:"36px",
+
+borderRadius:"32px",
+
+boxShadow:
+"0 20px 60px rgba(59,130,246,.35)"
+
+}}
+>
+
+<h5>
+
+Current SGPA
+
+</h5>
+
+<h1
+style={{
+fontSize:"5rem",
+fontWeight:"800"
+}}
+>
+
+{sgpa}
+
+</h1>
+
+<p>
+
+Semester {selectedSem}
+
+</p>
+
+</div>
+                    <div className="row g-4 mb-4">
 
                         {
 
@@ -913,7 +962,7 @@ value:`${completion}%`
                             ].map((item, index) => (
 
                                 <div
-                                    className="col-xl-2 col-md-6"
+                                    className="col-xl-2 col-lg-4 col-md-6"
                                     key={index}
                                 >
 
@@ -1022,29 +1071,33 @@ value:`${completion}%`
 
 value={selectedSem}
 
-onChange={(e)=>
+onChange={(e)=>{
+
 setSelectedSem(
+
 Number(
 e.target.value
 )
-)
-}
+
+);
+
+}}
 
 className="form-select"
 
 style={{
 
 background:
-"rgba(255,255,255,0.05)",
+"#172554",
 
 color:
 "white",
 
 border:
-"none",
+"1px solid #3b82f6",
 
 borderRadius:
-"16px"
+"18px"
 
 }}
 
@@ -1054,14 +1107,14 @@ borderRadius:
 
 [1,2,3,4]
 
-.map((sem)=>(
+.map((s)=>(
 
 <option
-key={sem}
-value={sem}
+key={s}
+value={s}
 >
 
-Semester {sem}
+Semester {s}
 
 </option>
 
