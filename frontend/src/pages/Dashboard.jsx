@@ -407,19 +407,19 @@ Number(sgpa)>=9
     const glassCard={
 
 background:
-"linear-gradient(180deg,#0f172a,#172554)",
+"#111827",
 
 border:
-"1px solid rgba(96,165,250,.12)",
+"1px solid rgba(255,255,255,.06)",
 
 borderRadius:
-"28px",
-
-backdropFilter:
-"blur(20px)",
+"24px",
 
 padding:
-"26px"
+"28px",
+
+boxShadow:
+"0 8px 24px rgba(0,0,0,.25)"
 
 };
 
@@ -618,7 +618,7 @@ background:
 
                 fontSize: "2rem",
 
-                fontWeight: "700",
+                fontWeight: "600",
 
                 boxShadow:
                     "0 10px 30px rgba(59,130,246,0.35)"
@@ -680,8 +680,7 @@ background:
         <div
             className="mt-3 p-3"
             style={{
-                background:
-                    "rgba(255,255,255,0.03)",
+               background:"#111827"
                 borderRadius: "18px"
             }}
         >
@@ -852,50 +851,25 @@ background:
 
 
 
-                    <div
-
-style={glassCard}
-
-className="p-3 mt-4"
-
->
-
-
-{
-
-Object.keys(
-grades
-).length
-
-}
-
-</div>
-
-<div
-style={glassCard}
-className="p-4"
->
-
-
-
-{new Date().toLocaleDateString()}
-
-</div>
+                  
 <div
 className="mb-5"
 style={{
 
 background:
-"linear-gradient(135deg,#2563eb,#7c3aed)",
+"linear-gradient(135deg,#1d4ed8,#6d28d9)",
 
 color:"#fff",
 
-padding:"24px",
+padding:"36px",
 
-borderRadius:"32px",
+borderRadius:"28px",
+
+border:
+"1px solid rgba(255,255,255,.08)",
 
 boxShadow:
-"0 20px 60px rgba(59,130,246,.35)"
+"0 8px 30px rgba(59,130,246,.18)"
 
 }}
 >
@@ -913,7 +887,7 @@ Current SGPA
 <h1
 style={{
 
-fontSize:"4rem",
+fontSize:"5rem",
 
 fontWeight:"800",
 
@@ -1104,9 +1078,7 @@ e.target.value
 className="form-select"
 
 style={{
-
-background:
-"#172554",
+background:"#0b1220"
 
 color:
 "white",
@@ -1165,7 +1137,7 @@ Semester {s}
                         <div
                             className="d-flex align-items-end gap-4"
                             style={{
-                                height: "320px"
+                                height: "170px"
                             }}
                         >
 
@@ -1197,7 +1169,7 @@ Semester {s}
 
                                                             0
 
-                                                        ) * 10}%`,
+                                                        ) * 8}%`,
 
                                                     borderRadius:
                                                         "24px 24px 0 0",
@@ -1486,7 +1458,7 @@ Number(sgpa)>=8
                                     padding:
                                         "12px 24px",
 
-                                    fontWeight: "600",
+                                    fontWeight: "700",
 
                                     border: "none"
                                 }}
@@ -1595,7 +1567,8 @@ Changes save only after pressing Save
 
                             fontWeight:
                                 "600",
-
+borderBottom:
+"10px solid transparent"
                             fontSize:
                                 "0.95rem"
                         }}
@@ -1620,8 +1593,7 @@ Changes save only after pressing Save
 <td
 style={{
 
-background:
-"#172554",
+background:"#0b1220"
 
 padding:"18px"
 
@@ -1658,7 +1630,7 @@ Semester Subject
 
 <td
 style={{
-background:"rgba(255,255,255,0.03)",
+background:"#111827"
 padding:"18px"
 }}
 >
@@ -1667,7 +1639,7 @@ padding:"18px"
 
 <td
 style={{
-background:"rgba(255,255,255,0.03)",
+background:"#111827"
 padding:"18px"
 }}
 >
@@ -1721,28 +1693,31 @@ className="form-control"
 style={{
 
 background:
-"#0f172a",
+"#020817",
 
 color:
-"#ffffff",
+"#f8fafc",
 
 border:
-"1px solid rgba(96,165,250,.3)",
-
-borderRadius:
-"14px",
+"1px solid #2563eb",
 
 height:
-"54px",
+"56px",
+
+width:
+"120px",
 
 fontWeight:
-"700",
+"600",
+
+fontSize:
+"20px",
 
 textAlign:
 "center",
 
-fontSize:
-"18px"
+borderRadius:
+"16px"
 
 }}
 
