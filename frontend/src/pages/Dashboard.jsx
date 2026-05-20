@@ -41,7 +41,14 @@ function Dashboard() {
     // STATES
     // =====================================
 
-    const selectedSem = 2;
+    const [
+selectedSem,
+setSelectedSem
+]
+
+=
+
+useState(2);
 
     const [subjects, setSubjects] = useState([]);
     const [grades, setGrades] =
@@ -80,7 +87,7 @@ function Dashboard() {
 
                 const response = await fetch(
 
-                    `${API_BASE}/semester/2/${rollNo}`
+                    `${API_BASE}/semester/${selectedSem}/${rollNo}`
                 );
 
                 const data =
@@ -490,7 +497,7 @@ Number(sgpa)>=9
                     {/* MENU */}
 {/* MENU */}
 
-<div className="d-grid gap-3">
+<div className="d-grid gap-3 mt-4 ">
 
 <button
 className="btn text-start fw-semibold py-3"
@@ -515,17 +522,32 @@ borderRadius:"18px",
 background:"rgba(255,255,255,0.05)"
 }}
 >
-
-🏆 Achievements
-
+📈 Statistics
+onClick={()=>
+navigate("/analytics")
+}
 </button>
 
 <button
+
 className="btn text-start text-white py-3"
+
+onClick={()=>
+navigate("/Settings")
+}
+
 style={{
+
 borderRadius:"18px",
-background:"rgba(255,255,255,0.05)"
+
+background:
+"rgba(255,255,255,0.05)",
+
+transition:
+"0.2s"
+
 }}
+
 >
 
 ⚙️ Settings
@@ -766,7 +788,7 @@ background:
 
                         <h1
                             style={{
-                                fontSize: "4rem",
+                                fontSize: "2.7rem",
                                 fontWeight: "700"
                             }}
                         >
@@ -816,51 +838,8 @@ background:
 
 </div>
 
-<div
-className="mt-4 d-flex justify-content-center"
->
 
-<div
-style={{
 
-width:"180px",
-
-height:"180px",
-
-borderRadius:"50%",
-
-background:
-
-`conic-gradient(
-#3b82f6 ${
-Number(sgpa)*10
-}%,
-#1e293b 0
-)`,
-
-display:"flex",
-
-alignItems:"center",
-
-justifyContent:"center",
-
-fontSize:"2rem",
-
-fontWeight:"700",
-
-boxShadow:
-
-"0 15px 40px rgba(59,130,246,0.3)"
-
-}}
-
->
-
-{sgpa}
-
-</div>
-
-</div>
                     <div
 
 style={glassCard}
@@ -891,7 +870,7 @@ className="p-4"
 {new Date().toLocaleDateString()}
 
 </div>
-                    <div className="row g-4 mb-5">
+                    <div className="row g-5 mb-5">
 
                         {
 
@@ -1032,12 +1011,65 @@ value:`${completion}%`
                                     }}
                                 >
 
-                                    <h5>📖 Active Semester</h5>
+                                    
+<h5>
 
-<h1>2</h1>
+📖 Active Semester
 
-<p>Current Semester</p>
+</h5>
 
+<select
+
+value={selectedSem}
+
+onChange={(e)=>
+setSelectedSem(
+Number(
+e.target.value
+)
+)
+}
+
+className="form-select"
+
+style={{
+
+background:
+"rgba(255,255,255,0.05)",
+
+color:
+"white",
+
+border:
+"none",
+
+borderRadius:
+"16px"
+
+}}
+
+>
+
+{
+
+[1,2,3,4]
+
+.map((sem)=>(
+
+<option
+key={sem}
+value={sem}
+>
+
+Semester {sem}
+
+</option>
+
+))
+
+}
+
+</select>
                                 </div>
 
                             </div>
@@ -1541,7 +1573,7 @@ fontSize:"12px"
 }}
 >
 
-Core Course
+Semester Subject
 
 </div>
 
