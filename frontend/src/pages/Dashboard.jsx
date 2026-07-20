@@ -497,71 +497,46 @@ boxShadow:
 
                     </div>
 
-                    {/* MENU */}
-{/* MENU */}
+                   {/* MENU */}
 
 <div className="d-grid gap-2 mt-5">
 
-<button
-className="btn text-start fw-semibold py-3"
-onClick={()=>navigate("/dashboard")}
-style={{
-borderRadius:"18px",
-background:
-"linear-gradient(to right,#ffffff,#dbeafe)",
-color:"#111827",
-border:"none"
-}}
->
+    <button
+        className="btn text-start fw-semibold py-3"
+        onClick={() => navigate("/dashboard")}
+        style={{
+            borderRadius: "18px",
+            background: "linear-gradient(to right,#ffffff,#dbeafe)",
+            color: "#111827",
+            border: "none"
+        }}
+    >
+        📊 Dashboard
+    </button>
 
-📊 Dashboard
+    <button
+        className="btn text-start text-white py-3"
+        onClick={() => navigate("/analytics")}
+        style={{
+            borderRadius: "18px",
+            background: "rgba(37,99,235,.12)"
+        }}
+    >
+        📈 Statistics
+    </button>
 
-</button>
+    <button
+        className="btn text-start text-danger py-3"
+        onClick={handleLogout}
+        style={{
+            borderRadius: "18px",
+            background: "rgba(239,68,68,0.08)"
+        }}
+    >
+        🚪 Logout
+    </button>
 
-<button
-
-className="btn text-start text-white py-3"
-
-onClick={()=>
-navigate("/Analytics")
-}
-
-style={{
-
-borderRadius:"18px",
-
-background:
-"rgba(37,99,235,.12)"
-
-}}
-
->
-
-📈 Statistics
-
-</button>
-
-<button
-
-className="btn text-start text-white py-3"
-
-onClick={()=>
-navigate("/Settings")
-}
-
-style={{
-
-borderRadius:"18px",
-
-background:
-"rgba(255,255,255,0.05)",
-
-transition:
-"0.2s"
-
-}}
-
->
+</div>
 
 ⚙️ Settings
 
