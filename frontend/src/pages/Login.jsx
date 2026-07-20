@@ -1,138 +1,116 @@
 import { useState } from "react";
-
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import API_BASE from "../services/api";
 
 function Login() {
-
     // =====================================
     // STATES
     // =====================================
 
-    const [roll, setRoll] =
-        useState("");
-
-    
-
-    const [message, setMessage] =
-        useState("");
-
-    const [loading, setLoading] =
-        useState(false);
+    const [roll, setRoll] = useState("");
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // =====================================
     // LOGIN
     // =====================================
+
     const handleLogin = async () => {
-
-    try {
-
-        setLoading(true);
-
-        setMessage("");
-
-        const res = await fetch(
-
-            `${API_BASE}/login`,
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    roll_no: roll,
-
-                    
-                })
-            }
-        );
-
-        const data =
-            await res.json();
-console.log(data);
-        if (data.success) {
-
-            localStorage.setItem(
-                "roll_no",
-                data.roll_no || ""
-            );
-
-            localStorage.setItem(
-                "student_name",
-                data.name || ""
-            );
-
-            localStorage.setItem(
-                "branch",
-                data.branch || ""
-            );
-
-            localStorage.setItem(
-                "programme",
-                data.programme || ""
-            );
-
-            localStorage.setItem(
-                "year",
-                data.year || "1"
-            );
-
-            localStorage.setItem(
-                "sem_id",
-                data.sem_id || "1"
-            );
-
-    
-
-            localStorage.setItem(
-                "role",
-                data.role || ""
-            );
-
-            window.location.href =
-                "/#/dashboard";
+        if (!roll.trim()) {
+            setMessage("Please enter your roll number");
+            return;
         }
 
-        else {
+        try {
+            setLoading(true);
+            setMessage("");
+
+            const res = await fetch(
+                `${API_BASE}/login`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        roll_no: roll.trim()
+                    })
+                }
+            );
+
+            const data = await res.json();
+
+            console.log(data);
+
+            if (data.success) {
+                localStorage.setItem(
+                    "roll_no",
+                    data.roll_no || ""
+                );
+
+                localStorage.setItem(
+                    "student_name",
+                    data.name || ""
+                );
+
+                localStorage.setItem(
+                    "branch",
+                    data.branch || ""
+                );
+
+                localStorage.setItem(
+                    "programme",
+                    data.programme || ""
+                );
+
+                localStorage.setItem(
+                    "year",
+                    data.year || "2"
+                );
+
+                localStorage.setItem(
+                    "sem_id",
+                    data.sem_id || "2"
+                );
+
+                localStorage.setItem(
+                    "email",
+                    data.email || ""
+                );
+
+                localStorage.setItem(
+                    "role",
+                    data.role || "student"
+                );
+
+                window.location.href =
+                    "/#/dashboard";
+            } else {
+                setMessage(
+                    data.message ||
+                        "Invalid roll number"
+                );
+            }
+        } catch (err) {
+            console.error(err);
 
             setMessage(
-
-                data.message ||
-
-                "Invalid credentials"
+                "Unable to connect to the server"
             );
+        } finally {
+            setLoading(false);
         }
+    };
 
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        setMessage(
-            "Server error"
-        );
-    }
-
-    finally {
-
-        setLoading(false);
-    }
-};
-
+    // =====================================
+    // ENTER KEY
+    // =====================================
 
     const handleKeyPress = (e) => {
-
         if (e.key === "Enter") {
-
             handleLogin();
         }
     };
@@ -142,13 +120,9 @@ console.log(data);
     // =====================================
 
     return (
-
         <div
-
             className="container-fluid min-vh-100"
-
             style={{
-
                 background:
                     "linear-gradient(135deg,#020617,#0f172a,#111827)",
 
@@ -158,147 +132,176 @@ console.log(data);
                 overflow: "hidden"
             }}
         >
-
             <div className="row min-vh-100">
 
+                {/* ================================= */}
                 {/* LEFT SIDE */}
+                {/* ================================= */}
 
                 <div
-
-                    className="col-lg-6 d-none d-lg-flex flex-column justify-content-center p-5"
-
+                    className="
+                        col-lg-6
+                        d-none
+                        d-lg-flex
+                        flex-column
+                        justify-content-center
+                        p-5
+                    "
                     style={{
                         position: "relative"
                     }}
                 >
-
                     <div
                         style={{
                             maxWidth: "600px"
                         }}
                     >
+                        {/* LOGO */}
 
                         <div
                             className="mb-4"
                             style={{
                                 width: "120px",
+
                                 height: "120px",
+
                                 borderRadius: "32px",
+
                                 background:
                                     "linear-gradient(to right,#3b82f6,#8b5cf6)",
+
                                 display: "flex",
+
                                 alignItems: "center",
-                                justifyContent: "center",
+
+                                justifyContent:
+                                    "center",
+
                                 fontSize: "4rem",
+
                                 boxShadow:
                                     "0 25px 60px rgba(59,130,246,0.35)"
                             }}
                         >
-
                             🎓
-
                         </div>
+
+                        {/* TITLE */}
 
                         <h1
                             className="mt-5"
                             style={{
                                 fontSize: "4.5rem",
+
                                 fontWeight: "800",
+
                                 lineHeight: "1.1"
                             }}
                         >
-
                             <span
                                 style={{
                                     background:
                                         "linear-gradient(to right,#38bdf8,#8b5cf6)",
+
                                     WebkitBackgroundClip:
                                         "text",
+
                                     WebkitTextFillColor:
                                         "transparent"
                                 }}
                             >
-
-                                Student Analytics Portal
-
+                                Student Analytics
+                                Portal
                             </span>
-
                         </h1>
+
+                        {/* DESCRIPTION */}
 
                         <p
                             className="mt-4"
                             style={{
                                 color: "#94a3b8",
+
                                 fontSize: "1.2rem",
+
                                 lineHeight: "2"
                             }}
                         >
-
-                            A modern academic analytics platform
-                            for monitoring grades, SGPA trends,
-                            semester performance and academic insights.
-
+                            A modern academic
+                            analytics platform for
+                            monitoring grades, SGPA
+                            trends, semester
+                            performance and academic
+                            insights.
                         </p>
+
+                        {/* UNIVERSITY CARD */}
 
                         <div
                             className="mt-5 p-4"
                             style={{
                                 background:
                                     "rgba(255,255,255,0.05)",
+
                                 border:
                                     "1px solid rgba(255,255,255,0.08)",
+
                                 borderRadius: "28px",
+
                                 backdropFilter:
                                     "blur(20px)"
                             }}
                         >
-
                             <h4>
-
                                 🏛️ JNTUH Hyderabad
-
                             </h4>
 
                             <p
                                 className="mt-3"
                                 style={{
                                     color: "#cbd5e1",
-                                    lineHeight: "1.8"
+
+                                    lineHeight: "1.8",
+
+                                    marginBottom: "0"
                                 }}
                             >
+                                Jawaharlal Nehru
+                                Technological
+                                University Hyderabad
 
-                                Jawaharlal Nehru Technological University Hyderabad
+                                <br />
+                                <br />
 
-                                <br /><br />
-
-                                Secure student dashboard with
-                                performance analytics,
-                                grade tracking,
-                                semester insights and
-                                academic management.
-
+                                Student dashboard
+                                with performance
+                                analytics, grade
+                                tracking, semester
+                                insights and academic
+                                management.
                             </p>
-
                         </div>
-
                     </div>
-
                 </div>
 
+                {/* ================================= */}
                 {/* RIGHT SIDE */}
+                {/* ================================= */}
 
                 <div
-
-                    className="col-lg-6 d-flex justify-content-center align-items-center p-4"
-
+                    className="
+                        col-lg-6
+                        d-flex
+                        justify-content-center
+                        align-items-center
+                        p-4
+                    "
                 >
+                    {/* LOGIN CARD */}
 
                     <div
-
                         className="p-5"
-
                         style={{
-
                             width: "100%",
 
                             maxWidth: "480px",
@@ -320,19 +323,21 @@ console.log(data);
                             color: "white"
                         }}
                     >
-
                         {/* MOBILE TITLE */}
 
-                        <div className="d-lg-none text-center mb-5">
-
+                        <div
+                            className="
+                                d-lg-none
+                                text-center
+                                mb-5
+                            "
+                        >
                             <h1
                                 style={{
                                     fontWeight: "800"
                                 }}
                             >
-
                                 🎓 Student Portal
-
                             </h1>
 
                             <p
@@ -340,11 +345,8 @@ console.log(data);
                                     color: "#94a3b8"
                                 }}
                             >
-
                                 JNTUH Hyderabad
-
                             </p>
-
                         </div>
 
                         {/* LOGIN TITLE */}
@@ -353,64 +355,68 @@ console.log(data);
                             className="mb-2"
                             style={{
                                 fontWeight: "700",
+
                                 fontSize: "3rem"
                             }}
                         >
-
                             Welcome Back 👋
-
                         </h1>
 
                         <p
                             className="mb-5"
                             style={{
                                 color: "#94a3b8",
+
                                 fontSize: "1.05rem"
                             }}
                         >
-
-                            Login to continue to your student dashboard
-
+                            Enter your roll number
+                            to continue to your
+                            student dashboard.
                         </p>
 
-                        {/* ROLL */}
+                        {/* ROLL NUMBER */}
 
                         <div className="mb-4">
-
                             <label
                                 className="mb-2"
                                 style={{
                                     color: "#cbd5e1"
                                 }}
                             >
-
                                 Roll Number
-
                             </label>
 
                             <input
-
                                 type="text"
 
-                                placeholder="Enter Roll Number"
+                                placeholder="
+                                    Enter Roll Number
+                                "
 
                                 value={roll}
 
                                 onChange={(e) =>
-                                    setRoll(e.target.value)
+                                    setRoll(
+                                        e.target.value
+                                    )
                                 }
 
-                                onKeyDown={handleKeyPress}
+                                onKeyDown={
+                                    handleKeyPress
+                                }
 
-                                className="form-control"
+                                autoComplete="username"
+
+                                className="
+                                    form-control
+                                "
 
                                 style={{
-
                                     background:
                                         "#0f172a",
 
-                                    color:
-                                        "white",
+                                    color: "white",
 
                                     border:
                                         "1px solid rgba(255,255,255,0.08)",
@@ -418,125 +424,163 @@ console.log(data);
                                     borderRadius:
                                         "18px",
 
-                                    padding:
-                                        "16px",
+                                    padding: "16px",
 
-                                    fontSize:
-                                        "1rem"
+                                    fontSize: "1rem"
                                 }}
                             />
-
                         </div>
 
-                       
+                        {/* LOGIN BUTTON */}
 
-    {
+                        <button
+                            className="
+                                btn
+                                w-100
+                            "
 
-        loading
+                            onClick={
+                                handleLogin
+                            }
 
-        ?
+                            disabled={
+                                loading ||
+                                !roll.trim()
+                            }
 
-        "Logging In..."
+                            style={{
+                                background:
+                                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
 
-        :
+                                color: "white",
 
-        "Login"
-    }
+                                padding: "16px",
 
-</button>
+                                borderRadius:
+                                    "20px",
 
-{/* ADMIN */}
+                                fontWeight: "700",
 
-<button
+                                fontSize:
+                                    "1.05rem",
 
-    className="btn w-100 mt-3"
+                                border: "none",
 
-    onClick={() => {
+                                boxShadow:
+                                    "0 10px 30px rgba(59,130,246,0.30)"
+                            }}
+                        >
+                            {loading
+                                ? "Logging In..."
+                                : "Login"}
+                        </button>
 
-        window.location.href =
-            "/#/admin-login";
-    }}
+                        {/* ADMIN LOGIN */}
 
-    style={{
+                        <button
+                            className="
+                                btn
+                                w-100
+                                mt-3
+                            "
 
-        background:
-            "rgba(255,255,255,0.05)",
+                            onClick={() => {
+                                window.location.href =
+                                    "/#/admin-login";
+                            }}
 
-        color:
-            "white",
+                            style={{
+                                background:
+                                    "rgba(255,255,255,0.05)",
 
-        padding:
-            "16px",
+                                color: "white",
 
-        borderRadius:
-            "20px",
+                                padding: "16px",
 
-        fontWeight:
-            "600",
+                                borderRadius:
+                                    "20px",
 
-        border:
-            "1px solid rgba(255,255,255,0.08)"
-    }}
->
+                                fontWeight: "600",
 
-    Admin Login
+                                border:
+                                    "1px solid rgba(255,255,255,0.08)"
+                            }}
+                        >
+                            Admin Login
+                        </button>
 
-</button>
+                        {/* ERROR MESSAGE */}
 
-{/* ERROR MESSAGE */}
+                        {message && (
+                            <div
+                                className="
+                                    mt-4
+                                    text-center
+                                "
 
-{
+                                style={{
+                                    color:
+                                        "#f87171",
 
-    message && (
+                                    fontWeight:
+                                        "500"
+                                }}
+                            >
+                                {message}
+                            </div>
+                        )}
 
-        <div
+                        {/* LOGIN INFO */}
 
-            className="mt-4 text-center"
+                        <div
+                            className="
+                                mt-4
+                                p-3
+                                text-center
+                            "
 
-            style={{
+                            style={{
+                                background:
+                                    "rgba(59,130,246,0.08)",
 
-                color:
-                    "#f87171",
+                                border:
+                                    "1px solid rgba(59,130,246,0.15)",
 
-                fontWeight:
-                    "500"
-            }}
-        >
+                                borderRadius:
+                                    "18px",
 
-            {message}
+                                color: "#93c5fd",
 
+                                fontSize:
+                                    "0.9rem"
+                            }}
+                        >
+                            🔐 Student access using
+                            your registered roll
+                            number
+                        </div>
+
+                        {/* FOOTER */}
+
+                        <div
+                            className="
+                                text-center
+                                mt-5
+                            "
+
+                            style={{
+                                color: "#64748b",
+
+                                fontSize: "0.9rem"
+                            }}
+                        >
+                            Made by Shyam 🚀
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    )
-}
-
-{/* FOOTER */}
-
-<div
-
-    className="text-center mt-5"
-
-    style={{
-
-        color:
-            "#64748b",
-
-        fontSize:
-            "0.9rem"
-    }}
->
-
-    Made by Shyam 🚀
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-);
+    );
 }
 
 export default Login;
