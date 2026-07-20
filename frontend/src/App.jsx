@@ -14,13 +14,10 @@ import Dashboard from "./pages/Dashboard";
 
 
 
-import Settings from "./pages/Settings";
+
 
 import Analytics from "./pages/Analytics";
 
-import ForgotPassword from "./pages/ForgotPassword";
-
-import ChangePassword from "./pages/ChangePassword";
 
 import AdminLogin from "./pages/AdminLogin";
 
@@ -63,22 +60,6 @@ function App() {
                     path="/settings"
 
                     element={<Settings />}
-
-                />
-
-                <Route
-
-                    path="/forgot-password"
-
-                    element={<ForgotPassword />}
-
-                />
-
-                <Route
-
-                    path="/change-password"
-
-                    element={<ChangePassword />}
 
                 />
 

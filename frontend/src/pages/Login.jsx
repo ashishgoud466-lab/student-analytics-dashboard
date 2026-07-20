@@ -13,8 +13,7 @@ function Login() {
     const [roll, setRoll] =
         useState("");
 
-    const [password, setPassword] =
-        useState("");
+    
 
     const [message, setMessage] =
         useState("");
@@ -51,7 +50,7 @@ function Login() {
 
                     roll_no: roll,
 
-                    password: password
+                    
                 })
             }
         );
@@ -91,10 +90,7 @@ console.log(data);
                 data.sem_id || "1"
             );
 
-            localStorage.setItem(
-                "email",
-                data.email || ""
-            );
+    
 
             localStorage.setItem(
                 "role",
@@ -432,126 +428,7 @@ console.log(data);
 
                         </div>
 
-                        {/* PASSWORD */}
-
-                        <div className="mb-3">
-
-                            <label
-                                className="mb-2"
-                                style={{
-                                    color: "#cbd5e1"
-                                }}
-                            >
-
-                                Password
-
-                            </label>
-
-                            <input
-
-                                type="password"
-
-                                placeholder="Enter Password"
-
-                                value={password}
-
-                                onChange={(e) =>
-                                    setPassword(e.target.value)
-                                }
-
-                                onKeyDown={handleKeyPress}
-
-                                className="form-control"
-
-                                style={{
-
-                                    background:
-                                        "#0f172a",
-
-                                    color:
-                                        "white",
-
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
-
-                                    borderRadius:
-                                        "18px",
-
-                                    padding:
-                                        "16px",
-
-                                    fontSize:
-                                        "1rem"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* FORGOT */}
-
-                        <div className="text-end mb-4">
-
-                            <button
-
-                                className="btn btn-link p-0"
-
-                                style={{
-                                    color: "#60a5fa",
-                                    textDecoration:
-                                        "none"
-                                }}
-
-                                onClick={() => {
-
-                                    window.location.href =
-                                        "/#/forgot-password";
-                                }}
-                            >
-
-                                Forgot Password?
-
-                            </button>
-
-                        </div>
-
-                        {/* LOGIN */}
-
-                        <button
-
-                            className="btn w-100"
-
-                            onClick={handleLogin}
-
-                            disabled={loading}
-
-                            style={{
-
-                                background:
-                                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
-
-                                color:
-                                    "white",
-
-                                padding:
-                                    "16px",
-
-                                borderRadius:
-                                    "20px",
-
-                                fontWeight:
-                                    "700",
-
-                                border:
-                                    "none",
-
-                            fontSize:
-    "1.05rem",
-
-boxShadow:
-    "0 15px 35px rgba(59,130,246,0.25)"
-}}
-
->
+                       
 
     {
 

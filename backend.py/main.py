@@ -49,53 +49,87 @@ def home():
 
 # ---------------- LOGIN ---------------- #
 
+# ---------------- LOGIN ---------------- #
+
 @app.post("/login")
 def login(data: dict = Body(...)):
 
+    conn = None
+
     try:
 
-        conn = get_connection()
+        roll = data.get("roll_no")
 
+        if not roll:
+            return {
+                "success": False,
+                "message": "Roll number is required"
+            }
+
+        conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        roll = data.get("roll_no")
-        password = data.get("password")
-
+        # Check whether the roll number exists
         cursor.execute("""
-
             SELECT *
-
             FROM Users
-
             WHERE Roll_no = %s
-
-            AND
-            (
-                Password = %s
-
-                OR
-
-                Temp_Password = %s
-            )
-
-        """, (
-
-            roll,
-            password,
-            password
-
-        ))
+        """, (roll,))
 
         user = cursor.fetchone()
 
         if not user:
-
             return {
-
                 "success": False,
-
-                "message": "Invalid credentials"
+                "message": "Invalid roll number"
             }
+
+        # Get student information
+        cursor.execute("""
+            SELECT *
+            FROM student_info
+            WHERE Roll_no = %s
+        """, (roll,))
+
+        student = cursor.fetchone()
+
+        if not student:
+            return {
+                "success": False,
+                "message": "Student information not found"
+            }
+
+        return {
+            "success": True,
+
+            "roll_no": user.get("Roll_no", ""),
+
+            "role": user.get("Role", "student"),
+
+            "name": student.get("Student_name", ""),
+
+            "branch": student.get("Branch", ""),
+
+            "programme": student.get("Programme", ""),
+
+            "year": 2,
+
+            "sem_id": student.get("Current_sem", 2),
+
+            "email": user.get("Email", "")
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "message": str(e)
+        }
+
+    finally:
+
+        if conn and conn.is_connected():
+            conn.close()
 
         # -------- STUDENT INFO -------- #
 

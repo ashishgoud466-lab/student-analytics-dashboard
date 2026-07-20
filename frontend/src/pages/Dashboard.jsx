@@ -1011,27 +1011,14 @@ fontWeight:"800"
 
                                     </h5>
 
-                                    <h3 className="mt-3">
-
-                                        {programme}
-
-                                    </h3>
-
-                                </div>
-
-                            </div>
-
-                            <div className="col-md-4">
-
-                                <div
-                                    className="p-4"
-                                    style={{
-                                        background:
-                                            "rgba(34,197,94,0.12)",
-                                        borderRadius: "24px"
-                                    }}
-                                >
-
+                                    <h3
+className="mt-3"
+style={{
+color:"#60a5fa"
+}}
+>
+{programme}
+</h3>
                                     <h5>🎯 Current Year</h5>
 
 <h1>2</h1>
@@ -1618,7 +1605,8 @@ borderBottom:
 <td
 style={{
 background:"#0b1220",
-padding:"18px"
+padding:"18px",
+color:"#93c5fd"
 }}
 >
 {sub.Cid}
