@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import API_BASE from "../services/api";
 
 function Login() {
+
     // =====================================
     // STATES
     // =====================================
@@ -11,17 +12,20 @@ function Login() {
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
+
     // =====================================
     // LOGIN
     // =====================================
 
     const handleLogin = async () => {
+
         if (!roll.trim()) {
             setMessage("Please enter your roll number");
             return;
         }
 
         try {
+
             setLoading(true);
             setMessage("");
 
@@ -31,8 +35,7 @@ function Login() {
                     method: "POST",
 
                     headers: {
-                        "Content-Type":
-                            "application/json"
+                        "Content-Type": "application/json"
                     },
 
                     body: JSON.stringify({
@@ -46,6 +49,7 @@ function Login() {
             console.log(data);
 
             if (data.success) {
+
                 localStorage.setItem(
                     "roll_no",
                     data.roll_no || ""
@@ -86,40 +90,48 @@ function Login() {
                     data.role || "student"
                 );
 
-                window.location.href =
-                    "/#/dashboard";
+                window.location.href = "/#/dashboard";
+
             } else {
+
                 setMessage(
-                    data.message ||
-                        "Invalid roll number"
+                    data.message || "Invalid roll number"
                 );
             }
+
         } catch (err) {
+
             console.error(err);
 
             setMessage(
                 "Unable to connect to the server"
             );
+
         } finally {
+
             setLoading(false);
         }
     };
+
 
     // =====================================
     // ENTER KEY
     // =====================================
 
     const handleKeyPress = (e) => {
+
         if (e.key === "Enter") {
             handleLogin();
         }
     };
+
 
     // =====================================
     // UI
     // =====================================
 
     return (
+
         <div
             className="container-fluid min-vh-100"
             style={{
@@ -129,10 +141,12 @@ function Login() {
                 fontFamily:
                     "'Poppins', sans-serif",
 
-                overflow: "hidden"
+                overflowX: "hidden"
             }}
         >
+
             <div className="row min-vh-100">
+
 
                 {/* ================================= */}
                 {/* LEFT SIDE */}
@@ -151,11 +165,14 @@ function Login() {
                         position: "relative"
                     }}
                 >
+
                     <div
                         style={{
-                            maxWidth: "600px"
+                            maxWidth: "620px"
                         }}
                     >
+
+
                         {/* LOGO */}
 
                         <div
@@ -168,14 +185,13 @@ function Login() {
                                 borderRadius: "32px",
 
                                 background:
-                                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
+                                    "linear-gradient(135deg,#3b82f6,#8b5cf6)",
 
                                 display: "flex",
 
                                 alignItems: "center",
 
-                                justifyContent:
-                                    "center",
+                                justifyContent: "center",
 
                                 fontSize: "4rem",
 
@@ -186,6 +202,7 @@ function Login() {
                             🎓
                         </div>
 
+
                         {/* TITLE */}
 
                         <h1
@@ -195,45 +212,48 @@ function Login() {
 
                                 fontWeight: "800",
 
-                                lineHeight: "1.1"
+                                lineHeight: "1.15",
+
+                                letterSpacing: "-1px"
                             }}
                         >
+
                             <span
                                 style={{
                                     background:
                                         "linear-gradient(to right,#38bdf8,#8b5cf6)",
 
-                                    WebkitBackgroundClip:
-                                        "text",
+                                    WebkitBackgroundClip: "text",
 
-                                    WebkitTextFillColor:
-                                        "transparent"
+                                    WebkitTextFillColor: "transparent"
                                 }}
                             >
                                 Student Analytics
+                                <br />
                                 Portal
                             </span>
+
                         </h1>
+
 
                         {/* DESCRIPTION */}
 
                         <p
                             className="mt-4"
                             style={{
-                                color: "#94a3b8",
+                                color: "#a5b4c8",
 
-                                fontSize: "1.2rem",
+                                fontSize: "1.15rem",
 
                                 lineHeight: "2"
                             }}
                         >
-                            A modern academic
-                            analytics platform for
-                            monitoring grades, SGPA
-                            trends, semester
-                            performance and academic
+                            A modern academic analytics platform
+                            for monitoring grades, SGPA trends,
+                            semester performance and academic
                             insights.
                         </p>
+
 
                         {/* UNIVERSITY CARD */}
 
@@ -241,48 +261,60 @@ function Login() {
                             className="mt-5 p-4"
                             style={{
                                 background:
-                                    "rgba(255,255,255,0.05)",
+                                    "rgba(30,41,59,0.72)",
 
                                 border:
-                                    "1px solid rgba(255,255,255,0.08)",
+                                    "1px solid rgba(148,163,184,0.14)",
 
                                 borderRadius: "28px",
 
-                                backdropFilter:
-                                    "blur(20px)"
+                                backdropFilter: "blur(20px)",
+
+                                boxShadow:
+                                    "0 18px 50px rgba(0,0,0,0.18)"
                             }}
                         >
-                            <h4>
+
+                            <h4
+                                style={{
+                                    color: "#60a5fa",
+
+                                    fontWeight: "700",
+
+                                    marginBottom: "0"
+                                }}
+                            >
                                 🏛️ JNTUH Hyderabad
                             </h4>
+
 
                             <p
                                 className="mt-3"
                                 style={{
-                                    color: "#cbd5e1",
+                                    color: "#d1d9e6",
 
                                     lineHeight: "1.8",
 
                                     marginBottom: "0"
                                 }}
                             >
-                                Jawaharlal Nehru
-                                Technological
+                                Jawaharlal Nehru Technological
                                 University Hyderabad
 
                                 <br />
                                 <br />
 
-                                Student dashboard
-                                with performance
-                                analytics, grade
-                                tracking, semester
-                                insights and academic
-                                management.
+                                Student dashboard with performance
+                                analytics, grade tracking, semester
+                                insights and academic management.
                             </p>
+
                         </div>
+
                     </div>
+
                 </div>
+
 
                 {/* ================================= */}
                 {/* RIGHT SIDE */}
@@ -297,6 +329,8 @@ function Login() {
                         p-4
                     "
                 >
+
+
                     {/* LOGIN CARD */}
 
                     <div
@@ -304,25 +338,26 @@ function Login() {
                         style={{
                             width: "100%",
 
-                            maxWidth: "480px",
+                            maxWidth: "500px",
 
                             background:
-                                "rgba(15,23,42,0.92)",
+                                "rgba(15,23,42,0.94)",
 
                             border:
-                                "1px solid rgba(255,255,255,0.08)",
+                                "1px solid rgba(148,163,184,0.14)",
 
                             borderRadius: "36px",
 
-                            backdropFilter:
-                                "blur(20px)",
+                            backdropFilter: "blur(20px)",
 
                             boxShadow:
-                                "0 25px 60px rgba(0,0,0,0.35)",
+                                "0 25px 70px rgba(0,0,0,0.38)",
 
-                            color: "white"
+                            color: "#f8fafc"
                         }}
                     >
+
+
                         {/* MOBILE TITLE */}
 
                         <div
@@ -332,6 +367,7 @@ function Login() {
                                 mb-5
                             "
                         >
+
                             <h1
                                 style={{
                                     fontWeight: "800"
@@ -347,101 +383,114 @@ function Login() {
                             >
                                 JNTUH Hyderabad
                             </p>
+
                         </div>
+
 
                         {/* LOGIN TITLE */}
 
                         <h1
-                            className="mb-2"
+                            className="mb-3"
                             style={{
-                                fontWeight: "700",
+                                fontWeight: "800",
 
-                                fontSize: "3rem"
+                                fontSize: "3rem",
+
+                                color: "#f8fafc",
+
+                                letterSpacing: "-1px"
                             }}
                         >
                             Welcome Back 👋
                         </h1>
+
 
                         <p
                             className="mb-5"
                             style={{
                                 color: "#94a3b8",
 
-                                fontSize: "1.05rem"
+                                fontSize: "1.05rem",
+
+                                lineHeight: "1.7"
                             }}
                         >
-                            Enter your roll number
-                            to continue to your
-                            student dashboard.
+                            Enter your roll number to continue
+                            to your student dashboard.
                         </p>
 
-                        {/* ROLL NUMBER */}
 
-                        <div className="mb-4">
+                        {/* ================================= */}
+                        {/* ROLL NUMBER */}
+                        {/* ================================= */}
+
+                        <div className="mb-4 text-center">
+
                             <label
-                                className="mb-2"
+                                className="mb-3 d-block"
                                 style={{
-                                    color: "#cbd5e1"
+                                    color: "#cbd5e1",
+
+                                    fontWeight: "600",
+
+                                    fontSize: "1rem"
                                 }}
                             >
                                 Roll Number
                             </label>
 
+
                             <input
                                 type="text"
 
-                                placeholder="
-                                    Enter Roll Number
-                                "
+                                placeholder="Enter Roll Number"
 
                                 value={roll}
 
                                 onChange={(e) =>
-                                    setRoll(
-                                        e.target.value
-                                    )
+                                    setRoll(e.target.value)
                                 }
 
-                                onKeyDown={
-                                    handleKeyPress
-                                }
+                                onKeyDown={handleKeyPress}
 
                                 autoComplete="username"
 
-                                className="
-                                    form-control
-                                "
+                                className="form-control"
 
                                 style={{
-                                    background:
-                                        "#0f172a",
+                                    background: "#111c31",
 
-                                    color: "white",
+                                    color: "#f8fafc",
 
                                     border:
-                                        "1px solid rgba(255,255,255,0.08)",
+                                        "1px solid rgba(96,165,250,0.25)",
 
-                                    borderRadius:
-                                        "18px",
+                                    borderRadius: "18px",
 
-                                    padding: "16px",
+                                    padding: "17px 20px",
 
-                                    fontSize: "1rem"
+                                    fontSize: "1.05rem",
+
+                                    textAlign: "center",
+
+                                    outline: "none",
+
+                                    boxShadow:
+                                        "inset 0 1px 3px rgba(0,0,0,0.15)"
                                 }}
                             />
+
                         </div>
 
+
+                        {/* ================================= */}
                         {/* LOGIN BUTTON */}
+                        {/* ================================= */}
 
                         <button
-                            className="
-                                btn
-                                w-100
-                            "
+                            className="btn w-100"
 
-                            onClick={
-                                handleLogin
-                            }
+                            onClick={handleLogin}
 
                             disabled={
                                 loading ||
@@ -450,68 +499,40 @@ function Login() {
 
                             style={{
                                 background:
-                                    "linear-gradient(to right,#3b82f6,#8b5cf6)",
+                                    "linear-gradient(to right,#3b82f6,#7c3aed)",
 
-                                color: "white",
+                                color: "#ffffff",
 
                                 padding: "16px",
 
-                                borderRadius:
-                                    "20px",
+                                borderRadius: "20px",
 
                                 fontWeight: "700",
 
-                                fontSize:
-                                    "1.05rem",
+                                fontSize: "1.05rem",
 
                                 border: "none",
 
                                 boxShadow:
-                                    "0 10px 30px rgba(59,130,246,0.30)"
+                                    "0 10px 30px rgba(59,130,246,0.25)"
                             }}
                         >
-                            {loading
-                                ? "Logging In..."
-                                : "Login"}
+
+                            {
+                                loading
+                                    ? "Logging In..."
+                                    : "Login"
+                            }
+
                         </button>
 
-                        {/* ADMIN LOGIN */}
 
-                        <button
-                            className="
-                                btn
-                                w-100
-                                mt-3
-                            "
-
-                            onClick={() => {
-                                window.location.href =
-                                    "/#/admin-login";
-                            }}
-
-                            style={{
-                                background:
-                                    "rgba(255,255,255,0.05)",
-
-                                color: "white",
-
-                                padding: "16px",
-
-                                borderRadius:
-                                    "20px",
-
-                                fontWeight: "600",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)"
-                            }}
-                        >
-                            Admin Login
-                        </button>
-
+                        {/* ================================= */}
                         {/* ERROR MESSAGE */}
+                        {/* ================================= */}
 
                         {message && (
+
                             <div
                                 className="
                                     mt-4
@@ -519,18 +540,30 @@ function Login() {
                                 "
 
                                 style={{
-                                    color:
-                                        "#f87171",
+                                    color: "#f87171",
 
-                                    fontWeight:
-                                        "500"
+                                    fontWeight: "600",
+
+                                    background:
+                                        "rgba(239,68,68,0.08)",
+
+                                    border:
+                                        "1px solid rgba(239,68,68,0.15)",
+
+                                    borderRadius: "14px",
+
+                                    padding: "12px"
                                 }}
                             >
                                 {message}
                             </div>
+
                         )}
 
+
+                        {/* ================================= */}
                         {/* LOGIN INFO */}
+                        {/* ================================= */}
 
                         <div
                             className="
@@ -544,23 +577,23 @@ function Login() {
                                     "rgba(59,130,246,0.08)",
 
                                 border:
-                                    "1px solid rgba(59,130,246,0.15)",
+                                    "1px solid rgba(59,130,246,0.18)",
 
-                                borderRadius:
-                                    "18px",
+                                borderRadius: "18px",
 
                                 color: "#93c5fd",
 
-                                fontSize:
-                                    "0.9rem"
+                                fontSize: "0.9rem"
                             }}
                         >
-                            🔐 Student access using
-                            your registered roll
-                            number
+                            🔐 Student access using your
+                            registered roll number
                         </div>
 
+
+                        {/* ================================= */}
                         {/* FOOTER */}
+                        {/* ================================= */}
 
                         <div
                             className="
@@ -576,9 +609,13 @@ function Login() {
                         >
                             Made by Shyam 🚀
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
     );
 }
