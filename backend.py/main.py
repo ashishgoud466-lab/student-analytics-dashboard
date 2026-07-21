@@ -5,12 +5,12 @@ import os
 
 
 # =========================================================
-# FASTAPI APP
+# APP
 # =========================================================
 
 app = FastAPI(
     title="Student Analytics API",
-    version="2.0"
+    version="3.0"
 )
 
 
@@ -28,10 +28,17 @@ app.add_middleware(
 
 
 # =========================================================
-# DATABASE CONNECTION
+# DATABASE
 # =========================================================
 
 def get_connection():
+    """
+    Connect to Aiven MySQL.
+
+    IMPORTANT:
+    DB_PASSWORD is the AIVEN DATABASE PASSWORD.
+    It is NOT a student login password.
+    """
 
     return mysql.connector.connect(
         host=os.getenv("DB_HOST"),
@@ -44,6 +51,18 @@ def get_connection():
 
 
 # =========================================================
+# HELPER
+# =========================================================
+
+def normalize_roll(roll_no):
+    """
+    Makes roll-number handling consistent everywhere.
+    """
+
+    return str(roll_no or "").strip().upper()
+
+
+# =========================================================
 # HOME / HEALTH CHECK
 # =========================================================
 
@@ -52,13 +71,18 @@ def home():
 
     return {
         "success": True,
-        "message": "Student Analytics API Running"
+        "message": "Student Analytics API Running",
+        "version": "3.0"
     }
 
 
 # =========================================================
 # LOGIN
-# PASSWORDLESS STUDENT LOGIN
+#
+# PASSWORDLESS LOGIN
+#
+# Student only needs to exist in student_info.
+# Users table is NOT used.
 # =========================================================
 
 @app.post("/login")
@@ -69,24 +93,17 @@ def login(data: dict = Body(...)):
 
     try:
 
-        roll = data.get("roll_no")
+        roll_no = normalize_roll(
+            data.get("roll_no")
+        )
 
-        # ---------------------------------------------
-        # VALIDATE ROLL NUMBER
-        # ---------------------------------------------
-
-        if not roll:
+        if not roll_no:
 
             return {
                 "success": False,
                 "message": "Roll number is required"
             }
 
-        roll = str(roll).strip().upper()
-
-        # ---------------------------------------------
-        # DATABASE
-        # ---------------------------------------------
 
         conn = get_connection()
 
@@ -94,66 +111,49 @@ def login(data: dict = Body(...)):
             dictionary=True
         )
 
-        # ---------------------------------------------
-        # CHECK USER
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # CHECK STUDENT
+        # -------------------------------------------------
 
         cursor.execute(
             """
-            SELECT
-                Roll_no,
-                Role,
-                Email
-            FROM Users
-            WHERE Roll_no = %s
+            SELECT *
+            FROM student_info
+            WHERE UPPER(TRIM(Roll_no)) = %s
+            LIMIT 1
             """,
-            (roll,)
+            (roll_no,)
         )
 
-        user = cursor.fetchone()
 
-        if not user:
+        student = cursor.fetchone()
+
+
+        if not student:
 
             return {
                 "success": False,
                 "message": "Invalid roll number"
             }
 
-        # ---------------------------------------------
-        # STUDENT INFORMATION
-        # ---------------------------------------------
 
-        cursor.execute(
-            """
-            SELECT *
-            FROM student_info
-            WHERE Roll_no = %s
-            """,
-            (roll,)
-        )
-
-        student = cursor.fetchone()
-
-        if not student:
-
-            return {
-                "success": False,
-                "message": "Student information not found"
-            }
-
-        # ---------------------------------------------
-        # SUCCESS
-        # ---------------------------------------------
+        # -------------------------------------------------
+        # LOGIN SUCCESS
+        # -------------------------------------------------
 
         return {
 
             "success": True,
 
             "roll_no":
-                user.get("Roll_no", ""),
+                student.get(
+                    "Roll_no",
+                    roll_no
+                ),
 
             "role":
-                user.get("Role", "student"),
+                "student",
 
             "name":
                 student.get(
@@ -173,8 +173,11 @@ def login(data: dict = Body(...)):
                     ""
                 ),
 
-            # Current app is Year 2
-            "year": 2,
+            "year":
+                student.get(
+                    "Current_year",
+                    2
+                ),
 
             "sem_id":
                 student.get(
@@ -182,12 +185,11 @@ def login(data: dict = Body(...)):
                     2
                 ),
 
+            # Users table is no longer required
             "email":
-                user.get(
-                    "Email",
-                    ""
-                )
+                ""
         }
+
 
     except Exception as e:
 
@@ -201,14 +203,17 @@ def login(data: dict = Body(...)):
             "message": str(e)
         }
 
+
     finally:
 
         if cursor:
 
             try:
                 cursor.close()
+
             except Exception:
                 pass
+
 
         if conn:
 
@@ -222,12 +227,10 @@ def login(data: dict = Body(...)):
 
 
 # =========================================================
-# GET SEMESTER DATA
+# SEMESTER DATA
 # =========================================================
 
-@app.get(
-    "/semester/{sem_id}/{roll_no}"
-)
+@app.get("/semester/{sem_id}/{roll_no}")
 def semester_data(
     sem_id: int,
     roll_no: str
@@ -236,17 +239,17 @@ def semester_data(
     conn = None
     cursor = None
 
+
     try:
 
-        roll_no = (
+        roll_no = normalize_roll(
             roll_no
-            .strip()
-            .upper()
         )
 
-        # ---------------------------------------------
-        # VALID SEMESTER
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # SEMESTER VALIDATION
+        # -------------------------------------------------
 
         if sem_id < 1 or sem_id > 4:
 
@@ -255,15 +258,17 @@ def semester_data(
                 "message": "Invalid semester"
             }
 
+
         conn = get_connection()
 
         cursor = conn.cursor(
             dictionary=True
         )
 
-        # ---------------------------------------------
-        # SUBJECTS + STUDENT GRADES
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # GET COURSES + STUDENT GRADES
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -283,7 +288,7 @@ def semester_data(
 
                 ON c.Cid = e.Cid
 
-                AND e.Roll_no = %s
+                AND UPPER(TRIM(e.Roll_no)) = %s
 
                 AND e.is_latest = 1
 
@@ -297,14 +302,18 @@ def semester_data(
             )
         )
 
+
         subjects = cursor.fetchall()
 
-        # ---------------------------------------------
-        # CALCULATE SGPA
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # SGPA
+        # -------------------------------------------------
 
         total_points = 0.0
+
         total_credits = 0.0
+
 
         for subject in subjects:
 
@@ -315,13 +324,14 @@ def semester_data(
                 ) or 0
             )
 
-            grade_point = (
-                subject.get(
-                    "Grade_point"
-                )
+
+            grade_point = subject.get(
+                "Grade_point"
             )
 
-            # Only calculate entered grades
+
+            # Only count subjects that have a grade
+
             if (
                 grade_point is not None
                 and grade_point != ""
@@ -331,41 +341,50 @@ def semester_data(
                     grade_point
                 )
 
+
                 total_points += (
                     grade_point
-                    * credits
+                    *
+                    credits
                 )
+
 
                 total_credits += credits
 
-            # React input should receive ""
-            # when grade hasn't been entered
-            if grade_point is None:
 
-                subject[
-                    "Grade_point"
-                ] = ""
+            else:
+
+                # Makes React input clean
+                subject["Grade_point"] = ""
+
 
         sgpa = 0.00
+
 
         if total_credits > 0:
 
             sgpa = round(
                 total_points
-                / total_credits,
+                /
+                total_credits,
                 2
             )
+
 
         return {
 
             "success": True,
 
-            "semester": sem_id,
+            "semester":
+                sem_id,
 
-            "subjects": subjects,
+            "subjects":
+                subjects,
 
-            "sgpa": sgpa
+            "sgpa":
+                sgpa
         }
+
 
     except Exception as e:
 
@@ -374,10 +393,15 @@ def semester_data(
             str(e)
         )
 
+
         return {
+
             "success": False,
-            "message": str(e)
+
+            "message":
+                str(e)
         }
+
 
     finally:
 
@@ -385,8 +409,10 @@ def semester_data(
 
             try:
                 cursor.close()
+
             except Exception:
                 pass
+
 
         if conn:
 
@@ -400,7 +426,7 @@ def semester_data(
 
 
 # =========================================================
-# UPDATE / SAVE GRADE
+# UPDATE / INSERT GRADE
 # =========================================================
 
 @app.post("/update-grade")
@@ -411,23 +437,31 @@ def update_grade(
     conn = None
     cursor = None
 
+
     try:
 
-        roll_no = data.get(
-            "roll_no"
+        # -------------------------------------------------
+        # INPUT
+        # -------------------------------------------------
+
+        roll_no = normalize_roll(
+            data.get("roll_no")
         )
 
-        cid = data.get(
-            "cid"
-        )
+
+        cid = str(
+            data.get("cid") or ""
+        ).strip()
+
 
         grade_point = data.get(
             "grade_point"
         )
 
-        # ---------------------------------------------
+
+        # -------------------------------------------------
         # VALIDATION
-        # ---------------------------------------------
+        # -------------------------------------------------
 
         if not roll_no:
 
@@ -436,12 +470,14 @@ def update_grade(
                 "message": "Roll number is required"
             }
 
+
         if not cid:
 
             return {
                 "success": False,
                 "message": "Course ID is required"
             }
+
 
         if grade_point is None:
 
@@ -450,16 +486,6 @@ def update_grade(
                 "message": "Grade point is required"
             }
 
-        roll_no = (
-            str(roll_no)
-            .strip()
-            .upper()
-        )
-
-        cid = (
-            str(cid)
-            .strip()
-        )
 
         try:
 
@@ -467,90 +493,128 @@ def update_grade(
                 grade_point
             )
 
-        except (ValueError, TypeError):
+
+        except (
+            ValueError,
+            TypeError
+        ):
 
             return {
+
                 "success": False,
+
                 "message":
                     "Grade point must be a number"
             }
 
+
         if (
             grade_point < 0
-            or grade_point > 10
+            or
+            grade_point > 10
         ):
 
             return {
+
                 "success": False,
+
                 "message":
                     "Grade point must be between 0 and 10"
             }
 
-        # ---------------------------------------------
+
+        # -------------------------------------------------
         # DATABASE
-        # ---------------------------------------------
+        # -------------------------------------------------
 
         conn = get_connection()
+
 
         cursor = conn.cursor(
             dictionary=True
         )
 
-        # ---------------------------------------------
-        # CHECK STUDENT
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # VERIFY STUDENT
+        # -------------------------------------------------
 
         cursor.execute(
             """
             SELECT Roll_no
+
             FROM student_info
-            WHERE Roll_no = %s
+
+            WHERE UPPER(TRIM(Roll_no)) = %s
+
+            LIMIT 1
             """,
             (roll_no,)
         )
 
+
         student = cursor.fetchone()
+
 
         if not student:
 
             return {
+
                 "success": False,
-                "message": "Student not found"
+
+                "message":
+                    "Student not found"
             }
 
-        # ---------------------------------------------
-        # CHECK COURSE
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # VERIFY COURSE
+        # -------------------------------------------------
 
         cursor.execute(
             """
             SELECT Cid
+
             FROM courses
+
             WHERE Cid = %s
+
+            LIMIT 1
             """,
             (cid,)
         )
 
+
         course = cursor.fetchone()
+
 
         if not course:
 
             return {
+
                 "success": False,
-                "message": "Course not found"
+
+                "message":
+                    "Course not found"
             }
 
-        # ---------------------------------------------
+
+        # -------------------------------------------------
         # CHECK EXISTING ENROLLMENT
-        # ---------------------------------------------
+        # -------------------------------------------------
 
         cursor.execute(
             """
             SELECT *
+
             FROM enroll
-            WHERE Roll_no = %s
+
+            WHERE UPPER(TRIM(Roll_no)) = %s
+
             AND Cid = %s
+
             AND is_latest = 1
+
             LIMIT 1
             """,
             (
@@ -559,11 +623,13 @@ def update_grade(
             )
         )
 
+
         existing = cursor.fetchone()
 
-        # ---------------------------------------------
-        # UPDATE EXISTING GRADE
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # UPDATE
+        # -------------------------------------------------
 
         if existing:
 
@@ -573,7 +639,7 @@ def update_grade(
 
                 SET Grade_point = %s
 
-                WHERE Roll_no = %s
+                WHERE UPPER(TRIM(Roll_no)) = %s
 
                 AND Cid = %s
 
@@ -586,9 +652,10 @@ def update_grade(
                 )
             )
 
-        # ---------------------------------------------
-        # CREATE NEW ENROLLMENT
-        # ---------------------------------------------
+
+        # -------------------------------------------------
+        # INSERT
+        # -------------------------------------------------
 
         else:
 
@@ -617,14 +684,16 @@ def update_grade(
                 )
             )
 
+
         conn.commit()
+
 
         return {
 
             "success": True,
 
             "message":
-                "Grade updated successfully",
+                "Grade saved successfully",
 
             "roll_no":
                 roll_no,
@@ -636,24 +705,33 @@ def update_grade(
                 grade_point
         }
 
+
     except Exception as e:
+
 
         if conn:
 
             try:
                 conn.rollback()
+
             except Exception:
                 pass
+
 
         print(
             "UPDATE GRADE ERROR:",
             str(e)
         )
 
+
         return {
+
             "success": False,
-            "message": str(e)
+
+            "message":
+                str(e)
         }
+
 
     finally:
 
@@ -661,8 +739,10 @@ def update_grade(
 
             try:
                 cursor.close()
+
             except Exception:
                 pass
+
 
         if conn:
 
@@ -679,9 +759,7 @@ def update_grade(
 # ANALYTICS
 # =========================================================
 
-@app.get(
-    "/analytics/{roll_no}"
-)
+@app.get("/analytics/{roll_no}")
 def analytics(
     roll_no: str
 ):
@@ -689,19 +767,25 @@ def analytics(
     conn = None
     cursor = None
 
+
     try:
 
-        roll_no = (
+        roll_no = normalize_roll(
             roll_no
-            .strip()
-            .upper()
         )
 
+
         conn = get_connection()
+
 
         cursor = conn.cursor(
             dictionary=True
         )
+
+
+        # -------------------------------------------------
+        # SGPA PER SEMESTER
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -713,23 +797,39 @@ def analytics(
 
                     SUM(
 
-                        IFNULL(
-                            e.Grade_point,
-                            0
-                        )
+                        CASE
 
-                        *
+                            WHEN e.Grade_point IS NOT NULL
 
-                        c.Credits
+                            THEN
+                                e.Grade_point
+                                *
+                                c.Credits
+
+                            ELSE 0
+
+                        END
 
                     )
 
                     /
 
                     NULLIF(
+
                         SUM(
-                            c.Credits
+
+                            CASE
+
+                                WHEN e.Grade_point IS NOT NULL
+
+                                THEN c.Credits
+
+                                ELSE 0
+
+                            END
+
                         ),
+
                         0
                     ),
 
@@ -739,26 +839,41 @@ def analytics(
 
             FROM courses c
 
+
             LEFT JOIN enroll e
 
                 ON c.Cid = e.Cid
 
-                AND e.Roll_no = %s
+                AND UPPER(TRIM(e.Roll_no)) = %s
 
                 AND e.is_latest = 1
 
+
             WHERE c.Sem_id BETWEEN 1 AND 4
 
+
             GROUP BY c.Sem_id
+
 
             ORDER BY c.Sem_id
             """,
             (roll_no,)
         )
 
+
         analytics_data = (
             cursor.fetchall()
         )
+
+
+        # Replace NULL SGPA with 0
+
+        for semester in analytics_data:
+
+            if semester.get("SGPA") is None:
+
+                semester["SGPA"] = 0
+
 
         return {
 
@@ -768,12 +883,14 @@ def analytics(
                 analytics_data
         }
 
+
     except Exception as e:
 
         print(
             "ANALYTICS ERROR:",
             str(e)
         )
+
 
         return {
 
@@ -783,14 +900,17 @@ def analytics(
                 str(e)
         }
 
+
     finally:
 
         if cursor:
 
             try:
                 cursor.close()
+
             except Exception:
                 pass
+
 
         if conn:
 
@@ -807,9 +927,7 @@ def analytics(
 # STUDENT PROFILE
 # =========================================================
 
-@app.get(
-    "/student/{roll_no}"
-)
+@app.get("/student/{roll_no}")
 def student_profile(
     roll_no: str
 ):
@@ -817,38 +935,49 @@ def student_profile(
     conn = None
     cursor = None
 
+
     try:
 
-        roll_no = (
+        roll_no = normalize_roll(
             roll_no
-            .strip()
-            .upper()
         )
 
+
         conn = get_connection()
+
 
         cursor = conn.cursor(
             dictionary=True
         )
 
+
         cursor.execute(
             """
             SELECT *
+
             FROM student_info
-            WHERE Roll_no = %s
+
+            WHERE UPPER(TRIM(Roll_no)) = %s
+
+            LIMIT 1
             """,
             (roll_no,)
         )
 
+
         student = cursor.fetchone()
+
 
         if not student:
 
             return {
+
                 "success": False,
+
                 "message":
                     "Student not found"
             }
+
 
         return {
 
@@ -858,12 +987,14 @@ def student_profile(
                 student
         }
 
+
     except Exception as e:
 
         print(
             "STUDENT PROFILE ERROR:",
             str(e)
         )
+
 
         return {
 
@@ -873,14 +1004,17 @@ def student_profile(
                 str(e)
         }
 
+
     finally:
 
         if cursor:
 
             try:
                 cursor.close()
+
             except Exception:
                 pass
+
 
         if conn:
 
